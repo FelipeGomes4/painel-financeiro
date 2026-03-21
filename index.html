@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <meta name="theme-color" content="#09090b">
+    <meta name="theme-color" content="#0d0d0d">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Painel Financeiro">
@@ -20,35 +20,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* ── Base surfaces ── */
-            --bg-primary:   #09090b;
-            --bg-secondary: #111113;
-            --bg-card:      #141418;
-            --bg-sidebar:   #0c0c0f;
-            --bg-elevated:  #1a1a20;
-
-            /* ── Text ── */
-            --text-primary:   #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted:     #475569;
-
-            /* ── Accent: indigo-violet (clean, premium) ── */
-            --accent:       #6366f1;
-            --accent-hover: #818cf8;
-            --accent-glow:  rgba(99, 102, 241, 0.25);
-
-            /* ── Semantic ── */
-            --success: #22c55e;
-            --danger:  #f43f5e;
+            --bg-primary: #0d0d0d;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #1f1f1f;
+            --bg-sidebar: #111111;
+            --text-primary: #e8e8e8;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --accent: #ff6b35;
+            --accent-hover: #ff8555;
+            --success: #10b981;
+            --danger: #ef4444;
             --warning: #f59e0b;
-            --purple:  #a78bfa;
-            --cyan:    #22d3ee;
-
-            /* ── Borders & shadows ── */
-            --border:       rgba(255,255,255,0.07);
-            --border-hover: rgba(255,255,255,0.12);
-            --shadow:       0 4px 24px rgba(0,0,0,0.6);
-            --shadow-card:  0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
+            --purple: #8b5cf6;
+            --border: #2a2a2a;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
         }
 
         * {
@@ -66,10 +52,10 @@
         }
 
         .sidebar {
-            width: 260px;
+            width: 280px;
             background: var(--bg-sidebar);
             border-right: 1px solid var(--border);
-            padding: 1.75rem 1.25rem;
+            padding: 2rem 1.5rem;
             display: flex;
             flex-direction: column;
             position: fixed;
@@ -80,84 +66,59 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.85rem;
+            gap: 1rem;
             margin-bottom: 2rem;
-            padding: 0 0.25rem;
         }
 
         .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #6366f1, #818cf8);
-            border-radius: 10px;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #c67c5c, #8b5a3c);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
-            box-shadow: 0 0 16px rgba(99,102,241,0.35);
-            flex-shrink: 0;
+            font-size: 1.5rem;
         }
 
         .logo-text {
-            font-size: 0.975rem;
+            font-size: 1.125rem;
             font-weight: 700;
             color: var(--text-primary);
-            letter-spacing: -0.3px;
-        }
-
-        .logo-sub {
-            font-size: 0.68rem;
-            color: var(--text-muted);
-            font-weight: 400;
-            letter-spacing: 0.2px;
-        }
-
-        .nav-section-label {
-            font-size: 0.62rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            padding: 0 0.75rem;
-            margin-bottom: 0.4rem;
-            margin-top: 0.5rem;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 0.6rem 0.75rem;
-            margin-bottom: 0.15rem;
+            padding: 0.875rem 1rem;
+            margin-bottom: 0.5rem;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.15s;
-            color: var(--text-muted);
+            transition: all 0.2s;
+            color: var(--text-secondary);
             font-weight: 500;
-            font-size: 0.875rem;
-            gap: 0.7rem;
+            gap: 0.75rem;
         }
 
         .nav-item:hover {
-            background: rgba(255,255,255,0.04);
-            color: var(--text-secondary);
+            background: rgba(255, 107, 53, 0.1);
+            color: var(--accent);
         }
 
         .nav-item.active {
-            background: rgba(99,102,241,0.12);
-            color: var(--accent-hover);
+            background: rgba(255, 107, 53, 0.15);
+            color: var(--accent);
+            border-left: 3px solid var(--accent);
         }
 
         .nav-icon {
-            font-size: 1rem;
-            width: 20px;
-            text-align: center;
-            flex-shrink: 0;
+            font-size: 1.25rem;
         }
 
         .main-content {
             flex: 1;
-            margin-left: 260px;
-            padding: 2rem 2.5rem;
+            margin-left: 280px;
+            padding: 2rem;
             overflow-y: auto;
         }
 
@@ -174,15 +135,14 @@
         }
 
         .page-title {
-            font-size: 1.75rem;
-            font-weight: 800;
-            margin-bottom: 0.4rem;
-            letter-spacing: -0.5px;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
         }
 
         .page-subtitle {
-            color: var(--text-muted);
-            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
         }
 
         .stats-grid {
@@ -195,60 +155,57 @@
         .stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 1.4rem 1.5rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            box-shadow: var(--shadow-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s;
         }
 
         .stat-card:hover {
-            border-color: var(--border-hover);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            transform: translateY(-2px);
         }
 
         .stat-label {
-            color: var(--text-muted);
-            font-size: 0.72rem;
-            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 0.6rem;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
         }
 
         .stat-value {
-            font-size: 1.85rem;
-            font-weight: 800;
-            margin-bottom: 0.3rem;
-            letter-spacing: -0.5px;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
         }
 
         .stat-change {
-            font-size: 0.78rem;
+            font-size: 0.875rem;
             display: flex;
             align-items: center;
             gap: 0.25rem;
-            color: var(--text-muted);
         }
 
-        .stat-change.positive { color: var(--success); }
-        .stat-change.negative { color: var(--danger); }
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
 
         .chart-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem 1.6rem;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--shadow-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .chart-title {
-            font-size: 0.78rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: var(--text-muted);
-            margin-bottom: 1.25rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
         }
 
         .chart-container {
@@ -257,57 +214,35 @@
         }
 
         .btn {
-            padding: 0.6rem 1.2rem;
-            border-radius: 9px;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
             border: none;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.855rem;
-            transition: all 0.15s;
-            letter-spacing: 0.1px;
+            transition: all 0.2s;
+            font-size: 0.875rem;
         }
 
         .btn-primary {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), #ff8555);
             color: white;
-            box-shadow: 0 0 0 1px rgba(99,102,241,0.3), 0 4px 14px rgba(99,102,241,0.25);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
         }
 
         .btn-primary:hover {
-            background: var(--accent-hover);
-            box-shadow: 0 0 0 1px rgba(129,140,248,0.4), 0 4px 18px rgba(99,102,241,0.35);
-            transform: translateY(-1px);
+            background: linear-gradient(135deg, #ff8555, var(--accent));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
         }
 
         .btn-success {
-            background: linear-gradient(135deg, #16a34a, #22c55e);
-            color: #fff;
-            border: none;
-            box-shadow: 0 2px 10px rgba(34,197,94,0.35);
-            font-weight: 700;
-        }
-        .btn-success:hover {
-            background: linear-gradient(135deg, #15803d, #16a34a);
-            box-shadow: 0 4px 14px rgba(34,197,94,0.45);
-            transform: translateY(-1px);
+            background: var(--success);
+            color: white;
         }
 
         .btn-danger {
-            background: rgba(244,63,94,0.12);
-            color: var(--danger);
-            border: 1px solid rgba(244,63,94,0.22);
-        }
-
-                .btn-warning {
-            background: linear-gradient(135deg, #d97706, #f59e0b);
-            color: #fff;
-            border: none;
-            box-shadow: 0 2px 10px rgba(245,158,11,0.3);
-            font-weight: 700;
-        }
-        .btn-warning:hover {
-            background: linear-gradient(135deg, #b45309, #d97706);
-            transform: translateY(-1px);
+            background: var(--danger);
+            color: white;
         }
 
         .btn-outline {
@@ -317,23 +252,19 @@
         }
 
         .btn-outline:hover {
-            background: rgba(255,255,255,0.04);
-            border-color: var(--border-hover);
-            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .btn-sm {
-            padding: 0.35rem 0.8rem;
-            font-size: 0.78rem;
-            border-radius: 7px;
+            padding: 0.375rem 0.875rem;
+            font-size: 0.8125rem;
         }
 
         .table-container {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: var(--shadow-card);
         }
 
         table {
@@ -342,12 +273,11 @@
         }
 
         thead {
-            background: rgba(99,102,241,0.04);
-            border-bottom: 1px solid var(--border);
+            background: rgba(255, 107, 53, 0.05);
         }
 
         th {
-            padding: 0.85rem 1rem;
+            padding: 1rem;
             text-align: left;
             font-weight: 600;
             color: var(--text-secondary);
@@ -370,26 +300,26 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
         }
 
-        .modal.show { display: flex; }
+        .modal.show {
+            display: flex;
+        }
 
         .modal-content {
-            background: var(--bg-elevated);
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 2rem;
             width: 90%;
             max-width: 500px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
         }
 
         .modal-header {
@@ -438,30 +368,19 @@
         .form-input,
         .form-select {
             width: 100%;
-            padding: 0.7rem 0.875rem;
+            padding: 0.75rem;
             border: 1px solid var(--border);
-            border-radius: 10px;
-            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            background: var(--bg-secondary);
             color: var(--text-primary);
-            font-size: 0.9rem;
-            transition: border-color 0.15s, box-shadow 0.15s;
+            font-size: 0.9375rem;
+            transition: border-color 0.2s;
         }
 
         .form-input:focus,
         .form-select:focus {
             outline: none;
-            border-color: rgba(99,102,241,0.5);
-            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 0.45rem;
-            font-weight: 600;
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            border-color: var(--accent);
         }
 
         .filter-bar {
@@ -472,18 +391,12 @@
         }
 
         .filter-select {
-            padding: 0.5rem 0.9rem;
+            padding: 0.625rem 1rem;
             border: 1px solid var(--border);
             border-radius: 8px;
-            background: rgba(255,255,255,0.03);
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: border-color 0.15s;
-        }
-        .filter-select:hover {
-            border-color: var(--border-hover);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.875rem;
         }
 
         .action-bar {
@@ -498,14 +411,9 @@
         .investment-item, .debt-item {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 1.4rem 1.5rem;
-            margin-bottom: 0.75rem;
-            box-shadow: var(--shadow-card);
-            transition: border-color 0.15s;
-        }
-        .investment-item:hover, .debt-item:hover {
-            border-color: var(--border-hover);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .investment-header {
@@ -562,35 +470,31 @@
 
         .debt-progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #6366f1, #a78bfa);
+            background: linear-gradient(90deg, var(--accent), var(--purple));
             transition: width 0.3s;
         }
 
         .badge {
             display: inline-block;
-            padding: 0.2rem 0.65rem;
+            padding: 0.25rem 0.75rem;
             border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.3px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
         .badge-success {
-            background: rgba(34,197,94,0.12);
+            background: rgba(16, 185, 129, 0.2);
             color: var(--success);
-            border: 1px solid rgba(34,197,94,0.2);
         }
 
         .badge-warning {
-            background: rgba(245,158,11,0.12);
+            background: rgba(245, 158, 11, 0.2);
             color: var(--warning);
-            border: 1px solid rgba(245,158,11,0.2);
         }
 
         .badge-danger {
-            background: rgba(244,63,94,0.12);
+            background: rgba(239, 68, 68, 0.2);
             color: var(--danger);
-            border: 1px solid rgba(244,63,94,0.2);
         }
 
         .category-section {
@@ -652,34 +556,16 @@
            ══════════════════════════════════════════════════════════════ */
 
         /* ── Elementos mobile: ocultos por padrão no desktop ── */
-        /* Mobile elements: hidden on desktop, shown on mobile via @media below */
-        @media (min-width: 769px) {
-            .mob-page-header, .mob-subnav, .mob-subpages { display: none !important; }
-        }
+        .mob-page-header, .mob-subnav, .mob-subpages { display: none; }
 
         @media (max-width: 768px) {
 
-            /* ══ PALETA MOBILE — escuro sofisticado ══ */
-            :root {
-                --mob-blue:       #2563eb;
-                --mob-blue-dark:  #1d4ed8;
-                --mob-blue-light: #60a5fa;
-                --mob-bg:         #0f1117;
-                --mob-bg2:        #161b27;
-                --mob-card:       #1e2533;
-                --mob-card2:      #242d3d;
-                --mob-border:     rgba(255,255,255,0.08);
-                --mob-text:       #f1f5f9;
-                --mob-text-sub:   #94a3b8;
-                --mob-text-muted: #475569;
-            }
-
             /* ══ BASE ══ */
             html, body { height: 100%; overflow: hidden; }
-            body { flex-direction: column; overflow: hidden; background: var(--mob-bg); }
+            body { flex-direction: column; overflow: hidden; background: #080808; }
             .sidebar { display: none !important; }
 
-            /* ── main-content = trilho horizontal de páginas ── */
+            /* ── Trilho horizontal de páginas ── */
             .main-content {
                 margin-left: 0 !important;
                 padding: 0 !important;
@@ -689,23 +575,25 @@
                 position: relative;
             }
 
-            /* ── Cada .page = slide horizontal FLEXBOX VERTICAL ── */
             .page {
-                display: flex !important;
-                flex-direction: column;
+                display: block !important;
                 position: absolute;
                 top: 0; left: 0;
                 width: 100%; height: 100%;
-                overflow: hidden;
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+                padding: 0;
                 box-sizing: border-box;
                 transform: translateX(100%);
-                transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+                transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
                 will-change: transform;
-                background: var(--mob-bg);
+                background: #080808;
             }
             .page.active { transform: translateX(0%); }
+            .page::-webkit-scrollbar { display: none; }
 
-            /* ── Esconde conteúdo desktop ── */
+            /* ── Oculta tudo desktop dentro das pages ── */
             .page > .page-header,
             .page .stats-grid,
             .page .chart-grid,
@@ -723,74 +611,67 @@
             .page [style*="margin-top: 1.5rem"],
             .page [style*="margin-top: 3rem"] { display: none !important; }
 
-            /* ══ CABEÇALHO — fixo no topo da .page ══ */
+            /* ══ CABEÇALHO STICKY ══ */
             .mob-page-header {
                 display: flex !important;
                 align-items: center;
                 justify-content: space-between;
-                padding: 0.8rem 1rem;
-                flex-shrink: 0;
-                background: linear-gradient(135deg, var(--mob-blue-dark), var(--mob-blue));
-                box-shadow: 0 2px 16px rgba(37,99,235,0.4);
-                z-index: 10;
+                padding: 0.9rem 1.1rem 0.65rem;
+                position: sticky;
+                top: 0; z-index: 20;
+                background: rgba(8,8,8,0.96);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-bottom: 1px solid rgba(255,255,255,0.06);
             }
             .mob-page-title {
-                font-size: 1rem;
-                font-weight: 700;
-                color: #fff;
-                flex: 1;
-                text-align: center;
-                letter-spacing: 0.1px;
+                font-size: 1.2rem;
+                font-weight: 800;
+                color: #f0f0f0;
+                letter-spacing: -0.5px;
             }
-            .mob-page-actions { display: flex; gap: 0.4rem; align-items: center; }
-            .mob-back-btn {
-                width: 32px; height: 32px;
-                display: flex; align-items: center; justify-content: center;
-                background: rgba(255,255,255,0.18);
-                border: 1px solid rgba(255,255,255,0.2);
-                border-radius: 9px;
-                color: #fff;
-                font-size: 1rem;
-                cursor: pointer;
-                flex-shrink: 0;
-                -webkit-tap-highlight-color: transparent;
-            }
-            .mob-back-btn:active { background: rgba(255,255,255,0.3); }
-            .mob-header-spacer { width: 32px; flex-shrink: 0; }
+            .mob-page-actions { display: flex; gap: 0.45rem; align-items: center; }
 
-            /* ══ SUB-NAV ══ */
+            /* ══ SUB-NAV (abas) ══ */
             .mob-subnav {
                 display: flex !important;
                 overflow-x: auto;
-                flex-shrink: 0;
-                background: var(--mob-blue);
+                background: #080808;
+                border-bottom: 1px solid rgba(255,255,255,0.06);
+                -webkit-overflow-scrolling: touch;
                 scrollbar-width: none;
-                padding: 0 0.5rem;
+                padding: 0 1rem;
+                gap: 0;
+                position: sticky;
+                top: 51px; z-index: 19;
             }
             .mob-subnav::-webkit-scrollbar { display: none; }
             .mob-subnav-tab {
                 flex: 0 0 auto;
-                padding: 0.6rem 1rem;
-                font-size: 0.65rem;
+                padding: 0.7rem 1rem;
+                font-size: 0.75rem;
                 font-weight: 700;
-                color: rgba(255,255,255,0.6);
+                color: #4b5563;
                 cursor: pointer;
                 white-space: nowrap;
                 border-bottom: 2px solid transparent;
-                text-transform: uppercase;
-                letter-spacing: 0.4px;
+                transition: all 0.2s;
                 -webkit-tap-highlight-color: transparent;
-                transition: color 0.15s, border-color 0.15s;
+                letter-spacing: 0.3px;
             }
-            .mob-subnav-tab.active { color: #fff; border-bottom-color: #fff; }
+            .mob-subnav-tab.active {
+                color: var(--accent);
+                border-bottom-color: var(--accent);
+            }
 
-            /* ══ CONTAINER DE SUB-PÁGINAS — flex: 1 para ocupar espaço restante ══ */
+            /* ══ CONTAINER DAS SUB-PÁGINAS ══ */
             .mob-subpages {
-                display: flex !important;
-                flex: 1;
+                display: block !important;
                 position: relative;
+                width: 100%;
                 overflow: hidden;
-                min-height: 0;
+                /* altura = tela − barra inferior − header − subnav */
+                height: calc(100vh - 64px - env(safe-area-inset-bottom,0px) - 51px - 39px);
             }
             .mob-subpage {
                 position: absolute;
@@ -799,46 +680,46 @@
                 overflow-y: auto;
                 overflow-x: hidden;
                 -webkit-overflow-scrolling: touch;
-                padding: 0.85rem 0.9rem 5rem;
+                padding: 1rem 1rem 1.5rem;
                 box-sizing: border-box;
-                background: var(--mob-bg);
-                transform: translateX(110%);
-                /* garante q o conteúdo não fica atrás da bottom nav */
-                transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+                transform: translateX(100%);
+                transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
                 will-change: transform;
             }
             .mob-subpage::-webkit-scrollbar { display: none; }
             .mob-subpage.active { transform: translateX(0%); }
-            .mob-subpage.prev   { transform: translateX(-110%); }
+            .mob-subpage.prev   { transform: translateX(-100%); }
 
             /* ══════════════════════════════════════════════
-               HERO CARD — estilo card branco com destaque azul
+               HERO CARD — grande, imersivo, tela cheia
                ══════════════════════════════════════════════ */
             .mob-hero-card {
-                background: linear-gradient(135deg, #1e3a8a 0%, var(--mob-blue-dark) 50%, var(--mob-blue) 100%);
-                border: none;
-                border-radius: 20px;
-                padding: 1.6rem 1.4rem 1.4rem;
+                background: linear-gradient(145deg, #111827 0%, #1e1b4b 50%, #0f172a 100%);
+                border: 1px solid rgba(255,107,53,0.2);
+                border-radius: 24px;
+                padding: 1.8rem 1.5rem 1.6rem;
                 margin-bottom: 1rem;
                 position: relative;
                 overflow: hidden;
-                box-shadow: 0 6px 24px rgba(26,115,232,0.4);
+                box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
             }
+            /* Glow superior direito */
             .mob-hero-card::before {
                 content: '';
                 position: absolute;
-                top: -50px; right: -50px;
-                width: 160px; height: 160px;
-                background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 65%);
+                top: -60px; right: -60px;
+                width: 200px; height: 200px;
+                background: radial-gradient(circle, rgba(255,107,53,0.22) 0%, transparent 65%);
                 border-radius: 50%;
                 pointer-events: none;
             }
+            /* Glow inferior esquerdo */
             .mob-hero-card::after {
                 content: '';
                 position: absolute;
-                bottom: -30px; left: -20px;
-                width: 120px; height: 120px;
-                background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 65%);
+                bottom: -40px; left: -30px;
+                width: 140px; height: 140px;
+                background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 65%);
                 border-radius: 50%;
                 pointer-events: none;
             }
@@ -847,22 +728,21 @@
                 font-weight: 700;
                 text-transform: uppercase;
                 letter-spacing: 1.5px;
-                color: rgba(255,255,255,0.75);
+                color: rgba(156,163,175,0.85);
                 margin-bottom: 0.55rem;
                 position: relative; z-index: 1;
             }
             .mob-hero-value {
-                font-size: 2.6rem;
+                font-size: 2.8rem;
                 font-weight: 800;
                 line-height: 1;
                 margin-bottom: 0.5rem;
                 letter-spacing: -2px;
-                color: #fff;
                 position: relative; z-index: 1;
             }
             .mob-hero-sub {
                 font-size: 0.76rem;
-                color: rgba(255,255,255,0.7);
+                color: rgba(156,163,175,0.7);
                 position: relative; z-index: 1;
             }
             .mob-hero-row {
@@ -877,15 +757,17 @@
                 font-weight: 700;
                 padding: 0.2rem 0.6rem;
                 border-radius: 20px;
-                background: rgba(255,255,255,0.2);
-                color: #fff;
-                border: 1px solid rgba(255,255,255,0.3);
+                background: rgba(16,185,129,0.2);
+                color: #34d399;
+                border: 1px solid rgba(16,185,129,0.25);
             }
             .mob-hero-badge.neg {
-                background: rgba(244,63,94,0.3);
-                color: #fecdd3;
-                border-color: rgba(244,63,94,0.4);
+                background: rgba(239,68,68,0.2);
+                color: #f87171;
+                border-color: rgba(239,68,68,0.25);
             }
+
+            /* ── Linha de 2 stat-chips no hero ── */
             .mob-hero-chips {
                 display: flex;
                 gap: 0.6rem;
@@ -894,15 +776,15 @@
             }
             .mob-hero-chip {
                 flex: 1;
-                background: rgba(255,255,255,0.15);
-                border: 1px solid rgba(255,255,255,0.2);
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.08);
                 border-radius: 14px;
                 padding: 0.7rem 0.8rem;
             }
-            .mob-hero-chip-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.7); margin-bottom: 0.3rem; }
-            .mob-hero-chip-value { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.5px; color: #fff; }
+            .mob-hero-chip-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6b7280; margin-bottom: 0.3rem; }
+            .mob-hero-chip-value { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.5px; }
 
-                        /* ══ MINI-GRID (cards 2×N) — estilo card branco ══ */
+            /* ══ MINI-GRID (cards 2×N) ══ */
             .mob-mini-grid {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -910,63 +792,82 @@
                 margin-bottom: 1rem;
             }
             .mob-mini-card {
-                background: var(--mob-card);
-                border: 1px solid var(--mob-border);
-                border-radius: 14px;
-                padding: 0.9rem 0.85rem;
+                background: #111111;
+                border: 1px solid #1e1e1e;
+                border-radius: 18px;
+                padding: 1rem 0.95rem;
                 position: relative;
                 overflow: hidden;
                 box-shadow: 0 2px 12px rgba(0,0,0,0.3);
             }
+            /* Barra de cor no topo */
             .mob-mini-card::before {
                 content: '';
                 position: absolute;
                 top: 0; left: 0; right: 0;
                 height: 3px;
-                border-radius: 16px 16px 0 0;
+                border-radius: 18px 18px 0 0;
             }
-            .mob-mini-card.accent-green::before  { background: linear-gradient(90deg,#16a34a,#22c55e); }
-            .mob-mini-card.accent-red::before    { background: linear-gradient(90deg,#dc2626,#f43f5e); }
-            .mob-mini-card.accent-purple::before { background: linear-gradient(90deg,#7c3aed,#8b5cf6); }
-            .mob-mini-card.accent-orange::before { background: linear-gradient(90deg,var(--mob-blue),var(--mob-blue-light)); }
-            .mob-mini-card.accent-yellow::before { background: linear-gradient(90deg,#d97706,#f59e0b); }
+            /* Glow de fundo */
+            .mob-mini-card::after {
+                content: '';
+                position: absolute;
+                bottom: -20px; right: -20px;
+                width: 70px; height: 70px;
+                border-radius: 50%;
+                opacity: 0.07;
+            }
+            .mob-mini-card.accent-green::before  { background: linear-gradient(90deg,#10b981,#34d399,transparent); }
+            .mob-mini-card.accent-green::after   { background: #10b981; }
+            .mob-mini-card.accent-red::before    { background: linear-gradient(90deg,#ef4444,#f87171,transparent); }
+            .mob-mini-card.accent-red::after     { background: #ef4444; }
+            .mob-mini-card.accent-purple::before { background: linear-gradient(90deg,#8b5cf6,#a78bfa,transparent); }
+            .mob-mini-card.accent-purple::after  { background: #8b5cf6; }
+            .mob-mini-card.accent-orange::before { background: linear-gradient(90deg,#ff6b35,#ff9a6c,transparent); }
+            .mob-mini-card.accent-orange::after  { background: #ff6b35; }
+            .mob-mini-card.accent-yellow::before { background: linear-gradient(90deg,#f59e0b,#fbbf24,transparent); }
+            .mob-mini-card.accent-yellow::after  { background: #f59e0b; }
             .mob-mini-label {
                 font-size: 0.62rem;
                 font-weight: 700;
                 text-transform: uppercase;
                 letter-spacing: 0.8px;
-                color: var(--mob-text-sub);
-                margin-bottom: 0.3rem;
+                color: #4b5563;
+                margin-bottom: 0.35rem;
             }
             .mob-mini-value {
-                font-size: 1.05rem;
+                font-size: 1.15rem;
                 font-weight: 800;
                 line-height: 1.2;
-                letter-spacing: -0.3px;
-                color: var(--mob-text);
+                letter-spacing: -0.5px;
             }
             .mob-mini-change {
-                font-size: 0.61rem;
-                margin-top: 0.18rem;
-                color: var(--mob-text-sub);
-            }           .mob-chart-card {
-                background: var(--mob-card);
-                border: 1px solid var(--mob-card-border);
-                border-radius: 16px;
+                font-size: 0.62rem;
+                margin-top: 0.25rem;
+                color: #4b5563;
+            }
+
+            /* ══ CARD DE GRÁFICO — maior e mais legível ══ */
+            .mob-chart-card {
+                background: #111111;
+                border: 1px solid #1e1e1e;
+                border-radius: 20px;
                 padding: 1.2rem 1.1rem 1.1rem;
                 margin-bottom: 0.8rem;
-                box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+                box-shadow: 0 2px 16px rgba(0,0,0,0.35);
             }
             .mob-chart-title {
-                font-size: 0.68rem;
-                font-weight: 700;
-                color: var(--mob-text-sub);
+                font-size: 0.83rem;
+                font-weight: 800;
+                color: #9ca3af;
                 margin-bottom: 1rem;
                 display: flex;
                 align-items: center;
                 gap: 0.4rem;
+                letter-spacing: 0.1px;
                 text-transform: uppercase;
                 letter-spacing: 0.6px;
+                font-size: 0.7rem;
             }
             /* Alturas generosas */
             .mob-chart-wrap         { height: 240px; position: relative; }
@@ -974,59 +875,59 @@
             .mob-chart-wrap.short   { height: 195px; }
             .mob-chart-wrap.full    { height: calc(100vh - 64px - env(safe-area-inset-bottom,0px) - 51px - 39px - 2.4rem - 1rem); min-height: 280px; }
 
-            /* ══ LISTA DE TRANSAÇÕES — card branco ══ */
+            /* ══ LISTA DE TRANSAÇÕES ══ */
             .mob-tx-item {
                 display: flex;
                 align-items: center;
                 gap: 0.8rem;
-                padding: 0.85rem 0.9rem;
-                background: var(--mob-card);
-                border: 1px solid var(--mob-border);
-                border-radius: 14px;
-                margin-bottom: 0.45rem;
+                padding: 0.9rem 1rem;
+                background: #111;
+                border: 1px solid #1e1e1e;
+                border-radius: 16px;
+                margin-bottom: 0.5rem;
                 -webkit-tap-highlight-color: transparent;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+                box-shadow: 0 1px 8px rgba(0,0,0,0.25);
             }
             .mob-tx-icon {
-                width: 42px; height: 42px;
-                border-radius: 12px;
+                width: 44px; height: 44px;
+                border-radius: 14px;
                 display: flex; align-items: center; justify-content: center;
-                font-size: 1.15rem;
+                font-size: 1.2rem;
                 flex-shrink: 0;
             }
             .mob-tx-info  { flex: 1; min-width: 0; }
-            .mob-tx-desc  { font-size: 0.86rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--mob-text); }
-            .mob-tx-cat   { font-size: 0.63rem; color: var(--mob-text-sub); margin-top: 2px; }
+            .mob-tx-desc  { font-size: 0.88rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #e8e8e8; }
+            .mob-tx-cat   { font-size: 0.65rem; color: #6b7280; margin-top: 3px; }
             .mob-tx-right { text-align: right; flex-shrink: 0; }
-            .mob-tx-value { font-size: 0.93rem; font-weight: 800; }
-            .mob-tx-date  { font-size: 0.61rem; color: var(--mob-text-sub); margin-top: 3px; }
+            .mob-tx-value { font-size: 0.95rem; font-weight: 800; }
+            .mob-tx-date  { font-size: 0.62rem; color: #4b5563; margin-top: 3px; }
 
-            /* ══ CARDS DE DÍVIDA / INVESTIMENTO — branco ══ */
+            /* ══ CARDS DE DÍVIDA / INVESTIMENTO ══ */
             .mob-debt-card {
-                background: var(--mob-card);
-                border: 1px solid var(--mob-border);
-                border-radius: 14px;
-                padding: 1.1rem 1rem;
-                margin-bottom: 0.65rem;
+                background: #111;
+                border: 1px solid #1e1e1e;
+                border-radius: 20px;
+                padding: 1.2rem 1.1rem;
+                margin-bottom: 0.8rem;
                 box-shadow: 0 2px 12px rgba(0,0,0,0.3);
             }
             .mob-debt-header       { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.85rem; }
-            .mob-debt-name         { font-size: 0.95rem; font-weight: 700; color: var(--mob-text); letter-spacing: -0.2px; }
-            .mob-debt-bank         { font-size: 0.65rem; color: var(--mob-text-sub); margin-top: 4px; }
+            .mob-debt-name         { font-size: 1rem; font-weight: 800; color: #f0f0f0; letter-spacing: -0.3px; }
+            .mob-debt-bank         { font-size: 0.65rem; color: #6b7280; margin-top: 4px; }
             .mob-debt-badge        { font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.65rem; border-radius: 10px; }
             .mob-debt-stats        { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.6rem; margin-bottom: 0.85rem; }
-            .mob-debt-stat-label   { font-size: 0.6rem; color: var(--mob-text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
+            .mob-debt-stat-label   { font-size: 0.6rem; color: #4b5563; text-transform: uppercase; letter-spacing: 0.5px; }
             .mob-debt-stat-value   { font-size: 0.95rem; font-weight: 800; margin-top: 3px; letter-spacing: -0.3px; }
-            .mob-progress          { height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+            .mob-progress          { height: 7px; background: #1a1a1a; border-radius: 4px; overflow: hidden; }
             .mob-progress-bar      { height: 100%; background: linear-gradient(90deg,#ff6b35,#8b5cf6); border-radius: 4px; transition: width 0.5s ease; }
 
             /* ══ SEÇÃO LABEL ══ */
             .mob-section-label {
-                font-size: 0.63rem;
-                font-weight: 700;
+                font-size: 0.65rem;
+                font-weight: 800;
                 text-transform: uppercase;
-                letter-spacing: 1px;
-                color: var(--mob-text-muted);
+                letter-spacing: 1.2px;
+                color: #374151;
                 padding: 0.6rem 0 0.4rem;
                 margin-bottom: 0.5rem;
                 border-bottom: 1px solid rgba(30,30,30,0.8);
@@ -1046,22 +947,21 @@
             .mob-filter-chip {
                 flex: 0 0 auto;
                 padding: 0.38rem 0.9rem;
-                background: var(--mob-card);
-                border: 1px solid var(--mob-border);
+                background: #111;
+                border: 1px solid #1e1e1e;
                 border-radius: 20px;
-                font-size: 0.71rem;
-                font-weight: 600;
-                color: var(--mob-text-sub);
+                font-size: 0.73rem;
+                font-weight: 700;
+                color: #6b7280;
                 cursor: pointer;
                 white-space: nowrap;
                 -webkit-tap-highlight-color: transparent;
                 transition: all 0.15s;
             }
             .mob-filter-chip.active {
-                background: var(--mob-blue);
-                border-color: var(--mob-blue);
-                color: #fff;
-                box-shadow: 0 2px 10px rgba(37,99,235,0.4);
+                background: rgba(255,107,53,0.14);
+                border-color: rgba(255,107,53,0.4);
+                color: var(--accent);
             }
 
             /* ══ MODAL ══ */
@@ -1142,45 +1042,33 @@
 <body>
     <aside class="sidebar">
         <div class="logo">
-            <div class="logo-icon">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2 13L6.5 8L10 11L16 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="16" cy="4" r="1.5" fill="white"/>
-                </svg>
-            </div>
-            <div>
-                <div class="logo-text">Financer</div>
-                <div class="logo-sub">Painel Pessoal</div>
-            </div>
+            <div class="logo-icon">🏛️</div>
+            <div class="logo-text">Painel Financeiro</div>
         </div>
         
         <nav>
-            <div class="nav-section-label">Visão Geral</div>
             <div class="nav-item active" onclick="switchPage('dashboard')">
-                <span class="nav-icon">◈</span>
+                <span class="nav-icon">📊</span>
                 <span>Dashboard</span>
             </div>
-            <div class="nav-section-label">Finanças</div>
             <div class="nav-item" onclick="switchPage('monthly')">
-                <span class="nav-icon">↕</span>
+                <span class="nav-icon">📅</span>
                 <span>Lançamentos</span>
             </div>
             <div class="nav-item" onclick="switchPage('debts')">
-                <span class="nav-icon">⊟</span>
-                <span>Dívidas</span>
+                <span class="nav-icon">🏦</span>
+                <span>Dívidas Bancárias</span>
             </div>
-            <div class="nav-section-label">Investimentos</div>
             <div class="nav-item" onclick="switchPage('investments')">
-                <span class="nav-icon">↗</span>
-                <span>Ativos</span>
+                <span class="nav-icon">📈</span>
+                <span>Investimentos</span>
             </div>
             <div class="nav-item" onclick="switchPage('portfolio')">
-                <span class="nav-icon">◎</span>
+                <span class="nav-icon">💼</span>
                 <span>Carteira</span>
             </div>
-            <div class="nav-section-label">Config</div>
             <div class="nav-item" onclick="switchPage('categories')">
-                <span class="nav-icon">⊞</span>
+                <span class="nav-icon">🏷️</span>
                 <span>Categorias</span>
             </div>
         </nav>
@@ -1278,19 +1166,16 @@
 
             <!-- ═══ MOBILE layout ═══ -->
             <div class="mob-page-header">
-                <div class="mob-header-spacer"></div>
-                <span class="mob-page-title">Dashboard</span>
+                <span class="mob-page-title">📊 Dashboard</span>
                 <div class="mob-page-actions">
-                    <select class="filter-select" id="dashboard-filter-month-mob" onchange="document.getElementById('dashboard-filter-month').value=this.value;filterDashboard();" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;">
+                    <select class="filter-select" id="dashboard-filter-month-mob" onchange="document.getElementById('dashboard-filter-month').value=this.value;filterDashboard();" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:var(--bg-card);border-color:var(--border);">
                         <option value="">Mês Atual</option>
                     </select>
-                    <button onclick="refreshDashboard()" id="mob-refresh-btn" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:8px;padding:0.3rem 0.6rem;font-size:0.85rem;font-weight:700;cursor:pointer;" title="Atualizar">
-                        <span id="mob-refresh-icon" style="display:inline-block;transition:transform 0.5s;">↻</span>
-                    </button>
+                    <button onclick="resetAllData()" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);color:#ef4444;border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">🗑️</button>
                 </div>
             </div>
 
-            </div><!-- Sub-nav abas dashboard -->
+            <!-- Sub-nav abas dashboard -->
             <div class="mob-subnav" id="dash-subnav">
                 <div class="mob-subnav-tab active" onclick="mobSubSwitch('dash-subnav','dash-subpages',this,'dash-overview')">Visão Geral</div>
                 <div class="mob-subnav-tab" onclick="mobSubSwitch('dash-subnav','dash-subpages',this,'dash-cashflow')">Fluxo do Mês</div>
@@ -1468,12 +1353,10 @@
 
             <!-- ═══ MOBILE layout ═══ -->
             <div class="mob-page-header">
-                <button class="mob-back-btn" onclick="goToPage('dashboard')">←</button>
-                <span class="mob-page-title">Investimentos</span>
+                <span class="mob-page-title">📈 Investimentos</span>
                 <div class="mob-page-actions">
                     <button onclick="openInvestmentModal()" style="background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">➕ Novo</button>
                 </div>
-            </div>
             </div>
             <div class="mob-subnav" id="invest-subnav">
                 <div class="mob-subnav-tab active" onclick="mobSubSwitch('invest-subnav','invest-subpages',this,'invest-list')">Meus Ativos</div>
@@ -1563,8 +1446,7 @@
 
             <!-- ═══ MOBILE layout ═══ -->
             <div class="mob-page-header">
-                <button class="mob-back-btn" onclick="goToPage('dashboard')">←</button>
-                <span class="mob-page-title">Carteira</span>
+                <span class="mob-page-title">💼 Carteira</span>
                 <div class="mob-page-actions"></div>
             </div>
             <div class="mob-subnav" id="portfolio-subnav">
@@ -1646,10 +1528,9 @@
 
             <!-- Mobile -->
             <div class="mob-page-header">
-                <button class="mob-back-btn" onclick="goToPage('dashboard')">←</button>
-                <span class="mob-page-title">Lançamentos</span>
+                <span class="mob-page-title">📅 Lançamentos</span>
                 <div class="mob-page-actions">
-                    <select id="monthly-filter-month-mob" class="filter-select" onchange="document.getElementById('monthly-filter-month').value=this.value;filterMonthlyTransactions();renderMobMonthlyList();setTimeout(()=>{initMobChart_MonthlyExpCat();initMobChart_MonthlyIncCat();},80);" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;"><option value="">Todos os meses</option></select>
+                    <select id="monthly-filter-month-mob" class="filter-select" onchange="document.getElementById('monthly-filter-month').value=this.value;filterMonthlyTransactions();" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:var(--bg-card);border-color:var(--border);"><option value="">Todos os meses</option></select>
                 </div>
             </div>
             <div class="mob-subnav" id="monthly-subnav">
@@ -1778,12 +1659,10 @@
 
             <!-- ═══ MOBILE layout ═══ -->
             <div class="mob-page-header">
-                <button class="mob-back-btn" onclick="goToPage('dashboard')">←</button>
-                <span class="mob-page-title">Dívidas</span>
+                <span class="mob-page-title">🏦 Dívidas</span>
                 <div class="mob-page-actions">
                     <button onclick="openDebtModal()" style="background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">➕ Nova</button>
                 </div>
-            </div>
             </div>
             <div class="mob-subnav" id="debts-subnav">
                 <div class="mob-subnav-tab active" onclick="mobSubSwitch('debts-subnav','debts-subpages',this,'debts-list-mob')">Dívidas Ativas</div>
@@ -1846,8 +1725,7 @@
 
             <!-- ═══ MOBILE layout ═══ -->
             <div class="mob-page-header">
-                <button class="mob-back-btn" onclick="goToPage('dashboard')">←</button>
-                <span class="mob-page-title">Categorias</span>
+                <span class="mob-page-title">🏷️ Categorias</span>
                 <div class="mob-page-actions">
                     <button onclick="openAddCategoryModal()" style="background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">➕ Nova</button>
                 </div>
@@ -2558,31 +2436,6 @@
                     monthlyFilter.appendChild(option);
                 });
             }
-
-            // Monthly filter MOBILE — espelha o desktop
-            const monthlyFilterMob = document.getElementById('monthly-filter-month-mob');
-            if (monthlyFilterMob) {
-                monthlyFilterMob.innerHTML = '<option value="">Todos os meses</option>';
-                allMonths.forEach(month => {
-                    const option = document.createElement('option');
-                    option.value = month;
-                    option.textContent = formatMonthLabel(month);
-                    monthlyFilterMob.appendChild(option);
-                });
-            }
-
-            // Dashboard filter MOBILE — espelha o desktop
-            const dashFilterMob = document.getElementById('dashboard-filter-month-mob');
-            if (dashFilterMob) {
-                dashFilterMob.innerHTML = '<option value="">Mês Atual</option>';
-                allMonths.forEach(month => {
-                    const option = document.createElement('option');
-                    option.value = month;
-                    option.textContent = formatMonthLabel(month);
-                    if (month === currentMonth) option.selected = true;
-                    dashFilterMob.appendChild(option);
-                });
-            }
         }
 
         function populateCategoryFilters() {
@@ -2649,16 +2502,9 @@
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-
-            const pageEl = document.getElementById(pageId);
-            if (!pageEl) return;
-            pageEl.classList.add('active');
-
-            // Marca nav-item desktop só se chamado via clique no sidebar
-            try {
-                const navEl = event && event.target && event.target.closest('.nav-item');
-                if (navEl) navEl.classList.add('active');
-            } catch(e) {}
+            
+            document.getElementById(pageId).classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
 
             if (pageId === 'dashboard') updateDashboard();
             if (pageId === 'monthly') renderMonthlyTransactions();
@@ -3299,7 +3145,6 @@
                 renderMonthlyTransactions();
                 populateMonthFilters();
                 populateCategoryFilters();
-                setTimeout(() => _refreshMobile({skipDebts:true,skipInvest:true,skipCats:true,skipPortf:true}), 50);
             } else if (type === 'debt') {
                 // Save as debt
                 const installmentValue = parseFloat(document.getElementById('transaction-installment-value').value);
@@ -3353,7 +3198,6 @@
                 renderMonthlyTransactions();
                 populateMonthFilters();
                 populateCategoryFilters();
-                setTimeout(() => _refreshMobile({skipDebts:true,skipInvest:true,skipCats:true,skipPortf:true}), 50);
             }
             
             // Limpar ID se existir
@@ -3366,19 +3210,16 @@
         }
 
         function deleteTransaction(id) {
-            id = typeof id === 'string' ? parseInt(id) : id;
             if (confirm('Deseja realmente excluir esta transação?')) {
                 transactions = transactions.filter(t => t.id !== id);
                 AppStorage.setItem('transactions', JSON.stringify(transactions));
                 updateDashboard();
                 renderMonthlyTransactions();
                 populateMonthFilters();
-                setTimeout(() => _refreshMobile({skipDebts:true,skipInvest:true,skipCats:true,skipPortf:true}), 50);
             }
         }
 
         function editTransaction(id) {
-            id = typeof id === 'string' ? parseInt(id) : id;
             const transaction = transactions.find(t => t.id === id);
             if (!transaction) return;
             
@@ -3415,7 +3256,6 @@
         }
 
         function payTransaction(id) {
-            id = typeof id === 'string' ? parseInt(id) : id;
             if (confirm('Marcar esta transação como paga?')) {
                 const transaction = transactions.find(t => t.id === id);
                 if (transaction) {
@@ -3423,35 +3263,12 @@
                     AppStorage.setItem('transactions', JSON.stringify(transactions));
                     updateDashboard();
                     renderMonthlyTransactions();
-                    setTimeout(() => _refreshMobile({skipDebts:true,skipInvest:true,skipCats:true,skipPortf:true}), 50);
                 }
             }
         }
 
         function filterTransactions() {
             // Function kept for compatibility but does nothing now
-        }
-
-        /* ── Botão Atualizar Dashboard ── */
-        function refreshDashboard() {
-            // Animação de rotação no ícone
-            const icon = document.getElementById('mob-refresh-icon');
-            if (icon) {
-                icon.style.transform = 'rotate(360deg)';
-                icon.style.transition = 'transform 0.6s ease';
-                setTimeout(() => {
-                    icon.style.transition = 'none';
-                    icon.style.transform = 'rotate(0deg)';
-                }, 650);
-            }
-            // Atualiza tudo
-            try { updateDashboard(); } catch(e){}
-            try { renderMonthlyTransactions(); } catch(e){}
-            setTimeout(() => {
-                try { _refreshMobile(); } catch(e){}
-                try { invalidateMobCharts(); } catch(e){}
-                try { initMobChartsForTab('dash-overview'); } catch(e){}
-            }, 100);
         }
 
         // Investments
@@ -3724,35 +3541,34 @@
         }
 
         function payInstallment(id) {
-            id = typeof id === 'string' ? parseInt(id) : id;
             const debt = debts.find(d => d.id === id);
-            if (!debt) return;
-            if (debt.paid >= debt.installments) {
-                alert('Esta dívida já está totalmente quitada!');
-                return;
+            if (debt && debt.paid < debt.installments) {
+                debt.paid++;
+                
+                // Create transaction for the paid installment
+                const installmentValue = debt.installmentValue || (debt.total / debt.installments);
+                const transaction = {
+                    id: Date.now(),
+                    type: 'expense',
+                    bank: null,
+                    description: `${debt.description} - Parcela ${debt.paid}/${debt.installments}`,
+                    category: debt.category,
+                    value: installmentValue,
+                    date: new Date().toISOString().split('T')[0],
+                    status: 'paid',
+                    isDebtPayment: true,
+                    debtId: debt.id
+                };
+                
+                transactions.push(transaction);
+                AppStorage.setItem('transactions', JSON.stringify(transactions));
+                AppStorage.setItem('debts', JSON.stringify(debts));
+                
+                renderDebts();
+                renderDebtsInTransactions();
+                renderMonthlyTransactions();
+                updateDashboard();
             }
-            debt.paid++;
-            const installmentValue = debt.installmentValue || (debt.total / debt.installments);
-            const transaction = {
-                id: Date.now(),
-                type: 'expense',
-                bank: null,
-                description: `${debt.description} - Parcela ${debt.paid}/${debt.installments}`,
-                category: debt.category,
-                value: installmentValue,
-                date: new Date().toISOString().split('T')[0],
-                status: 'paid',
-                isDebtPayment: true,
-                debtId: debt.id
-            };
-            transactions.push(transaction);
-            AppStorage.setItem('transactions', JSON.stringify(transactions));
-            AppStorage.setItem('debts', JSON.stringify(debts));
-            renderDebts();
-            renderDebtsInTransactions();
-            renderMonthlyTransactions();
-            updateDashboard();
-            setTimeout(() => _refreshMobile(), 50);
         }
 
         function unpayInstallment(id) {
@@ -4754,13 +4570,6 @@
             renderMonthlyTransactions();
             renderCategories();
             renderPortfolio();
-            // Update mobile views
-            renderMobMonthlyList();
-            renderMobInvestments();
-            renderMobDebts();
-            renderMobCategories();
-            renderMobPortfolioSummary();
-            syncMobileValues();
 
             alert(`✅ Importação concluída!\n\n• ${data.transactions.length} transações\n• ${data.investments.length} investimentos\n• ${data.debts.length} dívidas\n• ${data.monthlyExpenses.length} despesas fixas`);
         }
@@ -4839,112 +4648,21 @@
         }
 
         function renderMobDebts() {
-            const el = document.getElementById('mob-debts-list');
-            if (!el) return;
-            if (!debts || !debts.length) {
-                el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">🏦</div>Nenhuma dívida cadastrada</div>';
-                return;
-            }
-            el.innerHTML = debts.map(debt => {
-                const paid      = debt.paid || 0;
-                const total     = debt.installments || 0;
-                const remaining = total - paid;
-                const pct       = total > 0 ? Math.round((paid / total) * 100) : 0;
-                const bank      = banks.find(b => b.id == debt.bank) || {};
-                const pctColor  = pct >= 75 ? '#22c55e' : pct >= 40 ? '#f59e0b' : '#f43f5e';
-
-                const btnPay    = remaining > 0
-                    ? `<button onclick="payInstallment(${debt.id})" style="flex:1;padding:0.55rem 0;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:none;border-radius:11px;font-size:0.76rem;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(34,197,94,0.4);letter-spacing:0.2px;">💳 Pagar Parcela</button>`
-                    : `<span style="flex:1;text-align:center;font-size:0.72rem;font-weight:700;color:#22c55e;padding:0.5rem 0;">✅ Quitada</span>`;
-
-                const btnUnpay  = paid > 0
-                    ? `<button onclick="unpayInstallment(${debt.id})" style="padding:0.5rem 0.7rem;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.22);color:#f59e0b;border-radius:11px;font-size:0.72rem;font-weight:700;cursor:pointer;" title="Voltar parcela">↩</button>`
-                    : '';
-
-                const btnEdit   = `<button onclick="editDebt(${debt.id})" style="padding:0.5rem 0.7rem;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);color:#818cf8;border-radius:11px;font-size:0.72rem;font-weight:700;cursor:pointer;">✏️</button>`;
-                const btnDelete = `<button onclick="deleteDebtAndTransactions(${debt.id})" style="padding:0.5rem 0.7rem;background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.2);color:#f43f5e;border-radius:11px;font-size:0.72rem;font-weight:700;cursor:pointer;">🗑️</button>`;
-
-                return `<div class="mob-debt-card">
-                    <div class="mob-debt-header">
-                        <div>
-                            <div class="mob-debt-name">${debt.description}</div>
-                            <div class="mob-debt-bank">${bank.name || '—'} · ${debt.category || '—'}</div>
-                        </div>
-                        <div class="mob-debt-badge" style="background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);">${remaining} restantes</div>
-                    </div>
-                    <div class="mob-debt-stats">
-                        <div><div class="mob-debt-stat-label">Parcela</div><div class="mob-debt-stat-value">${formatCurrency(debt.installmentValue)}</div></div>
-                        <div><div class="mob-debt-stat-label">Total</div><div class="mob-debt-stat-value">${formatCurrency(debt.total)}</div></div>
-                        <div><div class="mob-debt-stat-label">Pagas</div><div class="mob-debt-stat-value" style="color:#22c55e;">${paid}/${total}</div></div>
-                    </div>
-                    <div class="mob-progress" style="margin:0.6rem 0 0.35rem;">
-                        <div class="mob-progress-bar" style="width:${pct}%;background:linear-gradient(90deg,#6366f1,#22c55e);"></div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.65rem;">
-                        <span style="font-size:0.63rem;font-weight:700;color:${pctColor};">${pct}% quitado</span>
-                        <span style="font-size:0.63rem;color:var(--text-muted);">${formatCurrency(debt.installmentValue * remaining)} restante</span>
-                    </div>
-                    <div style="display:flex;gap:0.45rem;align-items:center;">
-                        ${btnPay}${btnUnpay}${btnEdit}${btnDelete}
-                    </div>
-                </div>`;
+            const el=document.getElementById('mob-debts-list'); if(!el) return;
+            if(!debts||!debts.length){el.innerHTML='<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">🏦</div>Nenhuma dívida cadastrada</div>';return;}
+            el.innerHTML=debts.map(debt=>{
+                const pct=debt.installments>0?Math.round((debt.paidInstallments/debt.installments)*100):0, remaining=debt.installments-debt.paidInstallments;
+                const bank=banks.find(b=>b.id==debt.bank)||{};
+                return`<div class="mob-debt-card"><div class="mob-debt-header"><div><div class="mob-debt-name">${debt.description}</div><div class="mob-debt-bank">${bank.name||'—'} · ${debt.category||'—'}</div></div><div class="mob-debt-badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;">${remaining} rest.</div></div><div class="mob-debt-stats"><div><div class="mob-debt-stat-label">Parcela</div><div class="mob-debt-stat-value">${formatCurrency(debt.installmentValue)}</div></div><div><div class="mob-debt-stat-label">Total</div><div class="mob-debt-stat-value">${formatCurrency(debt.total)}</div></div><div><div class="mob-debt-stat-label">Pagas</div><div class="mob-debt-stat-value">${debt.paidInstallments}/${debt.installments}</div></div></div><div class="mob-progress"><div class="mob-progress-bar" style="width:${pct}%"></div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.45rem;"><span style="font-size:0.61rem;color:var(--text-muted);">${pct}% quitado</span><div style="display:flex;gap:0.35rem;"><button onclick="editDebt('${debt.id}')" style="padding:0.3rem 0.6rem;background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:7px;font-size:0.68rem;font-weight:700;cursor:pointer;">✏️</button><button onclick="deleteDebt('${debt.id}')" style="padding:0.3rem 0.6rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#ef4444;border-radius:7px;font-size:0.68rem;font-weight:700;cursor:pointer;">🗑️</button></div></div></div>`;
             }).join('');
         }
 
         function renderMobCategories() {
-            const el = document.getElementById('mob-categories-container');
-            if (!el) return;
-
-            // categories é um objeto {receitas:{...}, despesas:{...}, ...}
-            const keys = Object.keys(categories || {});
-            if (!keys.length) {
-                el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">🏷️</div>Nenhuma categoria</div>';
-                return;
-            }
-
-            const catIcons = { receitas:'💰', despesas:'💸', investimentos:'📈', dividas:'🏦' };
-
-            el.innerHTML = keys.map(key => {
-                const cat  = categories[key];
-                const subs = cat.subcategories || [];
-                const icon = catIcons[key] || '🏷️';
-
-                const subsHtml = subs.length
-                    ? subs.map((sub, idx) => {
-                        const name = typeof sub === 'string' ? sub : sub.name;
-                        const children = typeof sub === 'object' ? (sub.children || []) : [];
-                        const childHtml = children.length
-                            ? `<div style="margin-left:1rem;">${children.map((c,ci) => {
-                                const cn = typeof c === 'string' ? c : c.name;
-                                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0.5rem;background:rgba(255,255,255,0.03);border-radius:6px;margin-bottom:0.2rem;font-size:0.75rem;color:var(--text-secondary);">
-                                    <span>└ ${cn}</span>
-                                    <button onclick="deleteSubcatByPath('${key}',[${idx},${ci}])" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.7rem;padding:0 0.25rem;">✕</button>
-                                </div>`;
-                            }).join('')}</div>` : '';
-                        return `<div style="margin-bottom:0.3rem;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0.6rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;">
-                                <span style="font-size:0.82rem;font-weight:600;">${name}</span>
-                                <div style="display:flex;gap:0.3rem;">
-                                    <button onclick="openSubcatModal('${key}',[${idx}],false,null)" style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);color:#818cf8;border-radius:6px;padding:0.2rem 0.45rem;font-size:0.68rem;font-weight:700;cursor:pointer;">+ Sub</button>
-                                    <button onclick="openSubcatModal('${key}',[${idx}],true,'${name.replace(/'/g,"\\'")}'" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:var(--text-secondary);border-radius:6px;padding:0.2rem 0.45rem;font-size:0.68rem;cursor:pointer;">✏️</button>
-                                    <button onclick="deleteSubcatByPath('${key}',[${idx}])" style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.18);color:#f43f5e;border-radius:6px;padding:0.2rem 0.45rem;font-size:0.68rem;cursor:pointer;">🗑️</button>
-                                </div>
-                            </div>
-                            ${childHtml}
-                        </div>`;
-                    }).join('')
-                    : '<p style="font-size:0.78rem;color:var(--text-muted);padding:0.5rem 0;">Nenhuma subcategoria</p>';
-
-                return `<div class="mob-debt-card" style="margin-bottom:0.8rem;">
-                    <div class="mob-debt-header">
-                        <div>
-                            <div class="mob-debt-name">${icon} ${cat.name}</div>
-                            <div class="mob-debt-bank">${subs.length} subcategoria(s)</div>
-                        </div>
-                        <button onclick="openSubcatModal('${key}',[],false,null)" style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);color:#818cf8;border-radius:8px;padding:0.3rem 0.7rem;font-size:0.72rem;font-weight:700;cursor:pointer;">+ Nova</button>
-                    </div>
-                    <div style="margin-top:0.5rem;">${subsHtml}</div>
-                </div>`;
+            const el=document.getElementById('mob-categories-container'); if(!el) return;
+            if(!categories||!categories.length){el.innerHTML='<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">🏷️</div>Nenhuma categoria</div>';return;}
+            el.innerHTML=categories.map(cat=>{
+                const subs=cat.subcategories||[];
+                return`<div class="mob-debt-card"><div class="mob-debt-header"><div><div class="mob-debt-name">${cat.icon||'🏷️'} ${cat.name}</div><div class="mob-debt-bank">${subs.length} subcategoria(s)</div></div><div style="display:flex;gap:0.35rem;"><button onclick="openAddSubcategoryModal('${cat.id}')" style="padding:0.28rem 0.55rem;background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:7px;font-size:0.68rem;font-weight:700;cursor:pointer;">+ Sub</button><button onclick="deleteCategory('${cat.id}')" style="padding:0.28rem 0.55rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#ef4444;border-radius:7px;font-size:0.68rem;font-weight:700;cursor:pointer;">🗑️</button></div></div>${subs.map(sub=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0.5rem;background:var(--bg-secondary);border-radius:8px;margin-bottom:0.28rem;"><span style="font-size:0.78rem;">${sub.icon||'▸'} ${sub.name}</span><button onclick="deleteSubcategory('${cat.id}','${sub.id}')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.75rem;">✕</button></div>`).join('')}</div>`;
             }).join('');
         }
 
@@ -4959,329 +4677,20 @@
             }).join('');
         }
 
-        /* ═══════════════════════════════════════════════════════════════
-           FUNÇÕES MOBILE ESSENCIAIS — abas, filtros e gráficos
-           ═══════════════════════════════════════════════════════════════ */
-
-        /* ── Troca de sub-aba dentro de uma página ── */
-        function mobSubSwitch(navId, pagesId, tabEl, targetId) {
-            // Atualiza tabs
-            const nav = document.getElementById(navId);
-            if (nav) nav.querySelectorAll('.mob-subnav-tab').forEach(t => t.classList.remove('active'));
-            if (tabEl) tabEl.classList.add('active');
-
-            // Anima sub-páginas
-            const container = document.getElementById(pagesId);
-            if (!container) return;
-            const pages = container.querySelectorAll('.mob-subpage');
-            const targetEl = document.getElementById(targetId);
-            if (!targetEl) return;
-
-            // Descobre índice atual e novo
-            let curIdx = -1, newIdx = -1;
-            pages.forEach((p, i) => {
-                if (p.classList.contains('active')) curIdx = i;
-                if (p.id === targetId) newIdx = i;
-            });
-            if (curIdx === newIdx) return;
-
-            // Posiciona: saindo vai para left (-100%), entrando vem da right (+100%)
-            pages.forEach((p, i) => {
-                if (i === curIdx) {
-                    p.style.transform = newIdx > curIdx ? 'translateX(-100%)' : 'translateX(100%)';
-                    p.classList.remove('active');
-                } else if (i === newIdx) {
-                    // Começa fora e entra
-                    p.style.transition = 'none';
-                    p.style.transform = newIdx > curIdx ? 'translateX(100%)' : 'translateX(-100%)';
-                    p.classList.add('active');
-                    // Força reflow e anima
-                    p.offsetHeight; // eslint-disable-line
-                    p.style.transition = '';
-                    p.style.transform = 'translateX(0%)';
-                } else {
-                    p.style.transform = i < newIdx ? 'translateX(-100%)' : 'translateX(100%)';
-                    p.classList.remove('active');
-                }
-            });
-
-            // Inicializa gráficos mobile da aba recém-aberta (lazy)
-            setTimeout(() => initMobChartsForTab(targetId), 80);
-        }
-
-        /* ── Filtro de chips na lista de lançamentos ── */
-        let _mobTxFilter = 'all';
-        function mobTxFilter(chipEl, filter) {
-            _mobTxFilter = filter;
-            // Atualiza chips visuais
-            const row = chipEl.closest('.mob-filter-row');
-            if (row) row.querySelectorAll('.mob-filter-chip').forEach(c => c.classList.remove('active'));
-            chipEl.classList.add('active');
-            // Re-renderiza lista
-            renderMobMonthlyList();
-        }
-
-        /* ── Renderiza lista mobile de lançamentos com filtro ── */
-        function renderMobMonthlyList() {
-            const el = document.getElementById('mob-monthly-list');
-            if (!el) return;
-
-            const monthSel = document.getElementById('monthly-filter-month-mob');
-            const selMonth = monthSel ? monthSel.value : '';
-
-            let txs = [...(transactions || [])];
-            if (selMonth) txs = txs.filter(t => t.date && t.date.startsWith(selMonth));
-            if (_mobTxFilter === 'income')  txs = txs.filter(t => t.type === 'income');
-            if (_mobTxFilter === 'expense') txs = txs.filter(t => t.type === 'expense');
-            if (_mobTxFilter === 'pending') txs = txs.filter(t => t.status === 'pending');
-
-            txs.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
-            if (!txs.length) {
-                el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:#4b5563;"><div style="font-size:2rem;margin-bottom:0.5rem;">📭</div>Nenhum lançamento encontrado</div>';
-                return;
-            }
-
-            const catIcon = (catName) => {
-                try {
-                    const allSubs = Object.values(categories || {})
-                        .flatMap(c => c.subcategories || []);
-                    const cat = allSubs.find(s => s.name === catName);
-                    return cat ? (cat.icon || '💰') : '💳';
-                } catch(e) { return '💳'; }
-            };
-
-            el.innerHTML = txs.map(t => {
-                const isInc  = t.type === 'income';
-                const isPend = t.status === 'pending';
-                const isDebt = !!t.isDebtPayment;
-                const icon     = catIcon(t.category);
-                const bgColor  = isInc ? 'rgba(16,185,129,0.14)' : 'rgba(239,68,68,0.14)';
-                const valColor = isInc ? '#34d399' : '#f87171';
-
-                const statusBadge = isPend
-                    ? `<span style="font-size:0.58rem;background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.2);padding:0.1rem 0.4rem;border-radius:6px;">Pendente</span>`
-                    : `<span style="font-size:0.58rem;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.2);padding:0.1rem 0.4rem;border-radius:6px;">Pago</span>`;
-
-                const btnPay    = (isPend && !isDebt) ? `<button onclick="event.stopPropagation();payTransaction(${t.id})" style="flex:1;padding:0.5rem 0;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:none;border-radius:11px;font-size:0.75rem;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(34,197,94,0.35);letter-spacing:0.2px;">💳 Pagar</button>` : '';
-                const btnEdit   = !isDebt ? `<button onclick="event.stopPropagation();editTransaction(${t.id})" style="flex:1;padding:0.5rem 0;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);color:#818cf8;border-radius:11px;font-size:0.75rem;font-weight:700;cursor:pointer;">✏️ Editar</button>` : '';
-                const btnDelete = `<button onclick="event.stopPropagation();deleteTransactionFromHistory(${t.id},${isDebt})" style="flex:1;padding:0.5rem 0;background:rgba(244,63,94,0.1);border:1px solid rgba(244,63,94,0.22);color:#f43f5e;border-radius:11px;font-size:0.75rem;font-weight:700;cursor:pointer;">🗑️ Excluir</button>`;
-
-                return `<div class="mob-tx-item" style="flex-direction:column;align-items:stretch;gap:0.55rem;">
-                    <div style="display:flex;align-items:center;gap:0.8rem;">
-                        <div class="mob-tx-icon" style="background:${bgColor};">${icon}</div>
-                        <div class="mob-tx-info">
-                            <div class="mob-tx-desc">${t.description || t.category || '—'}</div>
-                            <div class="mob-tx-cat" style="display:flex;align-items:center;gap:0.35rem;margin-top:3px;">
-                                ${statusBadge}
-                                <span>${t.category || '—'} · ${formatDate(t.date)}</span>
-                            </div>
-                        </div>
-                        <div class="mob-tx-right">
-                            <div class="mob-tx-value" style="color:${valColor};">${isInc ? '+' : '−'}${formatCurrency(t.value)}</div>
-                        </div>
-                    </div>
-                    <div style="display:flex;gap:0.4rem;">${btnPay}${btnEdit}${btnDelete}</div>
-                </div>`;
-            }).join('');
-        }
-
-
-        function mobChartOptions(extra) {
-            return Object.assign({
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: { duration: 400 },
-                plugins: {
-                    legend: { labels: { color: '#6b7280', font: { size: 11 }, boxWidth: 10 } }
-                },
-                scales: {
-                    y: { ticks: { color: '#4b5563', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-                    x: { ticks: { color: '#4b5563', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
-                }
-            }, extra || {});
-        }
-
-        function initMobChartsForTab(tabId) {
-            // Cada case cria/atualiza só os gráficos necessários para aquela aba
-            switch(tabId) {
-                case 'dash-overview':    initMobChart_IncomeExpense(); break;
-                case 'dash-cashflow':    initMobChart_CashFlow(); initMobChart_YearComparison(); break;
-                case 'dash-charts':      initMobChart_Category(); initMobChart_BalanceEvolution(); break;
-                case 'dash-assets':      initMobChart_Asset(); break;
-                case 'monthly-charts':   initMobChart_MonthlyExpCat(); initMobChart_MonthlyIncCat(); break;
-                case 'portfolio-charts-mob': initMobChart_PortfolioComp(); initMobChart_PortfolioBank(); break;
-            }
-        }
-
-        function initMobChart_IncomeExpense() {
-            const ctx = document.getElementById('mob-incomeExpenseChart'); if (!ctx) return;
-            const months = getLast6Months();
-            const inc = months.map(m => transactions.filter(t=>t.type==='income'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0));
-            const exp = months.map(m => transactions.filter(t=>t.type==='expense'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0));
-            if (mobCharts.incomeExpense) mobCharts.incomeExpense.destroy();
-            mobCharts.incomeExpense = new Chart(ctx, { type:'bar', data:{ labels:months.map(formatMonthLabel), datasets:[
-                {label:'Receitas',data:inc,backgroundColor:'rgba(16,185,129,0.7)',borderRadius:5},
-                {label:'Despesas',data:exp,backgroundColor:'rgba(239,68,68,0.7)',borderRadius:5}
-            ]}, options: mobChartOptions() });
-        }
-
-        function initMobChart_CashFlow() {
-            const ctx = document.getElementById('mob-cashFlowChart'); if (!ctx) return;
-            const months = getLast6Months();
-            const data = months.map(m => {
-                const inc = transactions.filter(t=>t.type==='income'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0);
-                const exp = transactions.filter(t=>t.type==='expense'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0);
-                return inc - exp;
-            });
-            if (mobCharts.cashFlow) mobCharts.cashFlow.destroy();
-            mobCharts.cashFlow = new Chart(ctx, { type:'bar', data:{ labels:months.map(formatMonthLabel), datasets:[{
-                label:'Saldo', data,
-                backgroundColor: data.map(v => v>=0 ? 'rgba(255,107,53,0.75)' : 'rgba(239,68,68,0.7)'),
-                borderRadius:5
-            }]}, options: mobChartOptions() });
-        }
-
-        function initMobChart_YearComparison() {
-            const ctx = document.getElementById('mob-yearComparisonChart'); if (!ctx) return;
-            const months = getLast6Months();
-            const inc = months.map(m => transactions.filter(t=>t.type==='income'&&t.date.startsWith(m)).reduce((s,t)=>s+t.value,0));
-            const exp = months.map(m => transactions.filter(t=>t.type==='expense'&&t.date.startsWith(m)).reduce((s,t)=>s+t.value,0));
-            if (mobCharts.yearComp) mobCharts.yearComp.destroy();
-            mobCharts.yearComp = new Chart(ctx, { type:'line', data:{ labels:months.map(formatMonthLabel), datasets:[
-                {label:'Receitas',data:inc,borderColor:'#34d399',backgroundColor:'rgba(16,185,129,0.08)',tension:0.4},
-                {label:'Despesas',data:exp,borderColor:'#f87171',backgroundColor:'rgba(239,68,68,0.08)',tension:0.4}
-            ]}, options: mobChartOptions() });
-        }
-
-        function initMobChart_Category() {
-            const ctx = document.getElementById('mob-categoryChart'); if (!ctx) return;
-            const now = new Date(); const curMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-            const bycat = {};
-            transactions.filter(t=>t.type==='expense'&&t.date.startsWith(curMonth)).forEach(t=>{ bycat[t.category]=(bycat[t.category]||0)+t.value; });
-            const labels=Object.keys(bycat), vals=Object.values(bycat);
-            if (mobCharts.category) mobCharts.category.destroy();
-            if (!labels.length) return;
-            const colors=['#ff6b35','#8b5cf6','#10b981','#f59e0b','#ef4444','#3b82f6','#ec4899','#14b8a6'];
-            mobCharts.category = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
-                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
-                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
-        }
-
-        function initMobChart_BalanceEvolution() {
-            const ctx = document.getElementById('mob-balanceEvolutionChart'); if (!ctx) return;
-            const months = getLast12Months ? getLast12Months() : getLast6Months();
-            let running = 0;
-            const data = months.map(m => {
-                const inc = transactions.filter(t=>t.type==='income'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0);
-                const exp = transactions.filter(t=>t.type==='expense'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0);
-                running += inc - exp; return running;
-            });
-            if (mobCharts.balanceEvo) mobCharts.balanceEvo.destroy();
-            mobCharts.balanceEvo = new Chart(ctx, { type:'line', data:{ labels:months.map(formatMonthLabel), datasets:[{
-                label:'Patrimônio', data, borderColor:'#8b5cf6', backgroundColor:'rgba(139,92,246,0.1)', tension:0.4, fill:true
-            }]}, options: mobChartOptions() });
-        }
-
-        function initMobChart_Asset() {
-            const ctx = document.getElementById('mob-assetChart'); if (!ctx) return;
-            const data = []; const labels = [];
-            const account = transactions.filter(t=>t.status==='paid').reduce((s,t)=>s+(t.type==='income'?t.value:-t.value),0);
-            const invTotal = investments.reduce((s,i)=>s+(i.currentValue||i.invested||0),0);
-            const debtTotal = debts.reduce((s,d)=>s+((d.installments-d.paidInstallments)*d.installmentValue),0);
-            if(account>0){labels.push('Saldo Conta');data.push(account);}
-            if(invTotal>0){labels.push('Investimentos');data.push(invTotal);}
-            if(debtTotal>0){labels.push('Dívidas');data.push(debtTotal);}
-            if (mobCharts.asset) mobCharts.asset.destroy();
-            if (!data.length) return;
-            mobCharts.asset = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data,backgroundColor:['#10b981','#8b5cf6','#ef4444'],borderWidth:0,hoverOffset:6}]},
-                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
-                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
-        }
-
-        function initMobChart_MonthlyExpCat() {
-            const ctx = document.getElementById('mob-monthlyExpenseCategoryChart'); if (!ctx) return;
-            const selMonth = document.getElementById('monthly-filter-month-mob');
-            const m = selMonth&&selMonth.value ? selMonth.value : `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`;
-            const bycat = {};
-            transactions.filter(t=>t.type==='expense'&&t.date.startsWith(m)).forEach(t=>{ bycat[t.category]=(bycat[t.category]||0)+t.value; });
-            const labels=Object.keys(bycat), vals=Object.values(bycat);
-            if (mobCharts.monthExpCat) mobCharts.monthExpCat.destroy();
-            if (!labels.length) return;
-            const colors=['#ef4444','#f59e0b','#8b5cf6','#ff6b35','#10b981','#3b82f6','#ec4899','#14b8a6'];
-            mobCharts.monthExpCat = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
-                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
-                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
-        }
-
-        function initMobChart_MonthlyIncCat() {
-            const ctx = document.getElementById('mob-monthlyIncomeCategoryChart'); if (!ctx) return;
-            const selMonth = document.getElementById('monthly-filter-month-mob');
-            const m = selMonth&&selMonth.value ? selMonth.value : `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`;
-            const bycat = {};
-            transactions.filter(t=>t.type==='income'&&t.date.startsWith(m)).forEach(t=>{ bycat[t.category]=(bycat[t.category]||0)+t.value; });
-            const labels=Object.keys(bycat), vals=Object.values(bycat);
-            if (mobCharts.monthIncCat) mobCharts.monthIncCat.destroy();
-            if (!labels.length) return;
-            const colors=['#10b981','#34d399','#3b82f6','#8b5cf6','#f59e0b','#ff6b35'];
-            mobCharts.monthIncCat = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
-                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
-                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
-        }
-
-        function initMobChart_PortfolioComp() {
-            const ctx = document.getElementById('mob-portfolioCompositionChart'); if (!ctx) return;
-            const byType = {};
-            investments.forEach(i=>{ const t=i.type||'Outros'; byType[t]=(byType[t]||0)+(i.currentValue||i.invested||0); });
-            const labels=Object.keys(byType), vals=Object.values(byType);
-            if (mobCharts.ptfComp) mobCharts.ptfComp.destroy();
-            if (!labels.length) return;
-            const colors=['#8b5cf6','#10b981','#ff6b35','#f59e0b','#3b82f6','#ef4444'];
-            mobCharts.ptfComp = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
-                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
-                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
-        }
-
-        function initMobChart_PortfolioBank() {
-            const ctx = document.getElementById('mob-portfolioBankChart'); if (!ctx) return;
-            const byBank = {};
-            investments.forEach(i=>{ const b=(banks.find(bk=>bk.id==i.bank)||{}).name||'Outro'; byBank[b]=(byBank[b]||0)+(i.currentValue||i.invested||0); });
-            const labels=Object.keys(byBank), vals=Object.values(byBank);
-            if (mobCharts.ptfBank) mobCharts.ptfBank.destroy();
-            if (!labels.length) return;
-            const colors=['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ff6b35','#ef4444'];
-            mobCharts.ptfBank = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
-                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
-                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
-        }
-
-        /* ── Invalidar gráficos mobile quando dados mudam ── */
-        function invalidateMobCharts() {
-            Object.values(mobCharts).forEach(c => { try { c.destroy(); } catch(e){} });
-            Object.keys(mobCharts).forEach(k => delete mobCharts[k]);
-            // Re-inicializa a aba ativa
-            const activeSub = document.querySelector('.mob-subpage.active');
-            if (activeSub) initMobChartsForTab(activeSub.id);
-        }
-
-        /* ── Função central de atualização mobile ── */
-        function _refreshMobile(opts) {
-            opts = opts || {};
-            try { syncMobileValues(); } catch(e){}
-            if (!opts.skipList)    try { renderMobMonthlyList(); } catch(e){}
-            if (!opts.skipDebts)   try { renderMobDebts(); } catch(e){}
-            if (!opts.skipInvest)  try { renderMobInvestments(); } catch(e){}
-            if (!opts.skipCats)    try { renderMobCategories(); } catch(e){}
-            if (!opts.skipPortf)   try { renderMobPortfolioSummary(); } catch(e){}
-            try { invalidateMobCharts(); } catch(e){}
-        }
-
-        /* Boot */
+        /* Hook renders to also update mobile */
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                _refreshMobile();
-                initMobChartsForTab('dash-overview');
-            }, 700);
+            ['updateDashboard','renderMonthlyTransactions'].forEach(fn => {
+                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(syncMobileValues,60);};}
+            });
+            ['renderInvestments'].forEach(fn => {
+                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{renderMobInvestments();syncMobileValues();},60);};}
+            });
+            ['renderDebts','renderDebtsInTransactions'].forEach(fn => {
+                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{renderMobDebts();syncMobileValues();},60);};}
+            });
+            if(window.renderCategories){const o=window.renderCategories;window.renderCategories=function(...a){o(...a);setTimeout(renderMobCategories,60);};}
+            if(window.renderPortfolio){const o=window.renderPortfolio;window.renderPortfolio=function(...a){o(...a);setTimeout(()=>{renderMobPortfolioSummary();syncMobileValues();},60);};}
+            setTimeout(()=>{syncMobileValues();renderMobInvestments();renderMobDebts();renderMobCategories();renderMobPortfolioSummary();},500);
         });
 
         // Service Worker Registration (skip for Artifact context)
@@ -5351,8 +4760,8 @@
             display: none;
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background: #0f1117;
-            border-top: 1px solid rgba(255,255,255,0.08);
+            background: rgba(8,8,8,0.97);
+            border-top: 1px solid rgba(255,255,255,0.06);
             z-index: 600;
             padding-bottom: env(safe-area-inset-bottom, 0px);
             backdrop-filter: blur(24px);
@@ -5375,8 +4784,8 @@
             align-items: center;
             height: 0;
             overflow: hidden;
-            background: #161b27;
-            border-top: 1px solid rgba(255,255,255,0.06);
+            background: rgba(15,15,15,0.98);
+            border-top: 1px solid rgba(255,255,255,0.04);
             transition: height 0.28s cubic-bezier(0.4,0,0.2,1);
         }
         #mob-actions-row.open { height: 56px; }
@@ -5389,14 +4798,14 @@
             justify-content: center;
             padding: 0.4rem 0;
             cursor: pointer;
-            color: #475569;
+            color: #374151;
             gap: 3px;
             transition: color 0.15s;
             -webkit-tap-highlight-color: transparent;
         }
         .mob-nav-btn span:first-child { font-size: 1.3rem; line-height: 1; }
         .mob-nav-btn span:last-child  { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.4px; }
-        .mob-nav-btn.active           { color: var(--mob-blue) !important; }
+        .mob-nav-btn.active           { color: #ff6b35 !important; }
 
         /* Botão + central */
         .mob-btn-add {
@@ -5411,19 +4820,19 @@
         }
         .mob-btn-add-icon {
             width: 44px; height: 44px;
-            background: linear-gradient(135deg, var(--mob-blue-dark), var(--mob-blue));
+            background: linear-gradient(135deg, #ff6b35, #ff8c5a);
             border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem;
-            box-shadow: 0 4px 16px rgba(26,115,232,0.45), 0 0 0 1px rgba(26,115,232,0.25);
+            box-shadow: 0 4px 16px rgba(255,107,53,0.5), 0 0 0 1px rgba(255,107,53,0.2);
             transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s;
         }
         .mob-btn-add-icon.open {
             transform: rotate(45deg) scale(0.95);
-            background: linear-gradient(135deg, #f43f5e, #fb7185);
-            box-shadow: 0 4px 16px rgba(244,63,94,0.4);
+            background: linear-gradient(135deg, #dc2626, #f87171);
+            box-shadow: 0 4px 16px rgba(239,68,68,0.45);
         }
-        .mob-btn-add span:last-child { font-size: 0.57rem; font-weight: 700; color: var(--mob-blue); letter-spacing: 0.4px; }
+        .mob-btn-add span:last-child { font-size: 0.57rem; font-weight: 700; color: #ff6b35; letter-spacing: 0.4px; }
 
         /* Botões de ação */
         .mob-action-btn {
@@ -5434,12 +4843,12 @@
             justify-content: center;
             padding: 0.4rem 0;
             cursor: pointer;
-            color: #475569;
+            color: #6b7280;
             gap: 3px;
             -webkit-tap-highlight-color: transparent;
             transition: color 0.15s;
         }
-        .mob-action-btn:active { color: var(--mob-blue); transform: scale(0.94); }
+        .mob-action-btn:active { color: #ff6b35; transform: scale(0.94); }
         .mob-action-btn span:first-child { font-size: 1.2rem; line-height: 1; }
         .mob-action-btn span:last-child  { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.3px; }
     </style>
@@ -5487,79 +4896,9 @@
     </nav>
 
     <script>
-        /* ════════════════════════════════════════════════════
-           NAVEGAÇÃO MOBILE — fonte única de verdade
-           ════════════════════════════════════════════════════ */
-        const PAGE_ORDER = ['dashboard','monthly','debts','investments','portfolio','categories'];
-        let currentPageIdx = 0;
+        /* ── Controle da barra de navegação móvel ── */
         let mobActionsOpen = false;
 
-        /* Única função que muda de página — usada por tudo */
-        function goToPage(pageName) {
-            const newIdx = PAGE_ORDER.indexOf(pageName);
-            if (newIdx === -1) return;
-
-            const isMobile = window.innerWidth <= 768;
-
-            /* 1. Roda a lógica de dados do app (render) */
-            switchPage(pageName);
-
-            /* 2. No mobile, aplica translateX em todas as páginas */
-            if (isMobile) {
-                PAGE_ORDER.forEach((pid, i) => {
-                    const el = document.getElementById(pid);
-                    if (!el) return;
-                    el.style.transform = i < newIdx  ? 'translateX(-100%)' :
-                                         i === newIdx ? 'translateX(0%)'   :
-                                                        'translateX(100%)';
-                    el.classList.toggle('active', i === newIdx);
-                });
-            }
-
-            currentPageIdx = newIdx;
-
-            /* 3. Sincroniza barra inferior */
-            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
-                const active = btn.dataset.page === pageName;
-                btn.classList.toggle('active', active);
-                btn.style.color = active ? '#1a73e8' : '';
-            });
-
-            /* 4. Refresh mobile content + gráficos */
-            const tabMap = {
-                dashboard:   'dash-overview',
-                monthly:     'monthly-list',
-                debts:       'debts-list-mob',
-                investments: 'invest-list',
-                portfolio:   'portfolio-charts-mob',
-                categories:  null
-            };
-            const activeTab = tabMap[pageName];
-            // Sempre atualiza o conteúdo ao navegar para a página
-            setTimeout(() => {
-                if (pageName === 'monthly') {
-                    renderMobMonthlyList();
-                    syncMobileValues();
-                } else if (pageName === 'debts') {
-                    renderMobDebts();
-                    syncMobileValues();
-                } else if (pageName === 'investments') {
-                    renderMobInvestments();
-                    syncMobileValues();
-                } else if (pageName === 'dashboard') {
-                    syncMobileValues();
-                }
-                if (activeTab) initMobChartsForTab(activeTab);
-            }, 60);
-        }
-
-        /* Barra inferior: botão de página */
-        function mobNav(pageName) {
-            closeMobActions();
-            goToPage(pageName);
-        }
-
-        /* Barra inferior: botão de ação */
         function toggleMobActions() {
             mobActionsOpen = !mobActionsOpen;
             document.getElementById('mob-actions-row').classList.toggle('open', mobActionsOpen);
@@ -5570,6 +4909,21 @@
             mobActionsOpen = false;
             document.getElementById('mob-actions-row').classList.remove('open');
             document.getElementById('mob-add-icon').classList.remove('open');
+        }
+
+        function mobNav(pageName) {
+            closeMobActions();
+            // Usa o switchPage original
+            if (window._mobOrigSwitch) {
+                window._mobOrigSwitch(pageName);
+            } else {
+                switchPage(pageName);
+            }
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                const active = btn.dataset.page === pageName;
+                btn.classList.toggle('active', active);
+                btn.style.color = active ? '#ff6b35' : '';
+            });
         }
 
         function mobAction(action) {
@@ -5583,22 +4937,66 @@
             }
         }
 
-        /* ── Inicializa posições no boot ── */
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.innerWidth <= 768) {
+        /* ── Swipe horizontal entre páginas ── */
+        (function() {
+            const PAGE_ORDER = ['dashboard', 'monthly', 'debts', 'investments', 'portfolio', 'categories'];
+            let currentPageIdx = 0;
+            let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
+            let isSwiping = false;
+
+            // Intercepta switchPage para animar slides
+            document.addEventListener('DOMContentLoaded', () => {
+                const origSwitch = window.switchPage;
+                window._mobOrigSwitch = origSwitch;
+
+                window.switchPage = function(pageName) {
+                    origSwitch(pageName);
+
+                    const newIdx = PAGE_ORDER.indexOf(pageName);
+                    if (newIdx === -1) return;
+
+                    const pages = document.querySelectorAll('.page');
+
+                    // Em desktop não faz nada extra
+                    if (window.innerWidth > 768) {
+                        currentPageIdx = newIdx;
+                        return;
+                    }
+
+                    // Posiciona todas as páginas nos seus slots
+                    PAGE_ORDER.forEach((pid, i) => {
+                        const el = document.getElementById(pid);
+                        if (!el) return;
+                        el.style.transform = i < newIdx  ? 'translateX(-100%)' :
+                                             i === newIdx ? 'translateX(0%)'   :
+                                                            'translateX(100%)';
+                        el.classList.toggle('active', i === newIdx);
+                    });
+
+                    currentPageIdx = newIdx;
+
+                    // Sincroniza nav
+                    document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                        const active = btn.dataset.page === pageName;
+                        btn.classList.toggle('active', active);
+                        btn.style.color = active ? '#ff6b35' : '';
+                    });
+                };
+
+                // Inicializa posições
                 PAGE_ORDER.forEach((pid, i) => {
                     const el = document.getElementById(pid);
-                    if (el) el.style.transform = i === 0 ? 'translateX(0%)' : 'translateX(100%)';
+                    if (!el) return;
+                    if (window.innerWidth <= 768) {
+                        el.style.transform = i === 0 ? 'translateX(0%)' : 'translateX(100%)';
+                    }
                 });
-            }
-        });
+            });
 
-        /* ── Swipe horizontal ── */
-        (function() {
-            let touchStartX = 0, touchStartY = 0, touchStartTime = 0, isSwiping = false;
-
+            // Touch handlers no main-content
             document.addEventListener('touchstart', e => {
-                if (window.innerWidth > 768) return;
+                const mc = document.querySelector('.main-content');
+                if (!mc || window.innerWidth > 768) return;
                 touchStartX    = e.touches[0].clientX;
                 touchStartY    = e.touches[0].clientY;
                 touchStartTime = Date.now();
@@ -5609,17 +5007,25 @@
                 if (window.innerWidth > 768) return;
                 const dx = e.touches[0].clientX - touchStartX;
                 const dy = e.touches[0].clientY - touchStartY;
-                if (!isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) isSwiping = true;
+                if (!isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+                    isSwiping = true;
+                }
             }, { passive: true });
 
             document.addEventListener('touchend', e => {
                 if (window.innerWidth > 768 || !isSwiping) return;
-                const dx  = e.changedTouches[0].clientX - touchStartX;
-                const dt  = Date.now() - touchStartTime;
-                const ok  = (dt < 350 && Math.abs(dx) > 45) || Math.abs(dx) > window.innerWidth * 0.3;
-                if (ok) {
-                    if (dx < 0 && currentPageIdx < PAGE_ORDER.length - 1) goToPage(PAGE_ORDER[currentPageIdx + 1]);
-                    else if (dx > 0 && currentPageIdx > 0) goToPage(PAGE_ORDER[currentPageIdx - 1]);
+                const dx   = e.changedTouches[0].clientX - touchStartX;
+                const dt   = Date.now() - touchStartTime;
+                const fast = dt < 300 && Math.abs(dx) > 40;
+                const far  = Math.abs(dx) > window.innerWidth * 0.3;
+
+                if (fast || far) {
+                    const PAGE_ORDER = ['dashboard', 'monthly', 'debts', 'investments', 'portfolio', 'categories'];
+                    if (dx < 0 && currentPageIdx < PAGE_ORDER.length - 1) {
+                        window.switchPage(PAGE_ORDER[currentPageIdx + 1]);
+                    } else if (dx > 0 && currentPageIdx > 0) {
+                        window.switchPage(PAGE_ORDER[currentPageIdx - 1]);
+                    }
                 }
                 isSwiping = false;
             }, { passive: true });

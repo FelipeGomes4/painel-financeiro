@@ -1,11 +1,11 @@
 {
-  "name": "Financer",
-  "short_name": "Financer",
-  "description": "Painel financeiro pessoal — clean e sofisticado",
+  "name": "Painel Financeiro",
+  "short_name": "Finanças",
+  "description": "Gerencie suas finanças pessoais de forma simples e eficiente",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#09090b",
-  "theme_color": "#3a6186",
+  "background_color": "#0d0d0d",
+  "theme_color": "#ff6b35",
   "orientation": "portrait-primary",
   "lang": "pt-BR",
   "icons": [
@@ -58,10 +58,7 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": [
-    "finance",
-    "productivity"
-  ],
+  "categories": ["finance", "productivity"],
   "screenshots": [],
   "prefer_related_applications": false
 }
