@@ -1,0 +1,3994 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="theme-color" content="#0d0d0d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Painel Financeiro">
+    <meta name="description" content="Gerencie suas finanças pessoais de forma simples e eficiente">
+    <link rel="manifest" href="manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Painel Financeiro">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Painel Financeiro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0d0d0d;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #1f1f1f;
+            --bg-sidebar: #111111;
+            --text-primary: #e8e8e8;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --accent: #ff6b35;
+            --accent-hover: #ff8555;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --purple: #8b5cf6;
+            --border: #2a2a2a;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #c67c5c, #8b5a3c);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .logo-text {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-weight: 500;
+            gap: 0.75rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 107, 53, 0.1);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            background: rgba(255, 107, 53, 0.15);
+            color: var(--accent);
+            border-left: 3px solid var(--accent);
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-container {
+            height: 350px;
+            position: relative;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #ff8555);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #ff8555, var(--accent));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.875rem;
+            font-size: 0.8125rem;
+        }
+
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(255, 107, 53, 0.05);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.9375rem;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.625rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .investment-item, .debt-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .investment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .investment-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .investment-type {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            padding: 0.25rem 0.75rem;
+            background: rgba(255, 107, 53, 0.15);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 107, 53, 0.3);
+        }
+
+        .investment-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .investment-stat-item {
+            text-align: center;
+        }
+
+        .investment-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .investment-stat-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .debt-progress {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .debt-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--purple));
+            transition: width 0.3s;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .category-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .category-main-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .subcategory-list {
+            display: block;
+        }
+
+
+        .subcat-children {
+            margin-left: 0;
+        }
+
+        .subcategory-list {
+            display: block !important;
+        }
+
+        .subcategory-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .subcategory-name {
+            font-size: 0.9375rem;
+        }
+
+        .subcategory-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 1rem;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a5568;
+        }
+
+        .icon-catalogue-btn:hover {
+            background: rgba(255, 107, 53, 0.15) !important;
+            border-color: rgba(255, 107, 53, 0.5) !important;
+            transform: scale(1.1);
+        }
+
+        .icon-btn:hover {
+            background: rgba(255, 107, 53, 0.15) !important;
+            border-color: rgba(255, 107, 53, 0.4) !important;
+            transform: scale(1.15);
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🏛️</div>
+            <div class="logo-text">Painel Financeiro</div>
+        </div>
+        
+        <nav>
+            <div class="nav-item active" onclick="switchPage('dashboard')">
+                <span class="nav-icon">📊</span>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="switchPage('monthly')">
+                <span class="nav-icon">📅</span>
+                <span>Lançamentos</span>
+            </div>
+            <div class="nav-item" onclick="switchPage('debts')">
+                <span class="nav-icon">🏦</span>
+                <span>Dívidas Bancárias</span>
+            </div>
+            <div class="nav-item" onclick="switchPage('investments')">
+                <span class="nav-icon">📈</span>
+                <span>Investimentos</span>
+            </div>
+            <div class="nav-item" onclick="switchPage('portfolio')">
+                <span class="nav-icon">💼</span>
+                <span>Carteira</span>
+            </div>
+            <div class="nav-item" onclick="switchPage('categories')">
+                <span class="nav-icon">🏷️</span>
+                <span>Categorias</span>
+            </div>
+        </nav>
+
+        <div style="margin-top: auto; padding-top: 2rem;">
+            <button class="btn btn-primary" onclick="openTransactionModal()" style="width: 100%; margin-bottom: 0.5rem;">
+                ➕ Nova Transação
+            </button>
+            <button class="btn btn-outline" onclick="openBanksModal()" style="width: 100%; margin-bottom: 0.5rem;">
+                🏦 Gerenciar Bancos
+            </button>
+            <button class="btn btn-outline" onclick="exportData()" style="width: 100%; margin-bottom: 0.5rem;">
+                📥 Exportar Dados
+            </button>
+            <button class="btn btn-outline" onclick="openImportModal()" style="width: 100%;">
+                📤 Importar Dados
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <!-- Dashboard Page -->
+        <div id="dashboard" class="page active">
+            <div class="page-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h1 class="page-title">Dashboard Financeiro</h1>
+                        <p class="page-subtitle">Visão completa das suas finanças</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <select class="filter-select" id="dashboard-filter-month" onchange="filterDashboard()">
+                            <option value="">Mês Atual</option>
+                        </select>
+                        <button class="btn btn-danger btn-sm" onclick="resetAllData()">🗑️ Zerar Tudo</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cards Principais -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Patrimônio Líquido</div>
+                    <div class="stat-value" style="color: var(--success)" id="balance-net">R$ 0,00</div>
+                    <div class="stat-change positive" id="balance-change">
+                        <span>↑</span> Saldo - Dívidas
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Saldo em Conta</div>
+                    <div class="stat-value" id="balance-account">R$ 0,00</div>
+                    <div class="stat-change positive">
+                        <span>↑</span> <span id="income-transactions">0</span> receitas no mês
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Investimentos</div>
+                    <div class="stat-value" style="color: var(--purple)" id="balance-investments">R$ 0,00</div>
+                    <div class="stat-change positive">
+                        <span>↑</span> <span id="investment-count">0</span> ativos
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Dívidas Pendentes</div>
+                    <div class="stat-value" style="color: var(--danger)" id="balance-debts">R$ 0,00</div>
+                    <div class="stat-change negative">
+                        <span>↓</span> <span id="expense-transactions">0</span> despesas no mês
+                    </div>
+                </div>
+            </div>
+
+            <!-- Receitas e Despesas do Mês -->
+            <div style="margin-top: 2rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary);">Fluxo Financeiro do Mês</h2>
+                <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="stat-card">
+                        <div class="stat-label">Receitas do Mês</div>
+                        <div class="stat-value" style="color: var(--success)" id="month-income">R$ 0,00</div>
+                        <div class="stat-change" style="color: var(--text-muted); font-size: 0.8rem;">Total lançado (incluindo pendentes)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Despesas do Mês</div>
+                        <div class="stat-value" style="color: var(--danger)" id="month-expenses">R$ 0,00</div>
+                        <div class="stat-change" style="color: var(--text-muted); font-size: 0.8rem;">Total lançado (incluindo pendentes)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Saldo Realizado</div>
+                        <div class="stat-value" id="total-balance">R$ 0,00</div>
+                        <div class="stat-change" style="color: var(--text-muted); font-size: 0.8rem;">Receitas pagas − Despesas pagas</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos Principais -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+                <div class="chart-card">
+                    <h3 class="chart-title">📊 Receitas vs Despesas (6 meses)</h3>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="incomeExpenseChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">📈 Evolução Patrimonial (12 meses)</h3>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="balanceEvolutionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos Secundários -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                <div class="chart-card">
+                    <h3 class="chart-title">🏷️ Despesas por Categoria</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">💼 Distribuição Patrimonial</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="assetChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos de Análise -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; margin-bottom: 2rem;">
+                <div class="chart-card">
+                    <h3 class="chart-title">💰 Fluxo de Caixa Mensal</h3>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="cashFlowChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">📅 Comparativo Anual</h3>
+                    <div class="chart-container" style="height: 280px;">
+                        <canvas id="yearComparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investments Page -->
+        <div id="investments" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Investimentos</h1>
+                <p class="page-subtitle">Gerencie sua carteira de investimentos</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Valor Investido</div>
+                    <div class="stat-value" id="invested-total">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Valor Atual</div>
+                    <div class="stat-value" style="color: var(--success)" id="current-total">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Rentabilidade</div>
+                    <div class="stat-value" id="profit-total">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">% Retorno</div>
+                    <div class="stat-value" style="color: var(--purple)" id="return-percent">0%</div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <h3 class="chart-title">Meus Investimentos</h3>
+                <button class="btn btn-outline" onclick="openPriceCeilingModal()">📊 Simular Preço Teto</button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Banco</th>
+                            <th>Tipo</th>
+                            <th>Investido</th>
+                            <th>Atual</th>
+                            <th>Lucro/Prejuízo</th>
+                            <th>Retorno %</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="investments-table">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Portfolio Page -->
+        <div id="portfolio" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Carteira de Investimentos</h1>
+                <p class="page-subtitle">Visão consolidada da sua carteira</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Patrimônio Total</div>
+                    <div class="stat-value" id="portfolio-total">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Rentabilidade Total</div>
+                    <div class="stat-value" style="color: var(--success)" id="portfolio-profit">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Retorno (%)</div>
+                    <div class="stat-value" style="color: var(--purple)" id="portfolio-return">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Investido</div>
+                    <div class="stat-value" id="portfolio-invested">R$ 0,00</div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">Composição da Carteira por Tipo</h3>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="portfolioCompositionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3 class="chart-title">Distribuição por Banco/Corretora</h3>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="portfolioBankChart"></canvas>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <h3 class="chart-title">Resumo por Categoria</h3>
+            </div>
+
+            <div id="portfolio-summary"></div>
+        </div>
+
+        <!-- Monthly Transactions Page -->
+        <div id="monthly" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Lançamentos Mensais</h1>
+                <p class="page-subtitle">Todos os seus lançamentos financeiros</p>
+            </div>
+
+            <!-- Filtros -->
+            <div class="action-bar">
+                <div class="filter-bar">
+                    <select class="filter-select" id="monthly-filter-month" onchange="filterMonthlyTransactions()">
+                        <option value="">Todos os meses</option>
+                    </select>
+                    <select class="filter-select" id="monthly-filter-type" onchange="filterMonthlyTransactions()">
+                        <option value="all">Todos os tipos</option>
+                        <option value="income">Receitas</option>
+                        <option value="expense">Despesas</option>
+                    </select>
+                    <select class="filter-select" id="monthly-filter-category" onchange="filterMonthlyTransactions()">
+                        <option value="all">Todas categorias</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Cards de Resumo do Mês Atual -->
+            <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="stat-card">
+                    <div class="stat-label">Receitas do Mês</div>
+                    <div class="stat-value" style="color: var(--success)" id="monthly-income-total">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Despesas do Mês</div>
+                    <div class="stat-value" style="color: var(--danger)" id="monthly-expense-total">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Saldo do Mês</div>
+                    <div class="stat-value" id="monthly-balance-total">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total de Despesas Lançadas</div>
+                    <div class="stat-value" style="color: var(--warning)" id="monthly-all-expenses-total">R$ 0,00</div>
+                    <div class="stat-change" style="color: var(--text-muted);">
+                        <span>📋</span> Todas as despesas registradas
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+                <div class="chart-card">
+                    <h3 class="chart-title">📊 Despesas por Categoria</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="monthlyExpenseCategoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">💰 Receitas por Categoria</h3>
+                    <div class="chart-container" style="height: 300px;">
+                        <canvas id="monthlyIncomeCategoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de Lançamentos -->
+            <div style="margin-top: 2rem;">
+                <div class="action-bar">
+                    <h3 class="chart-title">Todos os Lançamentos</h3>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Descrição</th>
+                                <th>Categoria</th>
+                                <th>Tipo</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthly-transactions-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debts Page -->
+        <div id="debts" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Dívidas Bancárias</h1>
+                <p class="page-subtitle">Controle suas dívidas e parcelas pendentes</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total em Dívidas</div>
+                    <div class="stat-value" style="color: var(--danger)" id="total-debts">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Pago Este Mês</div>
+                    <div class="stat-value" style="color: var(--success)" id="paid-this-month">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">A Pagar Este Mês</div>
+                    <div class="stat-value" style="color: var(--warning)" id="to-pay-this-month">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total de Parcelas</div>
+                    <div class="stat-value" id="total-installments">0</div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <h3 class="chart-title">Dívidas Bancárias Parceladas</h3>
+                <select class="filter-select" id="debts-filter-bank" onchange="filterDebts()">
+                    <option value="all">Todos os bancos</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Categoria</th>
+                            <th>Valor Parcela</th>
+                            <th>Parcelas</th>
+                            <th>Total</th>
+                            <th>Progresso</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="debts-in-transactions-table">
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 3rem;">
+                <div class="action-bar">
+                    <h3 class="chart-title">Detalhamento das Dívidas</h3>
+                </div>
+                <div id="debts-list"></div>
+            </div>
+        </div>
+
+        <!-- Categories Page -->
+        <div id="categories" class="page">
+            <div class="page-header">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 class="page-title">Gerenciar Categorias</h1>
+                        <p class="page-subtitle">Organize suas categorias e subcategorias</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddCategoryModal()">➕ Nova Categoria Principal</button>
+                </div>
+            </div>
+
+            <div id="categories-container"></div>
+        </div>
+    </main>
+
+    <!-- Transaction Modal -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Nova Transação</h2>
+                <button class="close-btn" onclick="closeModal('transactionModal')">×</button>
+            </div>
+            <form onsubmit="saveTransaction(event)">
+                <div class="form-group">
+                    <label class="form-label">Tipo</label>
+                    <select class="form-select" id="transaction-type" required onchange="updateTransactionForm()">
+                        <option value="income">Receita</option>
+                        <option value="monthly-expense">Despesa Mensal</option>
+                        <option value="investment">Investimento</option>
+                        <option value="debt">Dívida Bancária</option>
+                    </select>
+                </div>
+                <div class="form-group" id="bank-field" style="display: none;">
+                    <label class="form-label">Banco</label>
+                    <select class="form-select" id="transaction-bank">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <input type="text" class="form-input" id="transaction-description" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Categoria</label>
+                    <select class="form-select" id="transaction-category" required onchange="autoFillDescription()">
+                    </select>
+                </div>
+                <div class="form-group" id="monthly-day-field" style="display: none;">
+                    <label class="form-label">Dia de Vencimento</label>
+                    <input type="number" min="1" max="31" class="form-input" id="transaction-monthly-day">
+                </div>
+                <div class="form-group" id="installment-value-field" style="display: none;">
+                    <label class="form-label">Valor da Parcela (R$)</label>
+                    <input type="number" step="0.01" class="form-input" id="transaction-installment-value" onchange="calculateTransactionTotal()">
+                </div>
+                <div class="form-group" id="installments-field" style="display: none;">
+                    <label class="form-label">Número de Parcelas</label>
+                    <input type="number" min="1" class="form-input" id="transaction-installments" onchange="calculateTransactionTotal()">
+                </div>
+                <div class="form-group" id="total-field" style="display: none;">
+                    <label class="form-label">Valor Total</label>
+                    <input type="number" step="0.01" class="form-input" id="transaction-total" readonly style="background: var(--bg-primary); cursor: not-allowed;">
+                    <small style="color: var(--text-secondary); font-size: 0.8125rem;">Calculado automaticamente</small>
+                </div>
+                <div class="form-group" id="value-field">
+                    <label class="form-label">Valor (R$)</label>
+                    <input type="number" step="0.01" class="form-input" id="transaction-value" required>
+                </div>
+                <div class="form-group" id="current-value-field" style="display: none;">
+                    <label class="form-label">Valor Atual (R$)</label>
+                    <input type="number" step="0.01" class="form-input" id="transaction-current-value">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Data</label>
+                    <input type="date" class="form-input" id="transaction-date" required>
+                </div>
+                <div class="form-group" id="status-field">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="transaction-status" required>
+                        <option value="paid">Pago</option>
+                        <option value="pending">Pendente</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Investment Modal -->
+    <div id="investmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Novo Investimento</h2>
+                <button class="close-btn" onclick="closeModal('investmentModal')">×</button>
+            </div>
+            <form onsubmit="saveInvestment(event)">
+                <div class="form-group">
+                    <label class="form-label">Banco/Corretora</label>
+                    <select class="form-select" id="investment-bank" required>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nome do Investimento</label>
+                    <input type="text" class="form-input" id="investment-name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo</label>
+                    <select class="form-select" id="investment-type" required onchange="autoFillInvestmentDescription()">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Valor Investido (R$)</label>
+                    <input type="number" step="0.01" class="form-input" id="investment-invested" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Valor Atual (R$)</label>
+                    <input type="number" step="0.01" class="form-input" id="investment-current" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Data de Compra</label>
+                    <input type="date" class="form-input" id="investment-date" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Debt Modal -->
+    <div id="debtModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="debt-modal-title">Nova Dívida</h2>
+                <button class="close-btn" onclick="closeModal('debtModal')">×</button>
+            </div>
+            <form onsubmit="saveDebt(event)">
+                <input type="hidden" id="debt-id">
+                <div class="form-group">
+                    <label class="form-label">Banco</label>
+                    <select class="form-select" id="debt-bank" required>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <input type="text" class="form-input" id="debt-description" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Categoria</label>
+                    <select class="form-select" id="debt-category" required onchange="autoFillDebtDescription()">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Valor da Parcela (R$)</label>
+                    <input type="number" step="0.01" class="form-input" id="debt-installment-value" required onchange="calculateDebtTotal()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Número de Parcelas</label>
+                    <input type="number" min="1" class="form-input" id="debt-installments" required onchange="calculateDebtTotal()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Valor Total</label>
+                    <input type="number" step="0.01" class="form-input" id="debt-total" required readonly style="background: var(--bg-primary); cursor: not-allowed;">
+                    <small style="color: var(--text-secondary); font-size: 0.8125rem;">Calculado automaticamente</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Parcelas Pagas</label>
+                    <input type="number" min="0" class="form-input" id="debt-paid" value="0" required onchange="validatePaidInstallments()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Data da Primeira Parcela</label>
+                    <input type="date" class="form-input" id="debt-date" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Monthly Expense Modal -->
+    <div id="monthlyExpenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Nova Despesa Fixa</h2>
+                <button class="close-btn" onclick="closeModal('monthlyExpenseModal')">×</button>
+            </div>
+            <form onsubmit="saveMonthlyExpense(event)">
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <input type="text" class="form-input" id="monthly-description" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Categoria</label>
+                    <select class="form-select" id="monthly-category" required onchange="autoFillMonthlyDescription()">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Valor (R$)</label>
+                    <input type="number" step="0.01" class="form-input" id="monthly-value" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dia de Vencimento</label>
+                    <input type="number" min="1" max="31" class="form-input" id="monthly-day" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Subcategory Modal -->
+    <div id="subcategoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="subcategory-modal-title">Nova Subcategoria</h2>
+                <button class="close-btn" onclick="closeModal('subcategoryModal')">×</button>
+            </div>
+            <form onsubmit="saveSubcategory(event)">
+                <input type="hidden" id="subcategory-cat-key">
+                <input type="hidden" id="subcategory-path">
+                <input type="hidden" id="subcategory-old-name">
+                <input type="hidden" id="subcategory-is-edit" value="0">
+                <div class="form-group">
+                    <label class="form-label">Nome da Subcategoria</label>
+                    <input type="text" class="form-input" id="subcategory-name" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Salvar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Price Ceiling Simulator Modal -->
+    <div id="priceCeilingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Simulador de Preço Teto</h2>
+                <button class="close-btn" onclick="closeModal('priceCeilingModal')">×</button>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <p style="color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.6;">
+                    Calcule o preço teto de um ativo baseado no método de Valuation por Dividendos (Modelo de Gordon).
+                </p>
+            </div>
+            <form onsubmit="calculatePriceCeiling(event)">
+                <div class="form-group">
+                    <label class="form-label">Dividendo Anual Esperado (R$)</label>
+                    <input type="number" step="0.01" class="form-input" id="ceiling-dividend" required placeholder="Ex: 2.50">
+                    <small style="color: var(--text-secondary); font-size: 0.8125rem;">Dividendo que você espera receber por ação/cota por ano</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Taxa de Retorno Desejada (%)</label>
+                    <input type="number" step="0.01" class="form-input" id="ceiling-return" required placeholder="Ex: 8.0">
+                    <small style="color: var(--text-secondary); font-size: 0.8125rem;">Rentabilidade anual que você deseja obter</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Taxa de Crescimento dos Dividendos (% ao ano)</label>
+                    <input type="number" step="0.01" class="form-input" id="ceiling-growth" value="0" placeholder="Ex: 3.0">
+                    <small style="color: var(--text-secondary); font-size: 0.8125rem;">Crescimento esperado dos dividendos (opcional, deixe 0 se não aplicável)</small>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Calcular Preço Teto</button>
+            </form>
+            <div id="ceiling-result" style="margin-top: 1.5rem; display: none;">
+                <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid var(--accent); border-radius: 8px; padding: 1.5rem;">
+                    <div style="text-align: center;">
+                        <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">PREÇO TETO CALCULADO</div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: var(--accent);" id="ceiling-price">R$ 0,00</div>
+                        <div style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 1rem; line-height: 1.6;" id="ceiling-explanation"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banks Management Modal -->
+    <div id="banksModal" class="modal">
+        <div class="modal-content" style="max-width:560px;">
+            <div class="modal-header">
+                <h2 class="modal-title">🏦 Gerenciar Bancos</h2>
+                <button class="close-btn" onclick="closeModal('banksModal')">×</button>
+            </div>
+
+            <!-- Add / Edit form -->
+            <div id="bank-form-section" style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1.25rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+                    <span id="bank-form-title" style="font-weight:600;font-size:1rem;">➕ Novo Banco</span>
+                    <button id="bank-form-cancel" class="btn btn-outline btn-sm" onclick="cancelBankForm()" style="display:none;">✕ Cancelar</button>
+                </div>
+                <input type="hidden" id="bank-form-index" value="-1">
+                <input type="hidden" id="bank-icon-id" value="">
+
+                <div class="form-group" style="margin-bottom:0.75rem;">
+                    <label class="form-label">Nome do Banco / Corretora</label>
+                    <input type="text" class="form-input" id="new-bank-name" placeholder="Ex: Sicoob"
+                        onkeydown="if(event.key==='Enter'){event.preventDefault();saveBank();}">
+                </div>
+
+                <div class="form-group" style="margin-bottom:0.75rem;">
+                    <label class="form-label">Ícone</label>
+                    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.6rem;">
+                        <div id="selected-bank-icon-preview"
+                            style="width:48px;height:48px;border-radius:10px;background:var(--bg-card);
+                                   border:2px solid var(--accent);display:flex;align-items:center;
+                                   justify-content:center;font-size:1.5rem;flex-shrink:0;color:var(--accent);">🏦</div>
+                        <span style="color:var(--text-muted);font-size:0.82rem;">Clique num ícone abaixo para selecionar</span>
+                    </div>
+                    <!-- Icon catalogue grid -->
+                    <div id="bank-icon-grid" style="
+                        display:grid;grid-template-columns:repeat(8,1fr);
+                        gap:5px;max-height:180px;overflow-y:auto;
+                        background:var(--bg-card);border:1px solid var(--border);
+                        border-radius:8px;padding:8px;">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="saveBank()" style="width:100%;">💾 Salvar</button>
+            </div>
+
+            <!-- Banks list -->
+            <div style="max-height:280px;overflow-y:auto;" id="banks-list"></div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content" style="max-width: 480px;">
+            <div class="modal-header">
+                <h2 class="modal-title">📤 Importar Dados</h2>
+                <button class="close-btn" onclick="closeModal('importModal')">×</button>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.25rem;">
+                Selecione um arquivo <strong style="color:var(--text-primary);">.json</strong> exportado anteriormente pelo Painel Financeiro. Os dados serão mesclados com os existentes.
+            </p>
+            <div id="import-drop-zone" style="
+                border: 2px dashed var(--border); border-radius: 12px;
+                padding: 2.5rem 1.5rem; text-align: center; cursor: pointer;
+                transition: all 0.2s; margin-bottom: 1.25rem;"
+                onclick="document.getElementById('import-file-input').click()"
+                ondragover="event.preventDefault(); this.style.borderColor='var(--accent)'; this.style.background='rgba(255,107,53,0.05)'"
+                ondragleave="this.style.borderColor='var(--border)'; this.style.background='none'"
+                ondrop="handleImportDrop(event)">
+                <div style="font-size:2.5rem; margin-bottom:0.75rem;">📂</div>
+                <div style="font-weight:600; margin-bottom:0.25rem;">Arraste o arquivo aqui</div>
+                <div style="color:var(--text-secondary); font-size:0.85rem;">ou clique para selecionar</div>
+            </div>
+            <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="handleImportFile(this)">
+            <div id="import-preview" style="display:none; background:var(--bg-secondary); border:1px solid var(--border); border-radius:8px; padding:1rem; margin-bottom:1.25rem; font-size:0.875rem;">
+            </div>
+            <div style="display:flex; gap:0.75rem;">
+                <button id="import-confirm-btn" class="btn btn-primary" onclick="confirmImport()" style="flex:1; display:none;">✅ Confirmar Importação</button>
+                <button class="btn btn-outline" onclick="closeModal('importModal')" style="flex:1;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ── Storage Abstraction ──────────────────────────────────────────────
+        // Works with window.storage (Artifact persistent storage) OR localStorage
+        const AppStorage = {
+            _cache: {},
+            _ready: false,
+            async init() {
+                // Try to load all known keys from window.storage
+                if (window.storage) {
+                    const keys = ['transactions','investments','debts','monthlyExpenses','categories','banks'];
+                    for (const k of keys) {
+                        try {
+                            const r = await window.storage.get(k);
+                            if (r && r.value !== undefined) this._cache[k] = r.value;
+                        } catch(e) { /* key not found yet */ }
+                    }
+                } else {
+                    // Fallback: copy localStorage into cache
+                    const keys = ['transactions','investments','debts','monthlyExpenses','categories','banks'];
+                    keys.forEach(k => {
+                        const v = localStorage.getItem(k);
+                        if (v !== null) this._cache[k] = v;
+                    });
+                }
+                this._ready = true;
+            },
+            getItem(key) {
+                return this._cache[key] !== undefined ? this._cache[key] : null;
+            },
+            setItem(key, value) {
+                this._cache[key] = value;
+                if (window.storage) {
+                    window.storage.set(key, value).catch(() => {});
+                } else {
+                    try { localStorage.setItem(key, value); } catch(e) {}
+                }
+            }
+        };
+
+        // ── Bootstrap: init storage, then fire DOMContentLoaded logic ────────
+        // (AppStorage.init is async; we gate the DOM setup inside DOMContentLoaded
+        //  which fires after the script runs — so we just initialise synchronously
+        //  from the localStorage fallback path and the async window.storage path
+        //  will overwrite when ready.  All functions are global.)
+
+        // Data Storage
+        let transactions = JSON.parse(AppStorage.getItem('transactions') || '[]');
+        // Normalizar: transações sem status são tratadas como paid (compatibilidade retroativa)
+        transactions = transactions.map(t => ({ ...t, status: t.status || 'paid' }));
+        let investments = JSON.parse(AppStorage.getItem('investments') || '[]');
+        let debts = JSON.parse(AppStorage.getItem('debts') || '[]');
+        let monthlyExpenses = JSON.parse(AppStorage.getItem('monthlyExpenses') || '[]');
+        
+        // Categories System with hierarchy
+        // categories uses nested format: { name, children:[] }
+        // migrateCategories() (defined later) normalises legacy flat strings
+        function _migrateCatsEarly(obj) {
+            Object.keys(obj).forEach(k => {
+                obj[k].subcategories = (obj[k].subcategories || []).map(s =>
+                    typeof s === 'string' ? { name: s, children: [] }
+                    : (!s.children ? { ...s, children: [] } : s));
+            });
+            return obj;
+        }
+        let categories = _migrateCatsEarly(JSON.parse(AppStorage.getItem('categories') || JSON.stringify({
+            receitas:      { name: 'Receitas',          subcategories: ['Salário','Freelance','Investimentos','Bonificação','Aluguel Recebido','Outros'] },
+            despesas:      { name: 'Despesas',          subcategories: ['Alimentação','Transporte','Moradia','Saúde','Educação','Lazer','Vestuário','Compras','Outros'] },
+            investimentos: { name: 'Investimentos',     subcategories: ['Renda Fixa','Renda Variável','Fundos','Criptomoedas','Imóveis','Previdência','Outros'] },
+            dividas:       { name: 'Dívidas Bancárias', subcategories: ['Cartão de Crédito','Empréstimo Pessoal','Financiamento','Cheque Especial','Consignado','Outros'] }
+        })));
+
+        let charts = {};
+
+        // ── Banks Management ─────────────────────────────────────────────────
+        const defaultBanks = [
+            { name: 'Mercado Pago',    icon: 'green',   emoji: null },
+            { name: 'Nubank',          icon: 'purple',  emoji: null },
+            { name: 'Inter',           icon: 'orange',  emoji: null },
+            { name: 'PagSeguro',       icon: 'yellow',  emoji: null },
+            { name: 'Santander',       icon: 'red',     emoji: null },
+            { name: 'Caixa Econômica', icon: 'blue',    emoji: null },
+            { name: 'Banco do Brasil', icon: 'yellow',  emoji: null },
+            { name: 'Bradesco',        icon: 'red',     emoji: null },
+            { name: 'Itaú',            icon: 'orange',  emoji: null },
+            { name: 'C6 Bank',         icon: 'black',   emoji: null },
+            { name: 'XP Investimentos',icon: 'chart',   emoji: null },
+            { name: 'Rico',            icon: 'invest',  emoji: null },
+            { name: 'Clear',           icon: 'trending',emoji: null },
+            { name: 'BTG Pactual',     icon: 'building',emoji: null },
+            { name: 'Picpay',          icon: 'teal',    emoji: null },
+            { name: 'Outros',          icon: 'bank',    emoji: null },
+        ];
+        let banks = JSON.parse(AppStorage.getItem('banks') || JSON.stringify(defaultBanks));
+
+        // ── Banks Management JS ─────────────────────────────────────────────────
+
+        // Icon catalogue — pure HTML/CSS icons (no images, no base64)
+        const ICON_CATALOGUE = [
+            // Banks & Finance
+            { id:'bank',       label:'Banco',          html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M8 10v11M12 10v11M16 10v11M20 10v11"/></svg>' },
+            { id:'building',   label:'Edifício',       html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M9 3v18M3 9h6M3 15h6M15 3v18M15 9h6M15 15h6"/></svg>' },
+            { id:'credit',     label:'Cartão',         html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><line x1="5" y1="16" x2="9" y2="16"/><line x1="13" y1="16" x2="15" y2="16"/></svg>' },
+            { id:'dollar',     label:'Dólar',          html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9H10.5a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 1 0 5H9"/></svg>' },
+            { id:'wallet',     label:'Carteira',       html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><path d="M20 12V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-4"/><path d="M20 12a2 2 0 0 1-2-2 2 2 0 0 1 2-2h2v4h-2z"/></svg>' },
+            { id:'coins',      label:'Moedas',         html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg>' },
+            { id:'piggy',      label:'Poupança',       html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8.5 3.3 1.5 4.4L6 18l.5 2h2.5l.5-2.5c.5.1 1 .2 1.5.2h3c.5 0 1-.1 1.5-.2l.5 2.5H18l.5-2-1.5-1.6C18 15.3 19 13.8 19 12h1a2 2 0 0 0 2-2v-1a2 2 0 0 0-2-2h-1zM9 10a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>' },
+            { id:'chart',      label:'Gráfico',        html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>' },
+            { id:'trending',   label:'Alta',           html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>' },
+            { id:'invest',     label:'Investimento',   html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>' },
+            // Mobile & Digital
+            { id:'mobile',     label:'Mobile',         html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>' },
+            { id:'shield',     label:'Seguro',         html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' },
+            { id:'lock',       label:'Segurança',      html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' },
+            { id:'global',     label:'Internacional',  html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>' },
+            { id:'star',       label:'Premium',        html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' },
+            { id:'pix',        label:'Pix',            html:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="28" height="28"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>' },
+            // Colours (solid circles as quick colour tokens)
+            { id:'green',      label:'Verde',          html:'<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="10" fill="#10b981"/></svg>' },
+            { id:'purple',     label:'Roxo',           html:'<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="10" fill="#8b5cf6"/></svg>' },
+            { id:'orange',     label:'Laranja',        html:'<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="10" fill="#ff6b35"/></svg>' },
+            { id:'blue',       label:'Azul',           html:'<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="10" fill="#3b82f6"/></svg>' },
+            { id:'red',        label:'Vermelho',       html:'<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="10" fill="#ef4444"/></svg>' },
+            { id:'yellow',     label:'Amarelo',        html:'<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="10" fill="#f59e0b"/></svg>' },
+            { id:'teal',       label:'Turquesa',       html:'<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="10" fill="#14b8a6"/></svg>' },
+            { id:'black',      label:'Preto',          html:'<svg viewBox="0 0 24 24" width="28" height="28"><circle cx="12" cy="12" r="10" fill="#111"/><circle cx="12" cy="12" r="10" fill="none" stroke="#555" stroke-width="1"/></svg>' },
+        ];
+
+        function saveBanks() {
+            AppStorage.setItem('banks', JSON.stringify(banks));
+        }
+
+        function populateBankSelects() {
+            const selects = ['transaction-bank', 'investment-bank', 'debt-bank'];
+            selects.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const current = el.value;
+                el.innerHTML = banks.map(b => `<option value="${b.name}">${b.icon ? '' : (b.emoji || '🏦') + ' '}${b.name}</option>`).join('');
+                if (current && banks.some(b => b.name === current)) el.value = current;
+            });
+        }
+
+        // Returns an inline HTML string for a bank icon (for list rendering)
+        function bankIconHTML(bank) {
+            if (bank.icon) {
+                const found = ICON_CATALOGUE.find(c => c.id === bank.icon);
+                if (found) return `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;color:var(--accent)">${found.html}</span>`;
+            }
+            // Legacy emoji support
+            return `<span style="font-size:1.4rem;line-height:1;">${bank.emoji || '🏦'}</span>`;
+        }
+
+        // Render the icon picker grid
+        function buildIconGrid(selectedId) {
+            const grid = document.getElementById('bank-icon-grid');
+            if (!grid) return;
+            grid.innerHTML = ICON_CATALOGUE.map(item => {
+                const sel = item.id === selectedId;
+                return `<button type="button" class="icon-catalogue-btn" data-icon-id="${item.id}"
+                    onclick="selectCatalogueIcon('${item.id}')"
+                    title="${item.label}"
+                    style="background:${sel ? 'rgba(255,107,53,0.15)' : 'var(--bg-secondary)'};
+                           border:2px solid ${sel ? 'var(--accent)' : 'transparent'};
+                           border-radius:10px; cursor:pointer; padding:8px; transition:all 0.15s;
+                           display:flex; flex-direction:column; align-items:center;
+                           justify-content:center; gap:4px; color:var(--accent);">
+                    ${item.html}
+                    <span style="font-size:0.62rem;color:var(--text-secondary);text-align:center;line-height:1.1;">${item.label}</span>
+                </button>`;
+            }).join('');
+        }
+
+        function selectCatalogueIcon(iconId) {
+            document.getElementById('bank-icon-id').value = iconId;
+            const found = ICON_CATALOGUE.find(c => c.id === iconId);
+            const preview = document.getElementById('selected-bank-icon-preview');
+            if (found) {
+                preview.innerHTML = `<span style="display:inline-flex;align-items:center;justify-content:center;color:var(--accent);">${found.html}</span>`;
+            }
+            // Highlight
+            document.querySelectorAll('.icon-catalogue-btn').forEach(btn => {
+                const sel = btn.dataset.iconId === iconId;
+                btn.style.borderColor = sel ? 'var(--accent)' : 'transparent';
+                btn.style.background  = sel ? 'rgba(255,107,53,0.15)' : 'var(--bg-secondary)';
+            });
+        }
+
+        // Populate add/edit form fields for a bank (index=-1 = new)
+        function openBankForm(index) {
+            const isEdit = index >= 0;
+            const bank   = isEdit ? banks[index] : null;
+            document.getElementById('bank-form-title').textContent = isEdit ? '✏️ Editar Banco' : '➕ Novo Banco';
+            document.getElementById('bank-form-index').value = index;
+            document.getElementById('new-bank-name').value   = isEdit ? bank.name : '';
+            const iconId = isEdit ? (bank.icon || '') : '';
+            document.getElementById('bank-icon-id').value    = iconId;
+
+            const preview = document.getElementById('selected-bank-icon-preview');
+            const found = ICON_CATALOGUE.find(c => c.id === iconId);
+            if (found) {
+                preview.innerHTML = `<span style="display:inline-flex;align-items:center;justify-content:center;color:var(--accent);">${found.html}</span>`;
+            } else {
+                preview.textContent = isEdit ? (bank.emoji || '🏦') : '🏦';
+                preview.style.fontSize = '1.5rem';
+            }
+            document.getElementById('bank-form-section').style.display = 'block';
+            document.getElementById('bank-form-cancel').style.display  = isEdit ? 'inline-block' : 'none';
+            buildIconGrid(iconId);
+            document.getElementById('new-bank-name').focus();
+        }
+
+        function cancelBankForm() {
+            document.getElementById('bank-form-index').value = '-1';
+            document.getElementById('new-bank-name').value   = '';
+            document.getElementById('bank-icon-id').value    = '';
+            document.getElementById('selected-bank-icon-preview').textContent = '🏦';
+            document.getElementById('selected-bank-icon-preview').style.fontSize = '1.5rem';
+            document.getElementById('bank-form-title').textContent = '➕ Novo Banco';
+            document.getElementById('bank-form-cancel').style.display = 'none';
+            buildIconGrid('');
+        }
+
+        function renderBanksModal() {
+            const list = document.getElementById('banks-list');
+            if (!list) return;
+            if (banks.length === 0) {
+                list.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:1rem;">Nenhum banco cadastrado.</p>';
+                return;
+            }
+            list.innerHTML = banks.map((b, i) => `
+                <div style="display:flex;align-items:center;justify-content:space-between;
+                            padding:0.7rem 1rem;background:var(--bg-secondary);
+                            border-radius:8px;margin-bottom:0.4rem;border:1px solid var(--border);">
+                    <div style="display:flex;align-items:center;gap:0.75rem;">
+                        <span style="display:inline-flex;align-items:center;justify-content:center;
+                                     width:32px;height:32px;">${bankIconHTML(b)}</span>
+                        <span style="font-size:0.95rem;">${b.name}</span>
+                    </div>
+                    <div style="display:flex;gap:0.4rem;">
+                        <button class="btn btn-outline btn-sm" onclick="editBank(${i})" title="Editar">✏️</button>
+                        <button class="btn btn-danger btn-sm"  onclick="deleteBank(${i})" title="Excluir">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openBanksModal() {
+            renderBanksModal();
+            cancelBankForm();
+            document.getElementById('banksModal').classList.add('show');
+        }
+
+        function editBank(index) {
+            openBankForm(index);
+        }
+
+        function saveBank() {
+            const name    = document.getElementById('new-bank-name').value.trim();
+            const iconId  = document.getElementById('bank-icon-id').value.trim();
+            const editIdx = parseInt(document.getElementById('bank-form-index').value);
+            if (!name) { alert('Digite o nome do banco.'); return; }
+            const duplicate = banks.some((b, i) => b.name.toLowerCase() === name.toLowerCase() && i !== editIdx);
+            if (duplicate) { alert('Este banco já existe na lista.'); return; }
+            const entry = { name, icon: iconId || null, emoji: iconId ? null : '🏦' };
+            if (editIdx >= 0) {
+                banks[editIdx] = entry;
+            } else {
+                banks.push(entry);
+            }
+            saveBanks();
+            populateBankSelects();
+            renderBanksModal();
+            cancelBankForm();
+        }
+
+        function deleteBank(index) {
+            const bank = banks[index];
+            if (!confirm(`Excluir "${bank.name}" da lista de bancos?`)) return;
+            banks.splice(index, 1);
+            saveBanks();
+            populateBankSelects();
+            renderBanksModal();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            AppStorage.init().then(() => {
+                // Re-parse data after async storage is ready
+                transactions = JSON.parse(AppStorage.getItem('transactions') || '[]');
+                transactions = transactions.map(t => ({ ...t, status: t.status || 'paid' }));
+                investments  = JSON.parse(AppStorage.getItem('investments')  || '[]');
+                debts        = JSON.parse(AppStorage.getItem('debts')        || '[]');
+                monthlyExpenses = JSON.parse(AppStorage.getItem('monthlyExpenses') || '[]');
+                categories   = _migrateCatsEarly(JSON.parse(AppStorage.getItem('categories') || JSON.stringify(categories)));
+                banks        = JSON.parse(AppStorage.getItem('banks')        || JSON.stringify(banks));
+                populateBankSelects();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('transaction-date').value = today;
+            document.getElementById('investment-date').value = today;
+            document.getElementById('debt-date').value = today;
+            
+            populateMonthFilters();
+            populateCategoryFilters();
+            populateBankFiltersForDebts();
+            updateTransactionForm();
+            updateInvestmentCategories();
+            updateDebtCategories();
+            updateMonthlyCategories();
+            updateDashboard();
+            renderInvestments();
+            renderDebts();
+            renderDebtsInTransactions();
+            renderMonthlyTransactions();
+            renderCategories();
+            renderPortfolio();
+            }); // end AppStorage.init().then
+        });
+
+        // Populate Filters
+        function populateMonthFilters() {
+            // Gerar lista de meses de 2026 até o ano atual + 1
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const endYear = Math.max(currentYear + 1, 2027); // Pelo menos até 2027
+            
+            const allMonths = [];
+            for (let year = 2026; year <= endYear; year++) {
+                for (let month = 1; month <= 12; month++) {
+                    const monthStr = `${year}-${String(month).padStart(2, '0')}`;
+                    allMonths.push(monthStr);
+                }
+            }
+            
+            const currentMonth = (d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'))(new Date());
+            
+            // Dashboard filter
+            const dashboardFilter = document.getElementById('dashboard-filter-month');
+            if (dashboardFilter) {
+                dashboardFilter.innerHTML = '<option value="">Mês Atual</option>';
+                allMonths.forEach(month => {
+                    const option = document.createElement('option');
+                    option.value = month;
+                    option.textContent = formatMonthLabel(month);
+                    if (month === currentMonth) option.selected = true;
+                    dashboardFilter.appendChild(option);
+                });
+            }
+            
+            // Monthly filter - mostra todos por padrão
+            const monthlyFilter = document.getElementById('monthly-filter-month');
+            if (monthlyFilter) {
+                monthlyFilter.innerHTML = '<option value="">Todos os meses</option>';
+                allMonths.forEach(month => {
+                    const option = document.createElement('option');
+                    option.value = month;
+                    option.textContent = formatMonthLabel(month);
+                    monthlyFilter.appendChild(option);
+                });
+            }
+        }
+
+        function populateCategoryFilters() {
+            const monthlyFilter = document.getElementById('monthly-filter-category');
+            if (monthlyFilter) {
+                const allCategories = new Set();
+                flattenSubcats(categories.receitas.subcategories, '').forEach(s => allCategories.add(s));
+                flattenSubcats(categories.despesas.subcategories, '').forEach(s => allCategories.add(s));
+                
+                monthlyFilter.innerHTML = '<option value="all">Todas categorias</option>';
+                Array.from(allCategories).sort().forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    monthlyFilter.appendChild(option);
+                });
+            }
+        }
+
+        function populateBankFiltersForDebts() {
+            const filter = document.getElementById('debts-filter-bank');
+            if (filter) {
+                const banks = new Set();
+                debts.forEach(d => d.bank && banks.add(d.bank));
+                
+                filter.innerHTML = '<option value="all">Todos os bancos</option>';
+                Array.from(banks).sort().forEach(bank => {
+                    const option = document.createElement('option');
+                    option.value = bank;
+                    option.textContent = bank;
+                    filter.appendChild(option);
+                });
+            }
+        }
+
+        function filterDashboard() {
+            updateDashboard();
+        }
+
+        function filterDebts() {
+            renderDebtsInTransactions();
+        }
+
+        function resetAllData() {
+            if (confirm('⚠️ ATENÇÃO! Isso irá excluir TODOS os dados (transações, investimentos, dívidas, despesas mensais) e zerar todos os saldos. Esta ação não pode ser desfeita!\n\nDeseja realmente continuar?')) {
+                if (confirm('Tem certeza absoluta? Todos os dados serão perdidos permanentemente!')) {
+                    transactions = [];
+                    investments = [];
+                    debts = [];
+                    monthlyExpenses = [];
+                    
+                    AppStorage.setItem('transactions', JSON.stringify([]));
+                    AppStorage.setItem('investments', JSON.stringify([]));
+                    AppStorage.setItem('debts', JSON.stringify([]));
+                    AppStorage.setItem('monthlyExpenses', JSON.stringify([]));
+                    
+                    // Recarregar tudo
+                    location.reload();
+                }
+            }
+        }
+
+        // Navigation
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(pageId).classList.add('active');
+            event.target.closest('.nav-item').classList.add('active');
+
+            if (pageId === 'dashboard') updateDashboard();
+            if (pageId === 'monthly') renderMonthlyTransactions();
+            if (pageId === 'debts') {
+                renderDebts();
+                renderDebtsInTransactions();
+            }
+            if (pageId === 'investments') renderInvestments();
+            if (pageId === 'portfolio') renderPortfolio();
+            if (pageId === 'categories') renderCategories();
+        }
+
+        // Modals
+        function openTransactionModal() {
+            updateTransactionForm();
+            document.getElementById('transactionModal').classList.add('show');
+        }
+
+        function openInvestmentModal() {
+            updateInvestmentCategories();
+            document.getElementById('investmentModal').classList.add('show');
+        }
+
+        function openDebtModal() {
+            if (document.getElementById('debt-id').value === '') {
+                document.getElementById('debt-modal-title').textContent = 'Nova Dívida';
+                document.getElementById('debt-paid').value = '0';
+                document.getElementById('debt-total').value = '';
+            }
+            updateDebtCategories();
+            document.getElementById('debtModal').classList.add('show');
+        }
+
+        function openMonthlyExpenseModal() {
+            updateMonthlyCategories();
+            document.getElementById('monthlyExpenseModal').classList.add('show');
+        }
+
+        function openPriceCeilingModal() {
+            document.getElementById('ceiling-result').style.display = 'none';
+            document.getElementById('priceCeilingModal').classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Categories Management
+        // ── Category helpers ─────────────────────────────────────────────────────
+
+        // Migrate old flat string arrays to new nested object format
+        function migrateCategories(obj) {
+            Object.keys(obj).forEach(key => {
+                const cat = obj[key];
+                if (Array.isArray(cat.subcategories)) {
+                    cat.subcategories = cat.subcategories.map(s => {
+                        if (typeof s === 'string') return { name: s, children: [] };
+                        if (!s.children) s.children = [];
+                        return s;
+                    });
+                }
+            });
+            return obj;
+        }
+
+        // Flatten a subcategory tree into option strings
+        function flattenSubcats(subcategories, prefix) {
+            const result = [];
+            (subcategories || []).forEach(sub => {
+                if (typeof sub === 'string') sub = { name: sub, children: [] };
+                const label = prefix ? prefix + ' \u203a ' + sub.name : sub.name;
+                result.push(label);
+                if (sub.children && sub.children.length) {
+                    flattenSubcats(sub.children, label).forEach(c => result.push(c));
+                }
+            });
+            return result;
+        }
+
+        // Navigate the nested tree by path array, return the node's children array
+        function getSubcatListByPath(catKey, path) {
+            let list = categories[catKey].subcategories;
+            for (let i = 0; i < path.length; i++) {
+                list = list[path[i]].children;
+            }
+            return list;
+        }
+
+        function getNodeNameByPath(catKey, path) {
+            let list = categories[catKey].subcategories;
+            let node = null;
+            for (let i = 0; i < path.length; i++) {
+                node = list[path[i]];
+                list = node.children;
+            }
+            return node ? node.name : categories[catKey].name;
+        }
+
+        // ── Categories rendering ─────────────────────────────────────────────
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = Object.keys(categories).map(key => {
+                const cat = categories[key];
+                return `
+                    <div class="category-section">
+                        <div class="category-header">
+                            <h3 class="category-main-title">${cat.name}</h3>
+                            <button class="btn btn-primary btn-sm"
+                                onclick="openSubcatModal('${key}', [], false, null)">
+                                ➕ Subcategoria
+                            </button>
+                        </div>
+                        <div class="subcategory-list" id="subcat-list-${key}">
+                            ${renderSubcatList(key, cat.subcategories, [])}
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function renderSubcatList(catKey, subcats, parentPath) {
+            if (!subcats || subcats.length === 0) return '<em style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0;display:block;">Nenhuma subcategoria</em>';
+            return subcats.map((sub, idx) => {
+                if (typeof sub === 'string') sub = { name: sub, children: [] };
+                const path  = [...parentPath, idx];
+                const depth = parentPath.length;
+                const ml    = depth * 18;
+                const esc   = JSON.stringify(path);
+                const childrenHTML = (sub.children && sub.children.length)
+                    ? `<div class="subcat-children">${renderSubcatList(catKey, sub.children, path)}</div>`
+                    : '';
+                return `
+                <div style="margin-left:${ml}px;margin-bottom:4px;">
+                    <div class="subcategory-item">
+                        ${depth ? '<span style="color:var(--text-muted);margin-right:4px;font-size:0.8rem;">└</span>' : ''}
+                        <span class="subcategory-name">${sub.name}</span>
+                        <div class="subcategory-actions">
+                            <button class="btn btn-outline btn-sm" title="Adicionar sub-subcategoria"
+                                onclick='openSubcatModal("${catKey}",${esc},false,null)'>＋</button>
+                            <button class="btn btn-outline btn-sm" title="Editar"
+                                onclick='openSubcatModal("${catKey}",${esc},true,"${sub.name.replace(/"/g,"&quot;")}")'>✏️</button>
+                            <button class="btn btn-danger btn-sm" title="Excluir"
+                                onclick='deleteSubcatByPath("${catKey}",${esc})'>🗑️</button>
+                        </div>
+                    </div>
+                    ${childrenHTML}
+                </div>`;
+            }).join('');
+        }
+
+        // ── Subcategory modal ────────────────────────────────────────────────
+        // path: array of indices, e.g. [] = root, [0] = first subcat, [0,2] = its 3rd child
+        // isEdit: bool — true = rename the node AT path, false = add child to path
+        function openSubcatModal(catKey, path, isEdit, oldName) {
+            document.getElementById('subcategory-cat-key').value  = catKey;
+            document.getElementById('subcategory-path').value     = JSON.stringify(path);
+            document.getElementById('subcategory-is-edit').value  = isEdit ? '1' : '0';
+            document.getElementById('subcategory-old-name').value = oldName || '';
+            document.getElementById('subcategory-name').value     = isEdit ? (oldName || '') : '';
+            const parentName = isEdit
+                ? categories[catKey].name          // not shown but needed
+                : (path.length ? getNodeNameByPath(catKey, path) : categories[catKey].name);
+            document.getElementById('subcategory-modal-title').textContent =
+                isEdit ? `\u270f\ufe0f Editar: ${oldName}`
+                       : `\u2795 Nova subcategoria em "${parentName}"`;
+            document.getElementById('subcategoryModal').classList.add('show');
+            setTimeout(() => document.getElementById('subcategory-name').focus(), 80);
+        }
+
+        // Compat shims
+        function openAddSubcategoryModal(catKey) { openSubcatModal(catKey, [], false, null); }
+        function openEditSubcategoryModal(catKey, name) {
+            const idx = categories[catKey].subcategories.findIndex(s =>
+                (typeof s === 'string' ? s : s.name) === name);
+            if (idx >= 0) openSubcatModal(catKey, [idx], true, name);
+        }
+
+        function saveSubcategory(e) {
+            e.preventDefault();
+            const catKey  = document.getElementById('subcategory-cat-key').value;
+            const path    = JSON.parse(document.getElementById('subcategory-path').value || '[]');
+            const isEdit  = document.getElementById('subcategory-is-edit').value === '1';
+            const oldName = document.getElementById('subcategory-old-name').value;
+            const newName = document.getElementById('subcategory-name').value.trim();
+            if (!newName) return;
+
+            if (isEdit) {
+                // Rename the node at this exact path
+                const parentPath = path.slice(0, -1);
+                const nodeIdx    = path[path.length - 1];
+                const list = parentPath.length
+                    ? getSubcatListByPath(catKey, parentPath)
+                    : categories[catKey].subcategories;
+                if (list[nodeIdx]) list[nodeIdx].name = newName;
+            } else {
+                // Add as child of the node at path (or root if path=[])
+                const list = path.length
+                    ? getSubcatListByPath(catKey, path)
+                    : categories[catKey].subcategories;
+                if (!list.some(s => (typeof s === 'string' ? s : s.name) === newName)) {
+                    list.push({ name: newName, children: [] });
+                }
+            }
+
+            AppStorage.setItem('categories', JSON.stringify(categories));
+            closeModal('subcategoryModal');
+            renderCategories();
+            updateAllCategorySelects();
+        }
+
+        function deleteSubcatByPath(catKey, path) {
+            const nodeIdx = path[path.length - 1];
+            const parent  = path.slice(0, -1);
+            const list    = parent.length
+                ? getSubcatListByPath(catKey, parent)
+                : categories[catKey].subcategories;
+            const node = list[nodeIdx];
+            const name = typeof node === 'string' ? node : node.name;
+            if (!confirm(`Excluir "${name}"${node.children && node.children.length ? ' e suas subcategorias' : ''}?`)) return;
+            list.splice(nodeIdx, 1);
+            AppStorage.setItem('categories', JSON.stringify(categories));
+            renderCategories();
+            updateAllCategorySelects();
+        }
+
+        function deleteSubcategory(catKey, name) {
+            const idx = (categories[catKey].subcategories || []).findIndex(s =>
+                (typeof s === 'string' ? s : s.name) === name);
+            if (idx >= 0) deleteSubcatByPath(catKey, [idx]);
+        }
+
+        function openAddCategoryModal() {
+            alert('\ud83d\udca1 As 4 categorias principais s\u00e3o fixas. Use o bot\u00e3o \u2795\u00a0Subcategoria para adicionar itens.');
+        }
+
+        function updateAllCategorySelects() {
+            updateTransactionForm();
+            updateInvestmentCategories();
+            updateDebtCategories();
+            updateMonthlyCategories();
+            populateCategoryFilter();
+        }
+
+        // Portfolio Functions
+        function renderPortfolio() {
+            if (investments.length === 0) {
+                document.getElementById('portfolio-summary').innerHTML = 
+                    '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum investimento na carteira</p>';
+                return;
+            }
+
+            const totalInvested = investments.reduce((sum, inv) => sum + inv.invested, 0);
+            const totalCurrent = investments.reduce((sum, inv) => sum + inv.current, 0);
+            const totalProfit = totalCurrent - totalInvested;
+            const returnPercent = totalInvested > 0 ? ((totalProfit / totalInvested) * 100) : 0;
+
+            document.getElementById('portfolio-total').textContent = formatCurrency(totalCurrent);
+            document.getElementById('portfolio-profit').textContent = formatCurrency(totalProfit);
+            document.getElementById('portfolio-return').textContent = returnPercent.toFixed(2) + '%';
+            document.getElementById('portfolio-invested').textContent = formatCurrency(totalInvested);
+
+            // Group by type
+            const byType = {};
+            investments.forEach(inv => {
+                if (!byType[inv.type]) {
+                    byType[inv.type] = { invested: 0, current: 0, count: 0 };
+                }
+                byType[inv.type].invested += inv.invested;
+                byType[inv.type].current += inv.current;
+                byType[inv.type].count++;
+            });
+
+            // Render summary
+            const summaryHtml = Object.keys(byType).map(type => {
+                const data = byType[type];
+                const profit = data.current - data.invested;
+                const returnPct = ((profit / data.invested) * 100).toFixed(2);
+                const percentage = ((data.current / totalCurrent) * 100).toFixed(1);
+                
+                return `
+                    <div class="investment-item">
+                        <div class="investment-header">
+                            <div>
+                                <div class="investment-name">${type}</div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.25rem;">
+                                    ${data.count} ${data.count === 1 ? 'ativo' : 'ativos'} • ${percentage}% da carteira
+                                </div>
+                            </div>
+                        </div>
+                        <div class="investment-stats" style="margin-top: 1rem;">
+                            <div class="investment-stat-item">
+                                <div class="investment-stat-label">Investido</div>
+                                <div class="investment-stat-value">${formatCurrency(data.invested)}</div>
+                            </div>
+                            <div class="investment-stat-item">
+                                <div class="investment-stat-label">Valor Atual</div>
+                                <div class="investment-stat-value" style="color: var(--success)">${formatCurrency(data.current)}</div>
+                            </div>
+                            <div class="investment-stat-item">
+                                <div class="investment-stat-label">Lucro/Prejuízo</div>
+                                <div class="investment-stat-value" style="color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}">
+                                    ${formatCurrency(profit)}
+                                </div>
+                            </div>
+                            <div class="investment-stat-item">
+                                <div class="investment-stat-label">Retorno</div>
+                                <div class="investment-stat-value" style="color: ${returnPct >= 0 ? 'var(--success)' : 'var(--danger)'}">
+                                    ${returnPct}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('portfolio-summary').innerHTML = summaryHtml;
+
+            updatePortfolioCharts();
+        }
+
+        function updatePortfolioCharts() {
+            // Composition by Type
+            const ctx1 = document.getElementById('portfolioCompositionChart');
+            if (ctx1) {
+                const byType = {};
+                investments.forEach(inv => {
+                    byType[inv.type] = (byType[inv.type] || 0) + inv.current;
+                });
+
+                if (charts.portfolioComposition) charts.portfolioComposition.destroy();
+
+                charts.portfolioComposition = new Chart(ctx1, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(byType),
+                        datasets: [{
+                            data: Object.values(byType),
+                            backgroundColor: [
+                                '#3b82f6', '#10b981', '#f59e0b', '#ef4444', 
+                                '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#94a3b8' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Distribution by Bank
+            const ctx2 = document.getElementById('portfolioBankChart');
+            if (ctx2) {
+                const byBank = {};
+                investments.forEach(inv => {
+                    byBank[inv.bank] = (byBank[inv.bank] || 0) + inv.current;
+                });
+
+                if (charts.portfolioBank) charts.portfolioBank.destroy();
+
+                charts.portfolioBank = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(byBank),
+                        datasets: [{
+                            label: 'Valor por Banco',
+                            data: Object.values(byBank),
+                            backgroundColor: '#8b5cf6'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: '#2d3748' }
+                            },
+                            x: {
+                                ticks: { color: '#94a3b8' },
+                                grid: { color: '#2d3748' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Price Ceiling Calculator
+        function calculatePriceCeiling(e) {
+            e.preventDefault();
+            
+            const dividend = parseFloat(document.getElementById('ceiling-dividend').value);
+            const returnRate = parseFloat(document.getElementById('ceiling-return').value) / 100;
+            const growthRate = parseFloat(document.getElementById('ceiling-growth').value) / 100;
+            
+            if (returnRate <= growthRate) {
+                alert('A taxa de retorno deve ser maior que a taxa de crescimento!');
+                return;
+            }
+            
+            // Gordon Growth Model: P = D / (r - g)
+            const priceCeiling = dividend / (returnRate - growthRate);
+            
+            document.getElementById('ceiling-price').textContent = formatCurrency(priceCeiling);
+            
+            const explanation = `
+                Com um dividendo de ${formatCurrency(dividend)} por ano, 
+                uma taxa de retorno desejada de ${(returnRate * 100).toFixed(2)}% 
+                ${growthRate > 0 ? `e crescimento de ${(growthRate * 100).toFixed(2)}% ao ano` : ''}, 
+                você não deveria pagar mais que ${formatCurrency(priceCeiling)} por este ativo.
+            `;
+            
+            document.getElementById('ceiling-explanation').textContent = explanation;
+            document.getElementById('ceiling-result').style.display = 'block';
+        }
+
+        function updateAllCategorySelects() {
+            updateTransactionForm();
+            updateInvestmentCategories();
+            updateDebtCategories();
+            updateMonthlyCategories();
+            populateCategoryFilter();
+        }
+
+        function updateTransactionForm() {
+            const type = document.getElementById('transaction-type').value;
+            const select = document.getElementById('transaction-category');
+            const bankField = document.getElementById('bank-field');
+            const monthlyDayField = document.getElementById('monthly-day-field');
+            const currentValueField = document.getElementById('current-value-field');
+            const statusField = document.getElementById('status-field');
+            const valueField = document.getElementById('value-field');
+            const installmentValueField = document.getElementById('installment-value-field');
+            const installmentsField = document.getElementById('installments-field');
+            const totalField = document.getElementById('total-field');
+            const bankSelect = document.getElementById('transaction-bank');
+            const monthlyDayInput = document.getElementById('transaction-monthly-day');
+            const currentValueInput = document.getElementById('transaction-current-value');
+            const valueInput = document.getElementById('transaction-value');
+            const installmentValueInput = document.getElementById('transaction-installment-value');
+            const installmentsInput = document.getElementById('transaction-installments');
+            
+            // Reset all fields
+            bankField.style.display = 'none';
+            monthlyDayField.style.display = 'none';
+            currentValueField.style.display = 'none';
+            statusField.style.display = 'block';
+            valueField.style.display = 'block';
+            installmentValueField.style.display = 'none';
+            installmentsField.style.display = 'none';
+            totalField.style.display = 'none';
+            bankSelect.required = false;
+            monthlyDayInput.required = false;
+            currentValueInput.required = false;
+            valueInput.required = true;
+            installmentValueInput.required = false;
+            installmentsInput.required = false;
+            
+            // Configure based on type
+            if (type === 'income') {
+                select.innerHTML = flattenSubcats(categories.receitas.subcategories, '').map(s => `<option value="${s}">${s}</option>`).join('');
+            } else if (type === 'monthly-expense') {
+                select.innerHTML = flattenSubcats(categories.despesas.subcategories, '').map(s => `<option value="${s}">${s}</option>`).join('');
+                monthlyDayField.style.display = 'block';
+                monthlyDayInput.required = true;
+            } else if (type === 'investment') {
+                select.innerHTML = flattenSubcats(categories.investimentos.subcategories, '').map(s => `<option value="${s}">${s}</option>`).join('');
+                bankField.style.display = 'block';
+                currentValueField.style.display = 'block';
+                bankSelect.required = true;
+                currentValueInput.required = true;
+                statusField.style.display = 'none';
+            } else if (type === 'debt') {
+                select.innerHTML = flattenSubcats(categories.dividas.subcategories, '').map(s => `<option value="${s}">${s}</option>`).join('');
+                bankField.style.display = 'block';
+                valueField.style.display = 'none';
+                installmentValueField.style.display = 'block';
+                installmentsField.style.display = 'block';
+                totalField.style.display = 'block';
+                statusField.style.display = 'none';
+                bankSelect.required = true;
+                valueInput.required = false;
+                installmentValueInput.required = true;
+                installmentsInput.required = true;
+            }
+            
+            // Auto-fill description after populating categories
+            autoFillDescription();
+        }
+
+        function autoFillDescription() {
+            const category = document.getElementById('transaction-category').value;
+            const descriptionField = document.getElementById('transaction-description');
+            
+            // Categorias que NÃO devem auto-preencher
+            const excludedCategories = ['Outros', 'Bônus'];
+            
+            // Auto-fill sempre que categoria não estiver na lista de exclusão
+            if (category && !excludedCategories.includes(category)) {
+                descriptionField.value = category;
+            }
+        }
+
+        function autoFillInvestmentDescription() {
+            const category = document.getElementById('investment-type').value;
+            const descriptionField = document.getElementById('investment-name');
+            
+            // Categorias que NÃO devem auto-preencher
+            const excludedCategories = ['Outros', 'Bônus'];
+            
+            // Auto-fill sempre que categoria não estiver na lista de exclusão
+            if (category && !excludedCategories.includes(category)) {
+                descriptionField.value = category;
+            }
+        }
+
+        function autoFillDebtDescription() {
+            const category = document.getElementById('debt-category').value;
+            const descriptionField = document.getElementById('debt-description');
+            
+            // Categorias que NÃO devem auto-preencher
+            const excludedCategories = ['Outros', 'Bônus'];
+            
+            // Auto-fill sempre que categoria não estiver na lista de exclusão
+            if (category && !excludedCategories.includes(category)) {
+                descriptionField.value = category;
+            }
+        }
+
+        function autoFillMonthlyDescription() {
+            const category = document.getElementById('monthly-category').value;
+            const descriptionField = document.getElementById('monthly-description');
+            
+            // Categorias que NÃO devem auto-preencher
+            const excludedCategories = ['Outros', 'Bônus'];
+            
+            // Auto-fill sempre que categoria não estiver na lista de exclusão
+            if (category && !excludedCategories.includes(category)) {
+                descriptionField.value = category;
+            }
+        }
+
+        function calculateTransactionTotal() {
+            const installmentValue = parseFloat(document.getElementById('transaction-installment-value').value) || 0;
+            const installments = parseInt(document.getElementById('transaction-installments').value) || 0;
+            const total = installmentValue * installments;
+            document.getElementById('transaction-total').value = total.toFixed(2);
+        }
+
+        function updateInvestmentCategories() {
+            const select = document.getElementById('investment-type');
+            select.innerHTML = flattenSubcats(categories.investimentos.subcategories, '').map(s => `<option value="${s}">${s}</option>`).join('');
+            autoFillInvestmentDescription();
+        }
+
+        function updateDebtCategories() {
+            const select = document.getElementById('debt-category');
+            select.innerHTML = flattenSubcats(categories.dividas.subcategories, '').map(s => `<option value="${s}">${s}</option>`).join('');
+            autoFillDebtDescription();
+        }
+
+        function updateMonthlyCategories() {
+            const select = document.getElementById('monthly-category');
+            select.innerHTML = flattenSubcats(categories.despesas.subcategories, '').map(s => `<option value="${s}">${s}</option>`).join('');
+            autoFillMonthlyDescription();
+        }
+
+        // Transactions
+        function saveTransaction(e) {
+            e.preventDefault();
+            
+            const type = document.getElementById('transaction-type').value;
+            const category = document.getElementById('transaction-category').value;
+            let description = document.getElementById('transaction-description').value.trim();
+            
+            // Se descrição estiver vazia, preencher com categoria (exceto Outros e Bônus)
+            const excludedCategories = ['Outros', 'Bônus'];
+            if (!description && category && !excludedCategories.includes(category)) {
+                description = category;
+            }
+            
+            // Verificar se é edição
+            const transactionId = document.getElementById('transaction-id')?.value;
+            
+            if (type === 'investment') {
+                // Save as investment
+                const investment = {
+                    id: Date.now(),
+                    bank: document.getElementById('transaction-bank').value,
+                    name: document.getElementById('transaction-description').value,
+                    type: document.getElementById('transaction-category').value,
+                    invested: parseFloat(document.getElementById('transaction-value').value),
+                    current: parseFloat(document.getElementById('transaction-current-value').value),
+                    date: document.getElementById('transaction-date').value
+                };
+                investments.push(investment);
+                AppStorage.setItem('investments', JSON.stringify(investments));
+                renderInvestments();
+                updateDashboard();
+            } else if (type === 'monthly-expense') {
+                // Verificar se é edição
+                const transactionId = document.getElementById('transaction-id')?.value;
+                
+                // Save as expense transaction
+                const transaction = {
+                    id: transactionId ? parseInt(transactionId) : Date.now(),
+                    type: 'expense',
+                    bank: null,
+                    description: description,
+                    category: category,
+                    value: parseFloat(document.getElementById('transaction-value').value),
+                    date: document.getElementById('transaction-date').value,
+                    status: document.getElementById('transaction-status').value
+                };
+                
+                if (transactionId) {
+                    // Editar existente
+                    const index = transactions.findIndex(t => t.id === parseInt(transactionId));
+                    if (index !== -1) {
+                        transactions[index] = transaction;
+                    }
+                } else {
+                    // Adicionar novo
+                    transactions.push(transaction);
+                }
+                
+                AppStorage.setItem('transactions', JSON.stringify(transactions));
+                updateDashboard();
+                renderMonthlyTransactions();
+                populateMonthFilters();
+                populateCategoryFilters();
+            } else if (type === 'debt') {
+                // Save as debt
+                const installmentValue = parseFloat(document.getElementById('transaction-installment-value').value);
+                const installments = parseInt(document.getElementById('transaction-installments').value);
+                
+                const debt = {
+                    id: Date.now(),
+                    bank: document.getElementById('transaction-bank').value,
+                    description: document.getElementById('transaction-description').value,
+                    category: document.getElementById('transaction-category').value,
+                    installmentValue: installmentValue,
+                    total: installmentValue * installments,
+                    installments: installments,
+                    paid: 0,
+                    date: document.getElementById('transaction-date').value
+                };
+                debts.push(debt);
+                AppStorage.setItem('debts', JSON.stringify(debts));
+                renderDebts();
+                renderDebtsInTransactions();
+                updateDashboard();
+            } else if (type === 'income') {
+                // Verificar se é edição
+                const transactionId = document.getElementById('transaction-id')?.value;
+                
+                // Save as income transaction
+                const transaction = {
+                    id: transactionId ? parseInt(transactionId) : Date.now(),
+                    type: 'income',
+                    bank: null,
+                    description: description,
+                    category: category,
+                    value: parseFloat(document.getElementById('transaction-value').value),
+                    date: document.getElementById('transaction-date').value,
+                    status: document.getElementById('transaction-status').value
+                };
+                
+                if (transactionId) {
+                    // Editar existente
+                    const index = transactions.findIndex(t => t.id === parseInt(transactionId));
+                    if (index !== -1) {
+                        transactions[index] = transaction;
+                    }
+                } else {
+                    // Adicionar novo
+                    transactions.push(transaction);
+                }
+                
+                AppStorage.setItem('transactions', JSON.stringify(transactions));
+                updateDashboard();
+                renderMonthlyTransactions();
+                populateMonthFilters();
+                populateCategoryFilters();
+            }
+            
+            // Limpar ID se existir
+            if (document.getElementById('transaction-id')) {
+                document.getElementById('transaction-id').value = '';
+            }
+            
+            closeModal('transactionModal');
+            e.target.reset();
+        }
+
+        function deleteTransaction(id) {
+            if (confirm('Deseja realmente excluir esta transação?')) {
+                transactions = transactions.filter(t => t.id !== id);
+                AppStorage.setItem('transactions', JSON.stringify(transactions));
+                updateDashboard();
+                renderMonthlyTransactions();
+                populateMonthFilters();
+            }
+        }
+
+        function editTransaction(id) {
+            const transaction = transactions.find(t => t.id === id);
+            if (!transaction) return;
+            
+            // Não permite editar transações de pagamento de parcelas
+            if (transaction.isDebtPayment) {
+                alert('Transações de pagamento de parcelas não podem ser editadas. Gerencie pela aba de Dívidas.');
+                return;
+            }
+            
+            // Definir tipo baseado no tipo da transação
+            const transactionType = transaction.type === 'income' ? 'income' : 'monthly-expense';
+            
+            // Criar input hidden para ID se não existir
+            let idInput = document.getElementById('transaction-id');
+            if (!idInput) {
+                idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.id = 'transaction-id';
+                document.querySelector('#transactionModal form').prepend(idInput);
+            }
+            
+            // Preencher valores
+            idInput.value = transaction.id;
+            document.getElementById('transaction-type').value = transactionType;
+            updateTransactionForm(); // Atualiza campos visíveis
+            
+            document.getElementById('transaction-description').value = transaction.description;
+            document.getElementById('transaction-category').value = transaction.category;
+            document.getElementById('transaction-value').value = transaction.value;
+            document.getElementById('transaction-date').value = transaction.date;
+            document.getElementById('transaction-status').value = transaction.status;
+            
+            openTransactionModal();
+        }
+
+        function payTransaction(id) {
+            if (confirm('Marcar esta transação como paga?')) {
+                const transaction = transactions.find(t => t.id === id);
+                if (transaction) {
+                    transaction.status = 'paid';
+                    AppStorage.setItem('transactions', JSON.stringify(transactions));
+                    updateDashboard();
+                    renderMonthlyTransactions();
+                }
+            }
+        }
+
+        function filterTransactions() {
+            // Function kept for compatibility but does nothing now
+        }
+
+        // Investments
+        function saveInvestment(e) {
+            e.preventDefault();
+            
+            const investmentId = document.getElementById('investment-id')?.value;
+            const category = document.getElementById('investment-type').value;
+            let name = document.getElementById('investment-name').value.trim();
+            
+            // Se nome estiver vazio, preencher com categoria (exceto Outros e Bônus)
+            const excludedCategories = ['Outros', 'Bônus'];
+            if (!name && category && !excludedCategories.includes(category)) {
+                name = category;
+            }
+            
+            const investment = {
+                id: investmentId ? parseInt(investmentId) : Date.now(),
+                bank: document.getElementById('investment-bank').value,
+                name: name,
+                type: category,
+                invested: parseFloat(document.getElementById('investment-invested').value),
+                current: parseFloat(document.getElementById('investment-current').value),
+                date: document.getElementById('investment-date').value
+            };
+
+            if (investmentId) {
+                // Edit existing
+                const index = investments.findIndex(inv => inv.id === parseInt(investmentId));
+                if (index !== -1) {
+                    investments[index] = investment;
+                }
+            } else {
+                // Add new
+                investments.push(investment);
+            }
+
+            AppStorage.setItem('investments', JSON.stringify(investments));
+            
+            closeModal('investmentModal');
+            e.target.reset();
+            if (document.getElementById('investment-id')) {
+                document.getElementById('investment-id').value = '';
+            }
+            renderInvestments();
+            updateDashboard();
+        }
+
+        function editInvestment(id) {
+            const investment = investments.find(inv => inv.id === id);
+            if (!investment) return;
+            
+            // Create hidden input if doesn't exist
+            let idInput = document.getElementById('investment-id');
+            if (!idInput) {
+                idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.id = 'investment-id';
+                document.querySelector('#investmentModal form').prepend(idInput);
+            }
+            
+            idInput.value = investment.id;
+            document.getElementById('investment-bank').value = investment.bank;
+            document.getElementById('investment-name').value = investment.name;
+            document.getElementById('investment-type').value = investment.type;
+            document.getElementById('investment-invested').value = investment.invested;
+            document.getElementById('investment-current').value = investment.current;
+            document.getElementById('investment-date').value = investment.date;
+            
+            updateInvestmentCategories();
+            openInvestmentModal();
+        }
+
+        function renderInvestments() {
+            const tbody = document.getElementById('investments-table');
+            
+            if (!tbody) return;
+            
+            if (investments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum investimento cadastrado</td></tr>';
+                
+                document.getElementById('invested-total').textContent = 'R$ 0,00';
+                document.getElementById('current-total').textContent = 'R$ 0,00';
+                document.getElementById('profit-total').textContent = 'R$ 0,00';
+                document.getElementById('return-percent').textContent = '0%';
+                return;
+            }
+
+            const totalInvested = investments.reduce((sum, inv) => sum + inv.invested, 0);
+            const totalCurrent = investments.reduce((sum, inv) => sum + inv.current, 0);
+            const totalProfit = totalCurrent - totalInvested;
+            const returnPercent = totalInvested > 0 ? ((totalProfit / totalInvested) * 100) : 0;
+
+            document.getElementById('invested-total').textContent = formatCurrency(totalInvested);
+            document.getElementById('current-total').textContent = formatCurrency(totalCurrent);
+            document.getElementById('profit-total').textContent = formatCurrency(totalProfit);
+            document.getElementById('return-percent').textContent = returnPercent.toFixed(2) + '%';
+
+            tbody.innerHTML = investments.map(inv => {
+                const profit = inv.current - inv.invested;
+                const returnPct = inv.invested > 0 ? ((profit / inv.invested) * 100).toFixed(2) : '0.00';
+                
+                return `
+                    <tr>
+                        <td>
+                            ${inv.name}
+                            <br><small style="color: var(--text-secondary);">Desde ${formatDate(inv.date)}</small>
+                        </td>
+                        <td>${inv.bank}</td>
+                        <td><span class="badge" style="background: rgba(255, 107, 53, 0.15); color: var(--accent); border: 1px solid rgba(255, 107, 53, 0.3);">${inv.type}</span></td>
+                        <td>${formatCurrency(inv.invested)}</td>
+                        <td style="color: var(--success)">${formatCurrency(inv.current)}</td>
+                        <td style="color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}">
+                            ${formatCurrency(profit)}
+                        </td>
+                        <td style="color: ${returnPct >= 0 ? 'var(--success)' : 'var(--danger)'}">
+                            ${returnPct}%
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.25rem;">
+                                <button class="btn btn-outline btn-sm" onclick="editInvestment(${inv.id})" style="padding: 0.375rem 0.625rem;">✏️</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteInvestment(${inv.id})" style="padding: 0.375rem 0.625rem;">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function deleteInvestment(id) {
+            if (confirm('Deseja realmente excluir este investimento?')) {
+                investments = investments.filter(inv => inv.id !== id);
+                AppStorage.setItem('investments', JSON.stringify(investments));
+                renderInvestments();
+                renderPortfolio();
+                updateDashboard();
+            }
+        }
+
+        // Debts
+        function calculateDebtTotal() {
+            const installmentValue = parseFloat(document.getElementById('debt-installment-value').value) || 0;
+            const installments = parseInt(document.getElementById('debt-installments').value) || 0;
+            const total = installmentValue * installments;
+            document.getElementById('debt-total').value = total.toFixed(2);
+        }
+
+        function validatePaidInstallments() {
+            const paid = parseInt(document.getElementById('debt-paid').value) || 0;
+            const total = parseInt(document.getElementById('debt-installments').value) || 0;
+            if (paid > total) {
+                document.getElementById('debt-paid').value = total;
+            }
+        }
+
+        function saveDebt(e) {
+            e.preventDefault();
+            
+            const debtId = document.getElementById('debt-id').value;
+            const installmentValue = parseFloat(document.getElementById('debt-installment-value').value);
+            const installments = parseInt(document.getElementById('debt-installments').value);
+            const category = document.getElementById('debt-category').value;
+            let description = document.getElementById('debt-description').value.trim();
+            
+            // Se descrição estiver vazia, preencher com categoria (exceto Outros e Bônus)
+            const excludedCategories = ['Outros', 'Bônus'];
+            if (!description && category && !excludedCategories.includes(category)) {
+                description = category;
+            }
+            
+            const debt = {
+                id: debtId ? parseInt(debtId) : Date.now(),
+                bank: document.getElementById('debt-bank').value,
+                description: description,
+                category: category,
+                installmentValue: installmentValue,
+                total: installmentValue * installments,
+                installments: installments,
+                paid: parseInt(document.getElementById('debt-paid').value),
+                date: document.getElementById('debt-date').value
+            };
+
+            if (debtId) {
+                // Edit existing
+                const index = debts.findIndex(d => d.id === parseInt(debtId));
+                if (index !== -1) {
+                    debts[index] = debt;
+                }
+            } else {
+                // Add new
+                debts.push(debt);
+            }
+
+            AppStorage.setItem('debts', JSON.stringify(debts));
+            
+            closeModal('debtModal');
+            e.target.reset();
+            document.getElementById('debt-id').value = '';
+            document.getElementById('debt-modal-title').textContent = 'Nova Dívida';
+            renderDebts();
+            renderDebtsInTransactions();
+            updateDashboard();
+        }
+
+        function renderDebts() {
+            const container = document.getElementById('debts-list');
+            
+            if (debts.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhuma dívida cadastrada</p>';
+                return;
+            }
+
+            const totalDebts = debts.reduce((sum, d) => sum + d.total, 0);
+            const totalPaid = debts.reduce((sum, d) => sum + (d.installmentValue * d.paid), 0);
+            const totalRemaining = totalDebts - totalPaid;
+
+            document.getElementById('total-debts').textContent = formatCurrency(totalRemaining);
+            document.getElementById('total-installments').textContent = debts.reduce((sum, d) => sum + d.installments, 0);
+
+            container.innerHTML = debts.map(debt => {
+                const installmentValue = debt.installmentValue || (debt.total / debt.installments);
+                const remaining = debt.installments - debt.paid;
+                const progress = (debt.paid / debt.installments) * 100;
+                
+                return `
+                    <div class="debt-item">
+                        <div class="investment-header">
+                            <div>
+                                <div class="investment-name">${debt.description}</div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.25rem;">
+                                    ${debt.bank ? debt.bank + ' • ' : ''}${debt.category} • ${debt.paid} de ${debt.installments} parcelas pagas
+                                </div>
+                            </div>
+                            <div class="investment-type">${formatCurrency(installmentValue)}/mês</div>
+                        </div>
+                        <div class="investment-stats" style="margin-top: 1rem;">
+                            <div class="investment-stat-item">
+                                <div class="investment-stat-label">Total</div>
+                                <div class="investment-stat-value">${formatCurrency(debt.total)}</div>
+                            </div>
+                            <div class="investment-stat-item">
+                                <div class="investment-stat-label">Pago</div>
+                                <div class="investment-stat-value" style="color: var(--success)">
+                                    ${formatCurrency(installmentValue * debt.paid)}
+                                </div>
+                            </div>
+                            <div class="investment-stat-item">
+                                <div class="investment-stat-label">Faltam</div>
+                                <div class="investment-stat-value" style="color: var(--danger)">
+                                    ${formatCurrency(installmentValue * remaining)}
+                                </div>
+                            </div>
+                            <div class="investment-stat-item">
+                                <div class="investment-stat-label">Parcelas Restantes</div>
+                                <div class="investment-stat-value">${remaining}</div>
+                            </div>
+                        </div>
+                        <div class="debt-progress">
+                            <div class="debt-progress-bar" style="width: ${progress}%"></div>
+                        </div>
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                            ${remaining > 0 ? `<button class="btn btn-success btn-sm" onclick="payInstallment(${debt.id})">💳 Pagar Parcela</button>` : ''}
+                            ${debt.paid > 0 ? `<button class="btn btn-warning btn-sm" onclick="unpayInstallment(${debt.id})">↩️ Voltar Parcela</button>` : ''}
+                            <button class="btn btn-outline btn-sm" onclick="editDebt(${debt.id})">✏️ Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteDebtAndTransactions(${debt.id})">🗑️ Excluir</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function payInstallment(id) {
+            const debt = debts.find(d => d.id === id);
+            if (debt && debt.paid < debt.installments) {
+                debt.paid++;
+                
+                // Create transaction for the paid installment
+                const installmentValue = debt.installmentValue || (debt.total / debt.installments);
+                const transaction = {
+                    id: Date.now(),
+                    type: 'expense',
+                    bank: null,
+                    description: `${debt.description} - Parcela ${debt.paid}/${debt.installments}`,
+                    category: debt.category,
+                    value: installmentValue,
+                    date: new Date().toISOString().split('T')[0],
+                    status: 'paid',
+                    isDebtPayment: true,
+                    debtId: debt.id
+                };
+                
+                transactions.push(transaction);
+                AppStorage.setItem('transactions', JSON.stringify(transactions));
+                AppStorage.setItem('debts', JSON.stringify(debts));
+                
+                renderDebts();
+                renderDebtsInTransactions();
+                renderMonthlyTransactions();
+                updateDashboard();
+            }
+        }
+
+        function unpayInstallment(id) {
+            if (confirm('Deseja realmente voltar o pagamento desta parcela? A transação correspondente será removida.')) {
+                const debt = debts.find(d => d.id === id);
+                if (debt && debt.paid > 0) {
+                    // Remover a transação da última parcela paga
+                    const lastPaidNumber = debt.paid;
+                    const transactionToRemove = transactions.find(t => 
+                        t.isDebtPayment && 
+                        t.debtId === debt.id && 
+                        t.description.includes(`Parcela ${lastPaidNumber}/${debt.installments}`)
+                    );
+                    
+                    if (transactionToRemove) {
+                        transactions = transactions.filter(t => t.id !== transactionToRemove.id);
+                        AppStorage.setItem('transactions', JSON.stringify(transactions));
+                    }
+                    
+                    debt.paid--;
+                    AppStorage.setItem('debts', JSON.stringify(debts));
+                    
+                    renderDebts();
+                    renderDebtsInTransactions();
+                    renderMonthlyTransactions();
+                    updateDashboard();
+                }
+            }
+        }
+
+        function deleteDebtAndTransactions(id) {
+            if (confirm('Deseja realmente excluir esta dívida? Todas as parcelas pagas (transações) também serão removidas.')) {
+                // Remover todas as transações relacionadas a esta dívida
+                transactions = transactions.filter(t => !t.isDebtPayment || t.debtId !== id);
+                AppStorage.setItem('transactions', JSON.stringify(transactions));
+                
+                // Remover a dívida
+                debts = debts.filter(d => d.id !== id);
+                AppStorage.setItem('debts', JSON.stringify(debts));
+                
+                renderDebts();
+                renderDebtsInTransactions();
+                renderMonthlyTransactions();
+                updateDashboard();
+            }
+        }
+
+        function editDebt(id) {
+            const debt = debts.find(d => d.id === id);
+            if (!debt) return;
+            
+            document.getElementById('debt-modal-title').textContent = 'Editar Dívida';
+            document.getElementById('debt-id').value = debt.id;
+            document.getElementById('debt-bank').value = debt.bank || 'Outros';
+            document.getElementById('debt-description').value = debt.description;
+            document.getElementById('debt-category').value = debt.category;
+            document.getElementById('debt-installment-value').value = debt.installmentValue || (debt.total / debt.installments);
+            document.getElementById('debt-installments').value = debt.installments;
+            document.getElementById('debt-total').value = debt.total;
+            document.getElementById('debt-paid').value = debt.paid;
+            document.getElementById('debt-date').value = debt.date;
+            
+            updateDebtCategories();
+            openDebtModal();
+        }
+
+        function deleteDebt(id) {
+            if (confirm('Deseja realmente excluir esta dívida? Todas as transações de parcelas pagas também serão removidas.')) {
+                // Remove debt
+                debts = debts.filter(d => d.id !== id);
+                AppStorage.setItem('debts', JSON.stringify(debts));
+                
+                // Remove all transactions related to this debt
+                transactions = transactions.filter(t => t.debtId !== id);
+                AppStorage.setItem('transactions', JSON.stringify(transactions));
+                
+                renderDebts();
+                renderDebtsInTransactions();
+                updateDashboard();
+            }
+        }
+
+        function renderDebtsInTransactions() {
+            const tbody = document.getElementById('debts-in-transactions-table');
+            
+            if (!tbody) return;
+            
+            const filterBank = document.getElementById('debts-filter-bank')?.value || 'all';
+            
+            let filtered = debts;
+            if (filterBank !== 'all') {
+                filtered = debts.filter(d => d.bank === filterBank);
+            }
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhuma dívida cadastrada</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(debt => {
+                const installmentValue = debt.installmentValue || (debt.total / debt.installments);
+                const remaining = debt.installments - debt.paid;
+                const progress = ((debt.paid / debt.installments) * 100).toFixed(0);
+                
+                return `
+                    <tr>
+                        <td>
+                            ${debt.description}
+                            ${debt.bank ? `<br><small style="color: var(--text-secondary);">${debt.bank}</small>` : ''}
+                        </td>
+                        <td>${debt.category}</td>
+                        <td style="color: var(--danger)">${formatCurrency(installmentValue)}</td>
+                        <td>${debt.paid}/${debt.installments}</td>
+                        <td style="font-weight: 600;">${formatCurrency(debt.total)}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div style="flex: 1; height: 8px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${progress}%; background: linear-gradient(90deg, var(--accent), var(--purple)); transition: width 0.3s;"></div>
+                                </div>
+                                <span style="font-size: 0.8125rem; color: var(--text-secondary); min-width: 45px;">${progress}%</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.25rem;">
+                                ${remaining > 0 ? `<button class="btn btn-success btn-sm" onclick="payInstallment(${debt.id})" style="padding: 0.375rem 0.625rem;" title="Pagar Parcela">💳</button>` : ''}
+                                ${debt.paid > 0 ? `<button class="btn btn-warning btn-sm" onclick="unpayInstallment(${debt.id})" style="padding: 0.375rem 0.625rem;" title="Voltar Parcela">↩️</button>` : ''}
+                                <button class="btn btn-outline btn-sm" onclick="editDebt(${debt.id})" style="padding: 0.375rem 0.625rem;" title="Editar">✏️</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteDebtAndTransactions(${debt.id})" style="padding: 0.375rem 0.625rem;" title="Excluir">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            populateBankFiltersForDebts();
+        }
+
+        // Monthly Expenses
+        function saveMonthlyExpense(e) {
+            e.preventDefault();
+            
+            const expenseId = document.getElementById('monthly-id')?.value;
+            const category = document.getElementById('monthly-category').value;
+            let description = document.getElementById('monthly-description').value.trim();
+            
+            // Se descrição estiver vazia, preencher com categoria (exceto Outros e Bônus)
+            const excludedCategories = ['Outros', 'Bônus'];
+            if (!description && category && !excludedCategories.includes(category)) {
+                description = category;
+            }
+            
+            const expense = {
+                id: expenseId ? parseInt(expenseId) : Date.now(),
+                description: description,
+                category: category,
+                value: parseFloat(document.getElementById('monthly-value').value),
+                day: parseInt(document.getElementById('monthly-day').value)
+            };
+
+            if (expenseId) {
+                // Edit existing
+                const index = monthlyExpenses.findIndex(exp => exp.id === parseInt(expenseId));
+                if (index !== -1) {
+                    monthlyExpenses[index] = expense;
+                }
+            } else {
+                // Add new
+                monthlyExpenses.push(expense);
+            }
+
+            AppStorage.setItem('monthlyExpenses', JSON.stringify(monthlyExpenses));
+            
+            closeModal('monthlyExpenseModal');
+            e.target.reset();
+            if (document.getElementById('monthly-id')) {
+                document.getElementById('monthly-id').value = '';
+            }
+            renderMonthlyExpenses();
+        }
+
+        function editMonthlyExpense(id) {
+            const expense = monthlyExpenses.find(exp => exp.id === id);
+            if (!expense) return;
+            
+            // Create hidden input if doesn't exist
+            let idInput = document.getElementById('monthly-id');
+            if (!idInput) {
+                idInput = document.createElement('input');
+                idInput.type = 'hidden';
+                idInput.id = 'monthly-id';
+                document.querySelector('#monthlyExpenseModal form').prepend(idInput);
+            }
+            
+            idInput.value = expense.id;
+            document.getElementById('monthly-description').value = expense.description;
+            document.getElementById('monthly-category').value = expense.category;
+            document.getElementById('monthly-value').value = expense.value;
+            document.getElementById('monthly-day').value = expense.day;
+            
+            updateMonthlyCategories();
+            openMonthlyExpenseModal();
+        }
+
+        function renderMonthlyTransactions() {
+            const tbody = document.getElementById('monthly-transactions-table');
+            if (!tbody) return;
+            
+            // Pegar mês selecionado (pode ser vazio para mostrar todos)
+            const filterMonth = document.getElementById('monthly-filter-month')?.value || '';
+            const filterType = document.getElementById('monthly-filter-type')?.value || 'all';
+            const filterCategory = document.getElementById('monthly-filter-category')?.value || 'all';
+            
+            // Filtrar transações
+            let filtered = transactions.filter(t => {
+                const matchMonth = !filterMonth || t.date.startsWith(filterMonth);
+                const matchType = filterType === 'all' || t.type === filterType;
+                const matchCategory = filterCategory === 'all' || t.category === filterCategory;
+                return matchMonth && matchType && matchCategory;
+            });
+            
+            // Calcular totais: usa mês do filtro se selecionado, caso contrário mês atual
+            const summaryMonth = filterMonth || (d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'))(new Date());
+            const summaryTransactions = transactions.filter(t => t.date.startsWith(summaryMonth));
+            
+            // Receita: total de todas as receitas do mês (pagas + pendentes)
+            const monthIncome = summaryTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.value, 0);
+            // Receita já recebida (paga)
+            const monthIncomePaid = summaryTransactions.filter(t => t.type === 'income' && t.status === 'paid').reduce((sum, t) => sum + t.value, 0);
+            
+            // Despesa: total de todas as despesas do mês (pagas + pendentes)
+            const monthExpense = summaryTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.value, 0);
+            // Despesa já paga
+            const monthExpensePaid = summaryTransactions.filter(t => t.type === 'expense' && t.status === 'paid').reduce((sum, t) => sum + t.value, 0);
+            
+            // Saldo realizado = receitas pagas - despesas pagas
+            const monthBalance = monthIncomePaid - monthExpensePaid;
+            
+            // Calcular total de TODAS as despesas (pagas e pendentes) de todos os meses
+            const allExpensesTotal = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.value, 0);
+            
+            const monthIncomeEl = document.getElementById('monthly-income-total');
+            const monthExpenseEl = document.getElementById('monthly-expense-total');
+            const monthBalanceEl = document.getElementById('monthly-balance-total');
+            
+            if (monthIncomeEl) {
+                monthIncomeEl.textContent = formatCurrency(monthIncome);
+                monthIncomeEl.title = `Recebido: ${formatCurrency(monthIncomePaid)} | Pendente: ${formatCurrency(monthIncome - monthIncomePaid)}`;
+            }
+            if (monthExpenseEl) {
+                monthExpenseEl.textContent = formatCurrency(monthExpense);
+                monthExpenseEl.title = `Pago: ${formatCurrency(monthExpensePaid)} | Pendente: ${formatCurrency(monthExpense - monthExpensePaid)}`;
+            }
+            if (monthBalanceEl) {
+                monthBalanceEl.textContent = formatCurrency(monthBalance);
+                monthBalanceEl.style.color = monthBalance >= 0 ? 'var(--success)' : 'var(--danger)';
+            }
+            
+            const allExpensesEl = document.getElementById('monthly-all-expenses-total');
+            if (allExpensesEl) allExpensesEl.textContent = formatCurrency(allExpensesTotal);
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum lançamento encontrado</td></tr>';
+            } else {
+                filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                tbody.innerHTML = filtered.map(t => `
+                    <tr>
+                        <td>${formatDate(t.date)}</td>
+                        <td>${t.description}${t.isDebtPayment ? '<br><span class="badge badge-warning" style="font-size: 0.7rem;">Parcela</span>' : ''}</td>
+                        <td>${t.category}</td>
+                        <td>
+                            <span class="badge ${t.type === 'income' ? 'badge-success' : 'badge-danger'}">
+                                ${t.type === 'income' ? 'Receita' : 'Despesa'}
+                            </span>
+                        </td>
+                        <td style="color: ${t.type === 'income' ? 'var(--success)' : 'var(--danger)'}; font-weight: 600;">
+                            ${formatCurrency(t.value)}
+                        </td>
+                        <td>
+                            <span class="badge ${t.status === 'paid' ? 'badge-success' : 'badge-warning'}">
+                                ${t.status === 'paid' ? 'Pago' : 'Pendente'}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.25rem;">
+                                ${t.status === 'pending' && !t.isDebtPayment ? `<button class="btn btn-success btn-sm" onclick="payTransaction(${t.id})" style="padding: 0.375rem 0.625rem;" title="Pagar">💳</button>` : ''}
+                                ${!t.isDebtPayment ? `<button class="btn btn-outline btn-sm" onclick="editTransaction(${t.id})" style="padding: 0.375rem 0.625rem;" title="Editar">✏️</button>` : ''}
+                                <button class="btn btn-danger btn-sm" onclick="deleteTransactionFromHistory(${t.id}, ${t.isDebtPayment || false})" style="padding: 0.375rem 0.625rem;" title="Excluir">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            updateMonthlyCharts(filtered);
+        }
+
+        function deleteTransactionFromHistory(id, isDebtPayment) {
+            if (isDebtPayment) {
+                if (confirm('Esta é uma transação de pagamento de parcela. Deseja excluí-la? Isso também voltará a parcela na dívida.')) {
+                    const transaction = transactions.find(t => t.id === id);
+                    if (transaction && transaction.debtId) {
+                        const debt = debts.find(d => d.id === transaction.debtId);
+                        if (debt && debt.paid > 0) {
+                            debt.paid--;
+                            AppStorage.setItem('debts', JSON.stringify(debts));
+                        }
+                    }
+                    
+                    transactions = transactions.filter(t => t.id !== id);
+                    AppStorage.setItem('transactions', JSON.stringify(transactions));
+                    
+                    renderDebts();
+                    renderDebtsInTransactions();
+                    renderMonthlyTransactions();
+                    updateDashboard();
+                }
+            } else {
+                deleteTransaction(id);
+            }
+        }
+
+        function updateMonthlyCharts(transactions) {
+            // Gráfico de Despesas por Categoria
+            const expensesByCategory = {};
+            transactions.filter(t => t.type === 'expense').forEach(t => {
+                expensesByCategory[t.category] = (expensesByCategory[t.category] || 0) + t.value;
+            });
+            
+            const ctx1 = document.getElementById('monthlyExpenseCategoryChart');
+            if (ctx1 && Object.keys(expensesByCategory).length > 0) {
+                if (charts.monthlyExpenseCategory) charts.monthlyExpenseCategory.destroy();
+                
+                charts.monthlyExpenseCategory = new Chart(ctx1, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(expensesByCategory),
+                        datasets: [{
+                            data: Object.values(expensesByCategory),
+                            backgroundColor: [
+                                '#ef4444', '#f59e0b', '#eab308', '#84cc16',
+                                '#22c55e', '#14b8a6', '#06b6d4', '#3b82f6',
+                                '#6366f1', '#8b5cf6', '#a855f7', '#d946ef'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#94a3b8', font: { size: 11 } }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Gráfico de Receitas por Categoria
+            const incomesByCategory = {};
+            transactions.filter(t => t.type === 'income').forEach(t => {
+                incomesByCategory[t.category] = (incomesByCategory[t.category] || 0) + t.value;
+            });
+            
+            const ctx2 = document.getElementById('monthlyIncomeCategoryChart');
+            if (ctx2 && Object.keys(incomesByCategory).length > 0) {
+                if (charts.monthlyIncomeCategory) charts.monthlyIncomeCategory.destroy();
+                
+                charts.monthlyIncomeCategory = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(incomesByCategory),
+                        datasets: [{
+                            data: Object.values(incomesByCategory),
+                            backgroundColor: [
+                                '#10b981', '#14b8a6', '#06b6d4', '#3b82f6',
+                                '#6366f1', '#8b5cf6', '#a855f7', '#d946ef'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#94a3b8', font: { size: 11 } }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function filterMonthlyTransactions() {
+            renderMonthlyTransactions();
+        }
+
+        function deleteMonthlyExpense(id) {
+            if (confirm('Deseja realmente excluir esta despesa mensal?')) {
+                monthlyExpenses = monthlyExpenses.filter(exp => exp.id !== id);
+                AppStorage.setItem('monthlyExpenses', JSON.stringify(monthlyExpenses));
+                renderMonthlyTransactions();
+                updateDashboard();
+            }
+        }
+
+        // Dashboard
+        function updateDashboard() {
+            // Pegar mês selecionado ou usar mês atual
+            const dashboardMonth = document.getElementById('dashboard-filter-month')?.value || (d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'))(new Date());
+            
+            // Receita do mês: todas as receitas (pagas e pendentes) do mês selecionado
+            const monthIncome = transactions
+                .filter(t => t.type === 'income' && t.date.startsWith(dashboardMonth))
+                .reduce((sum, t) => sum + t.value, 0);
+            
+            // Receita do mês já recebida (status 'paid')
+            const monthIncomePaid = transactions
+                .filter(t => t.type === 'income' && t.date.startsWith(dashboardMonth) && t.status === 'paid')
+                .reduce((sum, t) => sum + t.value, 0);
+
+            // Despesas do mês: todas as despesas (pagas e pendentes) do mês selecionado
+            const monthExpenses = transactions
+                .filter(t => t.type === 'expense' && t.date.startsWith(dashboardMonth))
+                .reduce((sum, t) => sum + t.value, 0);
+
+            // Despesas do mês já pagas (status 'paid')
+            const monthExpensesPaid = transactions
+                .filter(t => t.type === 'expense' && t.date.startsWith(dashboardMonth) && t.status === 'paid')
+                .reduce((sum, t) => sum + t.value, 0);
+            
+            // Saldo do mês = receitas pagas - despesas pagas
+            const monthBalance = monthIncomePaid - monthExpensesPaid;
+            
+            // Contadores
+            const incomeCount = transactions.filter(t => t.type === 'income' && t.date.startsWith(dashboardMonth)).length;
+            const expenseCount = transactions.filter(t => t.type === 'expense' && t.date.startsWith(dashboardMonth)).length;
+            const investmentCount = investments.length;
+            
+            // Atualizar cards de fluxo do mês
+            // Receita do mês mostra o total (incluindo pendentes) para dar visão completa
+            document.getElementById('month-income').textContent = formatCurrency(monthIncome);
+            document.getElementById('month-expenses').textContent = formatCurrency(monthExpenses);
+            // Saldo = somente transações pagas (dinheiro efetivamente movimentado)
+            const totalBalanceEl = document.getElementById('total-balance');
+            totalBalanceEl.textContent = formatCurrency(monthBalance);
+            totalBalanceEl.style.color = monthBalance >= 0 ? 'var(--success)' : 'var(--danger)';
+            
+            // Atualizar contadores
+            document.getElementById('income-transactions').textContent = incomeCount;
+            document.getElementById('expense-transactions').textContent = expenseCount;
+            document.getElementById('investment-count').textContent = investmentCount;
+
+            // Atualizar dados de saldo e patrimônio
+            updateBalance();
+            
+            // Atualizar gráficos
+            updateIncomeExpenseChart();
+            updateCategoryChart();
+            updateAssetChart();
+            
+        }
+
+        function updateBalance() {
+            const totalIncome = transactions.filter(t => t.type === 'income' && t.status === 'paid').reduce((sum, t) => sum + t.value, 0);
+            const totalExpense = transactions.filter(t => t.type === 'expense' && t.status === 'paid').reduce((sum, t) => sum + t.value, 0);
+            const totalInvestments = investments.reduce((sum, inv) => sum + inv.current, 0);
+            const totalDebts = debts.reduce((sum, d) => {
+                const installmentValue = d.installmentValue || (d.total / d.installments);
+                const remaining = d.installments - d.paid;
+                return sum + (installmentValue * remaining);
+            }, 0);
+
+            const accountBalance = totalIncome - totalExpense;
+            const netWorth = accountBalance + totalInvestments - totalDebts;
+
+            document.getElementById('balance-account').textContent = formatCurrency(accountBalance);
+            document.getElementById('balance-investments').textContent = formatCurrency(totalInvestments);
+            document.getElementById('balance-debts').textContent = formatCurrency(totalDebts);
+            document.getElementById('balance-net').textContent = formatCurrency(netWorth);
+
+            updateBalanceEvolutionChart();
+            updateCashFlowChart();
+            updateYearComparisonChart();
+        }
+
+        // Charts
+        function updateIncomeExpenseChart() {
+            const ctx = document.getElementById('incomeExpenseChart');
+            if (!ctx) return;
+
+            const last6Months = getLast6Months();
+            const incomeData = [];
+            const expenseData = [];
+
+            last6Months.forEach(month => {
+                const income = transactions
+                    .filter(t => t.type === 'income' && t.date.startsWith(month) && t.status === 'paid')
+                    .reduce((sum, t) => sum + t.value, 0);
+                
+                const expense = transactions
+                    .filter(t => t.type === 'expense' && t.date.startsWith(month) && t.status === 'paid')
+                    .reduce((sum, t) => sum + t.value, 0);
+                
+                incomeData.push(income);
+                expenseData.push(expense);
+            });
+
+            if (charts.incomeExpense) charts.incomeExpense.destroy();
+
+            charts.incomeExpense = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: last6Months.map(m => formatMonthLabel(m)),
+                    datasets: [
+                        {
+                            label: 'Receitas',
+                            data: incomeData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Despesas',
+                            data: expenseData,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#2d3748' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#2d3748' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCategoryChart() {
+            const ctx = document.getElementById('categoryChart');
+            if (!ctx) return;
+
+            const currentMonth = (d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'))(new Date());
+            const categoryData = {};
+
+            transactions
+                .filter(t => t.type === 'expense' && t.date.startsWith(currentMonth) && t.status === 'paid')
+                .forEach(t => {
+                    categoryData[t.category] = (categoryData[t.category] || 0) + t.value;
+                });
+
+            if (charts.category) charts.category.destroy();
+
+            charts.category = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categoryData),
+                    datasets: [{
+                        data: Object.values(categoryData),
+                        backgroundColor: [
+                            '#3b82f6', '#10b981', '#f59e0b', '#ef4444', 
+                            '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAssetChart() {
+            const ctx = document.getElementById('assetChart');
+            if (!ctx) return;
+
+            const totalIncome = transactions.filter(t => t.type === 'income' && t.status === 'paid').reduce((sum, t) => sum + t.value, 0);
+            const totalExpense = transactions.filter(t => t.type === 'expense' && t.status === 'paid').reduce((sum, t) => sum + t.value, 0);
+            const totalInvestments = investments.reduce((sum, inv) => sum + inv.current, 0);
+            const accountBalance = totalIncome - totalExpense;
+
+            if (charts.asset) charts.asset.destroy();
+
+            charts.asset = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Conta Corrente', 'Investimentos'],
+                    datasets: [{
+                        data: [accountBalance, totalInvestments],
+                        backgroundColor: ['#3b82f6', '#8b5cf6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateMonthlyTrendChart() {
+            const ctx = document.getElementById('monthlyTrendChart');
+            if (!ctx) return;
+
+            const last6Months = getLast6Months();
+            const monthlyData = last6Months.map(month => {
+                return monthlyExpenses.reduce((sum, exp) => sum + exp.value, 0);
+            });
+
+            if (charts.monthlyTrend) charts.monthlyTrend.destroy();
+
+            charts.monthlyTrend = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: last6Months.map(m => formatMonthLabel(m)),
+                    datasets: [{
+                        label: 'Despesas Fixas',
+                        data: monthlyData,
+                        backgroundColor: '#ef4444'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#2d3748' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#2d3748' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateBalanceEvolutionChart() {
+            const ctx = document.getElementById('balanceEvolutionChart');
+            if (!ctx) return;
+
+            const last12Months = getLast12Months();
+            const balanceData = [];
+
+            let cumulative = 0;
+            last12Months.forEach(month => {
+                const income = transactions
+                    .filter(t => t.type === 'income' && t.date.startsWith(month) && t.status === 'paid')
+                    .reduce((sum, t) => sum + t.value, 0);
+                
+                const expense = transactions
+                    .filter(t => t.type === 'expense' && t.date.startsWith(month) && t.status === 'paid')
+                    .reduce((sum, t) => sum + t.value, 0);
+                
+                cumulative += (income - expense);
+                balanceData.push(cumulative);
+            });
+
+            if (charts.balanceEvolution) charts.balanceEvolution.destroy();
+
+            charts.balanceEvolution = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: last12Months.map(m => formatMonthLabel(m)),
+                    datasets: [{
+                        label: 'Patrimônio',
+                        data: balanceData,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#2d3748' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#2d3748' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCashFlowChart() {
+            const ctx = document.getElementById('cashFlowChart');
+            if (!ctx) return;
+
+            const currentMonth = (d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'))(new Date());
+            
+            const income = transactions
+                .filter(t => t.type === 'income' && t.date.startsWith(currentMonth) && t.status === 'paid')
+                .reduce((sum, t) => sum + t.value, 0);
+            
+            const expense = transactions
+                .filter(t => t.type === 'expense' && t.date.startsWith(currentMonth) && t.status === 'paid')
+                .reduce((sum, t) => sum + t.value, 0);
+
+            if (charts.cashFlow) charts.cashFlow.destroy();
+
+            charts.cashFlow = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Entradas', 'Saídas', 'Saldo'],
+                    datasets: [{
+                        data: [income, expense, income - expense],
+                        backgroundColor: ['#10b981', '#ef4444', '#3b82f6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#2d3748' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#2d3748' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateYearComparisonChart() {
+            const ctx = document.getElementById('yearComparisonChart');
+            if (!ctx) return;
+
+            const currentYear = new Date().getFullYear();
+            const lastYear = currentYear - 1;
+
+            const currentYearIncome = transactions
+                .filter(t => t.type === 'income' && t.date.startsWith(currentYear.toString()) && t.status === 'paid')
+                .reduce((sum, t) => sum + t.value, 0);
+            
+            const lastYearIncome = transactions
+                .filter(t => t.type === 'income' && t.date.startsWith(lastYear.toString()) && t.status === 'paid')
+                .reduce((sum, t) => sum + t.value, 0);
+
+            if (charts.yearComparison) charts.yearComparison.destroy();
+
+            charts.yearComparison = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [lastYear.toString(), currentYear.toString()],
+                    datasets: [{
+                        label: 'Receitas Anuais',
+                        data: [lastYearIncome, currentYearIncome],
+                        backgroundColor: '#10b981'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#2d3748' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: '#2d3748' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Utilities
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            return date.toLocaleDateString('pt-BR');
+        }
+
+        function formatMonthLabel(monthString) {
+            const [year, month] = monthString.split('-');
+            const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            return `${months[parseInt(month) - 1]}/${year}`;
+        }
+
+        function getLast6Months() {
+            const months = [];
+            const today = new Date();
+            
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                const monthStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+                months.push(monthStr);
+            }
+            
+            return months;
+        }
+
+        function getLast12Months() {
+            const months = [];
+            const today = new Date();
+            
+            for (let i = 11; i >= 0; i--) {
+                const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+                const monthStr = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+                months.push(monthStr);
+            }
+            
+            return months;
+        }
+
+        function exportData() {
+            const data = {
+                transactions,
+                investments,
+                debts,
+                monthlyExpenses,
+                categories,
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `financas_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+
+        function openImportModal() {
+            document.getElementById('import-preview').style.display = 'none';
+            document.getElementById('import-confirm-btn').style.display = 'none';
+            document.getElementById('import-file-input').value = '';
+            document.getElementById('import-drop-zone').style.borderColor = 'var(--border)';
+            document.getElementById('import-drop-zone').style.background = 'none';
+            window._importData = null;
+            document.getElementById('importModal').classList.add('show');
+        }
+
+        function handleImportDrop(event) {
+            event.preventDefault();
+            const zone = document.getElementById('import-drop-zone');
+            zone.style.borderColor = 'var(--border)';
+            zone.style.background = 'none';
+            const file = event.dataTransfer.files[0];
+            if (file) processImportFile(file);
+        }
+
+        function handleImportFile(input) {
+            const file = input.files[0];
+            if (file) processImportFile(file);
+        }
+
+        function processImportFile(file) {
+            if (!file.name.endsWith('.json')) {
+                alert('Por favor selecione um arquivo .json válido.');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    const required = ['transactions', 'investments', 'debts', 'monthlyExpenses'];
+                    const hasAll = required.every(k => Array.isArray(data[k]));
+                    if (!hasAll) {
+                        alert('Arquivo inválido: formato não reconhecido.');
+                        return;
+                    }
+                    window._importData = data;
+                    const preview = document.getElementById('import-preview');
+                    const dateStr = data.exportDate
+                        ? new Date(data.exportDate).toLocaleString('pt-BR')
+                        : 'Desconhecida';
+                    preview.innerHTML = `
+                        <div style="font-weight:600; margin-bottom:0.5rem; color:var(--text-primary);">📋 Dados encontrados no arquivo:</div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; color:var(--text-secondary);">
+                            <span>💰 Transações</span><strong style="color:var(--text-primary)">${data.transactions.length}</strong>
+                            <span>📈 Investimentos</span><strong style="color:var(--text-primary)">${data.investments.length}</strong>
+                            <span>🏦 Dívidas</span><strong style="color:var(--text-primary)">${data.debts.length}</strong>
+                            <span>📅 Despesas fixas</span><strong style="color:var(--text-primary)">${data.monthlyExpenses.length}</strong>
+                            <span>📆 Exportado em</span><strong style="color:var(--text-primary); grid-column:span 1">${dateStr}</strong>
+                        </div>
+                        <div style="margin-top:0.75rem; padding:0.6rem 0.75rem; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); border-radius:6px; color:var(--warning); font-size:0.8rem;">
+                            ⚠️ Os dados serão <strong>mesclados</strong> com os existentes (IDs duplicados serão substituídos).
+                        </div>
+                    `;
+                    preview.style.display = 'block';
+                    document.getElementById('import-confirm-btn').style.display = 'block';
+                } catch(err) {
+                    alert('Erro ao ler o arquivo. Verifique se é um JSON válido.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function confirmImport() {
+            const data = window._importData;
+            if (!data) return;
+
+            // Merge — replace by id, append new
+            function mergeById(existing, incoming) {
+                const map = {};
+                existing.forEach(item => { if (item.id) map[item.id] = item; });
+                incoming.forEach(item => { if (item.id) map[item.id] = item; });
+                return Object.values(map);
+            }
+
+            transactions    = mergeById(transactions, data.transactions);
+            investments     = mergeById(investments,  data.investments);
+            debts           = mergeById(debts,         data.debts);
+            monthlyExpenses = mergeById(monthlyExpenses, data.monthlyExpenses);
+
+            if (data.categories) categories = data.categories;
+            if (data.banks)      banks = data.banks;
+
+            // Normalise status
+            transactions = transactions.map(t => ({ ...t, status: t.status || 'paid' }));
+
+            // Persist
+            AppStorage.setItem('transactions',    JSON.stringify(transactions));
+            AppStorage.setItem('investments',     JSON.stringify(investments));
+            AppStorage.setItem('debts',           JSON.stringify(debts));
+            AppStorage.setItem('monthlyExpenses', JSON.stringify(monthlyExpenses));
+            AppStorage.setItem('categories',      JSON.stringify(categories));
+            AppStorage.setItem('banks',           JSON.stringify(banks));
+
+            closeModal('importModal');
+            // Refresh everything
+            populateBankSelects();
+            populateMonthFilters();
+            populateCategoryFilters();
+            updateTransactionForm();
+            updateInvestmentCategories();
+            updateDebtCategories();
+            updateMonthlyCategories();
+            updateDashboard();
+            renderInvestments();
+            renderDebts();
+            renderDebtsInTransactions();
+            renderMonthlyTransactions();
+            renderCategories();
+            renderPortfolio();
+
+            alert(`✅ Importação concluída!\n\n• ${data.transactions.length} transações\n• ${data.investments.length} investimentos\n• ${data.debts.length} dívidas\n• ${data.monthlyExpenses.length} despesas fixas`);
+        }
+
+        // Close modals on outside click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        });
+
+        // Service Worker Registration (skip for Artifact context)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => console.log('SW registered:', registration))
+                    .catch(err => console.log('SW registration failed:', err));
+            });
+        }
+
+        // Install button (PWA)
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallBanner();
+        });
+
+        function showInstallBanner() {
+            if (document.getElementById('pwa-install-banner')) return;
+            const banner = document.createElement('div');
+            banner.id = 'pwa-install-banner';
+            banner.innerHTML = `
+                <div style="display:flex;align-items:center;gap:1rem;">
+                    <span style="font-size:1.5rem;">📱</span>
+                    <div>
+                        <div style="font-weight:700;font-size:0.9rem;">Instalar Painel Financeiro</div>
+                        <div style="font-size:0.78rem;color:#ccc;">Acesse como app — funciona offline!</div>
+                    </div>
+                    <button id="pwa-install-btn" style="margin-left:auto;background:linear-gradient(135deg,#ff6b35,#ff8555);color:#fff;border:none;padding:0.5rem 1.1rem;border-radius:8px;font-weight:700;cursor:pointer;white-space:nowrap;">Instalar</button>
+                    <button id="pwa-dismiss-btn" style="background:none;border:none;color:#aaa;font-size:1.2rem;cursor:pointer;padding:0 0.25rem;">✕</button>
+                </div>`;
+            banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#1f1f1f;border-top:1px solid #2a2a2a;padding:1rem 1.5rem;z-index:9999;box-shadow:0 -4px 20px rgba(0,0,0,0.5);animation:slideUp 0.3s ease;';
+            document.head.insertAdjacentHTML('beforeend', '<style>@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}</style>');
+            document.body.appendChild(banner);
+            document.getElementById('pwa-install-btn').onclick = async () => {
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                banner.remove();
+                deferredPrompt = null;
+                if (outcome === 'accepted') {
+                    setTimeout(() => alert('✅ App instalado com sucesso! Procure pelo ícone "Painel Financeiro" na sua tela inicial.'), 1000);
+                }
+            };
+            document.getElementById('pwa-dismiss-btn').onclick = () => {
+                banner.remove();
+                localStorage.setItem('pwa-banner-dismissed', Date.now());
+            };
+        }
+
+        // Detect if already installed
+        window.addEventListener('appinstalled', () => {
+            const banner = document.getElementById('pwa-install-banner');
+            if (banner) banner.remove();
+            console.log('[PWA] App instalado com sucesso!');
+        });
+
+
+    </script>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav id="mobile-bottom-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #2a2a2a;z-index:500;padding:0.25rem 0;padding-bottom:env(safe-area-inset-bottom,0);">
+        <div style="display:flex;justify-content:space-around;align-items:center;">
+            <div onclick="switchPage('dashboard')" class="mob-nav-btn active" data-page="dashboard" style="flex:1;display:flex;flex-direction:column;align-items:center;padding:0.5rem 0;cursor:pointer;color:#9ca3af;gap:2px;">
+                <span style="font-size:1.3rem;">📊</span>
+                <span style="font-size:0.6rem;font-weight:600;">Dashboard</span>
+            </div>
+            <div onclick="switchPage('monthly')" class="mob-nav-btn" data-page="monthly" style="flex:1;display:flex;flex-direction:column;align-items:center;padding:0.5rem 0;cursor:pointer;color:#9ca3af;gap:2px;">
+                <span style="font-size:1.3rem;">📅</span>
+                <span style="font-size:0.6rem;font-weight:600;">Lançamentos</span>
+            </div>
+            <div onclick="openTransactionModal()" style="flex:1;display:flex;flex-direction:column;align-items:center;padding:0.5rem 0;cursor:pointer;color:#ff6b35;gap:2px;">
+                <span style="font-size:1.6rem;line-height:1;">➕</span>
+                <span style="font-size:0.6rem;font-weight:700;color:#ff6b35;">Nova</span>
+            </div>
+            <div onclick="switchPage('debts')" class="mob-nav-btn" data-page="debts" style="flex:1;display:flex;flex-direction:column;align-items:center;padding:0.5rem 0;cursor:pointer;color:#9ca3af;gap:2px;">
+                <span style="font-size:1.3rem;">🏦</span>
+                <span style="font-size:0.6rem;font-weight:600;">Dívidas</span>
+            </div>
+            <div onclick="switchPage('investments')" class="mob-nav-btn" data-page="investments" style="flex:1;display:flex;flex-direction:column;align-items:center;padding:0.5rem 0;cursor:pointer;color:#9ca3af;gap:2px;">
+                <span style="font-size:1.3rem;">📈</span>
+                <span style="font-size:0.6rem;font-weight:600;">Investimentos</span>
+            </div>
+        </div>
+    </nav>
+    <style>
+        .mob-nav-btn.active { color: #ff6b35 !important; }
+        @media (max-width: 768px) {
+            #mobile-bottom-nav { display: block !important; }
+            .sidebar { display: none !important; }
+            .main-content { margin-left: 0 !important; padding: 1rem !important; padding-bottom: 80px !important; }
+        }
+    </style>
+    <script>
+        // Sync mobile bottom nav with page switches
+        const _origSwitchPage = switchPage;
+        // Override after init
+        document.addEventListener('DOMContentLoaded', () => {
+            const origSwitch = window.switchPage;
+            window.switchPage = function(pageName) {
+                origSwitch(pageName);
+                document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.page === pageName);
+                    btn.style.color = btn.dataset.page === pageName ? '#ff6b35' : '#9ca3af';
+                });
+            };
+        });
+    </script>
+
+</body>
+</html>
