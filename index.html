@@ -659,16 +659,19 @@
 
         @media (max-width: 768px) {
 
-            /* ══ MOBILE PALETTE — azul vibrante ══ */
+            /* ══ PALETA MOBILE — escuro sofisticado ══ */
             :root {
-                --mob-blue:       #1a73e8;
-                --mob-blue-dark:  #1557b0;
-                --mob-blue-light: #4a9eff;
-                --mob-bg:         #f0f4f8;
-                --mob-card:       #ffffff;
-                --mob-card-border:rgba(0,0,0,0.08);
-                --mob-text:       #1a1a2e;
-                --mob-text-sub:   #64748b;
+                --mob-blue:       #2563eb;
+                --mob-blue-dark:  #1d4ed8;
+                --mob-blue-light: #60a5fa;
+                --mob-bg:         #0f1117;
+                --mob-bg2:        #161b27;
+                --mob-card:       #1e2533;
+                --mob-card2:      #242d3d;
+                --mob-border:     rgba(255,255,255,0.08);
+                --mob-text:       #f1f5f9;
+                --mob-text-sub:   #94a3b8;
+                --mob-text-muted: #475569;
             }
 
             /* ══ BASE ══ */
@@ -676,7 +679,7 @@
             body { flex-direction: column; overflow: hidden; background: var(--mob-bg); }
             .sidebar { display: none !important; }
 
-            /* ── Trilho horizontal de páginas ── */
+            /* ── main-content = trilho horizontal de páginas ── */
             .main-content {
                 margin-left: 0 !important;
                 padding: 0 !important;
@@ -686,25 +689,23 @@
                 position: relative;
             }
 
+            /* ── Cada .page = slide horizontal FLEXBOX VERTICAL ── */
             .page {
-                display: block !important;
+                display: flex !important;
+                flex-direction: column;
                 position: absolute;
                 top: 0; left: 0;
                 width: 100%; height: 100%;
-                overflow-y: auto;
-                overflow-x: hidden;
-                -webkit-overflow-scrolling: touch;
-                padding: 0;
+                overflow: hidden;
                 box-sizing: border-box;
                 transform: translateX(100%);
-                transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+                transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
                 will-change: transform;
                 background: var(--mob-bg);
             }
             .page.active { transform: translateX(0%); }
-            .page::-webkit-scrollbar { display: none; }
 
-            /* ── Oculta tudo desktop dentro das pages ── */
+            /* ── Esconde conteúdo desktop ── */
             .page > .page-header,
             .page .stats-grid,
             .page .chart-grid,
@@ -722,85 +723,74 @@
             .page [style*="margin-top: 1.5rem"],
             .page [style*="margin-top: 3rem"] { display: none !important; }
 
-            /* ══ CABEÇALHO STICKY — azul vibrante ══ */
+            /* ══ CABEÇALHO — fixo no topo da .page ══ */
             .mob-page-header {
                 display: flex !important;
                 align-items: center;
                 justify-content: space-between;
-                padding: 0.85rem 1rem 0.75rem;
-                position: sticky;
-                top: 0; z-index: 20;
-                background: linear-gradient(135deg, var(--mob-blue-dark) 0%, var(--mob-blue) 100%);
-                box-shadow: 0 2px 12px rgba(26,115,232,0.35);
+                padding: 0.8rem 1rem;
+                flex-shrink: 0;
+                background: linear-gradient(135deg, var(--mob-blue-dark), var(--mob-blue));
+                box-shadow: 0 2px 16px rgba(37,99,235,0.4);
+                z-index: 10;
             }
             .mob-page-title {
-                font-size: 1.05rem;
+                font-size: 1rem;
                 font-weight: 700;
                 color: #fff;
-                letter-spacing: 0.1px;
                 flex: 1;
                 text-align: center;
+                letter-spacing: 0.1px;
             }
-            .mob-page-actions { display: flex; gap: 0.45rem; align-items: center; }
-            /* Botão voltar */
+            .mob-page-actions { display: flex; gap: 0.4rem; align-items: center; }
             .mob-back-btn {
-                width: 34px; height: 34px;
+                width: 32px; height: 32px;
                 display: flex; align-items: center; justify-content: center;
-                background: rgba(255,255,255,0.15);
-                border: none;
-                border-radius: 10px;
+                background: rgba(255,255,255,0.18);
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 9px;
                 color: #fff;
-                font-size: 1.1rem;
+                font-size: 1rem;
                 cursor: pointer;
-                -webkit-tap-highlight-color: transparent;
                 flex-shrink: 0;
+                -webkit-tap-highlight-color: transparent;
             }
-            .mob-back-btn:active { background: rgba(255,255,255,0.25); }
-            /* Placeholder para alinhar título ao centro quando há ação direita */
-            .mob-header-spacer { width: 34px; flex-shrink: 0; }
+            .mob-back-btn:active { background: rgba(255,255,255,0.3); }
+            .mob-header-spacer { width: 32px; flex-shrink: 0; }
 
-            /* ══ SUB-NAV — tabs Material azul ══ */
+            /* ══ SUB-NAV ══ */
             .mob-subnav {
                 display: flex !important;
                 overflow-x: auto;
+                flex-shrink: 0;
                 background: var(--mob-blue);
-                -webkit-overflow-scrolling: touch;
                 scrollbar-width: none;
                 padding: 0 0.5rem;
-                gap: 0;
-                position: sticky;
-                top: 55px; z-index: 19;
-                box-shadow: 0 2px 8px rgba(26,115,232,0.3);
             }
             .mob-subnav::-webkit-scrollbar { display: none; }
             .mob-subnav-tab {
                 flex: 0 0 auto;
-                padding: 0.65rem 1rem;
-                font-size: 0.73rem;
+                padding: 0.6rem 1rem;
+                font-size: 0.65rem;
                 font-weight: 700;
-                color: rgba(255,255,255,0.65);
+                color: rgba(255,255,255,0.6);
                 cursor: pointer;
                 white-space: nowrap;
-                border-bottom: 2.5px solid transparent;
-                transition: all 0.18s;
-                -webkit-tap-highlight-color: transparent;
-                letter-spacing: 0.3px;
+                border-bottom: 2px solid transparent;
                 text-transform: uppercase;
-                font-size: 0.65rem;
+                letter-spacing: 0.4px;
+                -webkit-tap-highlight-color: transparent;
+                transition: color 0.15s, border-color 0.15s;
             }
-            .mob-subnav-tab.active {
-                color: #fff;
-                border-bottom-color: #fff;
-            }
+            .mob-subnav-tab.active { color: #fff; border-bottom-color: #fff; }
 
-            /* ══ CONTAINER DAS SUB-PÁGINAS ══ */
+            /* ══ CONTAINER DE SUB-PÁGINAS — flex: 1 para ocupar espaço restante ══ */
             .mob-subpages {
-                display: block !important;
+                display: flex !important;
+                flex: 1;
                 position: relative;
-                width: 100%;
                 overflow: hidden;
-                /* altura = tela − barra inferior − header − subnav */
-                height: calc(100vh - 64px - env(safe-area-inset-bottom,0px) - 51px - 39px);
+                min-height: 0;
             }
             .mob-subpage {
                 position: absolute;
@@ -809,22 +799,23 @@
                 overflow-y: auto;
                 overflow-x: hidden;
                 -webkit-overflow-scrolling: touch;
-                padding: 0.85rem 0.85rem 1.5rem;
+                padding: 0.85rem 0.9rem 5rem;
                 box-sizing: border-box;
                 background: var(--mob-bg);
-                transform: translateX(100%);
-                transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+                transform: translateX(110%);
+                /* garante q o conteúdo não fica atrás da bottom nav */
+                transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
                 will-change: transform;
             }
             .mob-subpage::-webkit-scrollbar { display: none; }
             .mob-subpage.active { transform: translateX(0%); }
-            .mob-subpage.prev   { transform: translateX(-100%); }
+            .mob-subpage.prev   { transform: translateX(-110%); }
 
             /* ══════════════════════════════════════════════
                HERO CARD — estilo card branco com destaque azul
                ══════════════════════════════════════════════ */
             .mob-hero-card {
-                background: linear-gradient(135deg, var(--mob-blue-dark) 0%, var(--mob-blue) 60%, var(--mob-blue-light) 100%);
+                background: linear-gradient(135deg, #1e3a8a 0%, var(--mob-blue-dark) 50%, var(--mob-blue) 100%);
                 border: none;
                 border-radius: 20px;
                 padding: 1.6rem 1.4rem 1.4rem;
@@ -920,12 +911,12 @@
             }
             .mob-mini-card {
                 background: var(--mob-card);
-                border: 1px solid var(--mob-card-border);
-                border-radius: 16px;
-                padding: 1rem 0.95rem;
+                border: 1px solid var(--mob-border);
+                border-radius: 14px;
+                padding: 0.9rem 0.85rem;
                 position: relative;
                 overflow: hidden;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                box-shadow: 0 2px 12px rgba(0,0,0,0.3);
             }
             .mob-mini-card::before {
                 content: '';
@@ -945,18 +936,18 @@
                 text-transform: uppercase;
                 letter-spacing: 0.8px;
                 color: var(--mob-text-sub);
-                margin-bottom: 0.35rem;
+                margin-bottom: 0.3rem;
             }
             .mob-mini-value {
-                font-size: 1.1rem;
+                font-size: 1.05rem;
                 font-weight: 800;
                 line-height: 1.2;
-                letter-spacing: -0.5px;
+                letter-spacing: -0.3px;
                 color: var(--mob-text);
             }
             .mob-mini-change {
-                font-size: 0.62rem;
-                margin-top: 0.25rem;
+                font-size: 0.61rem;
+                margin-top: 0.18rem;
                 color: var(--mob-text-sub);
             }           .mob-chart-card {
                 background: var(--mob-card);
@@ -964,11 +955,11 @@
                 border-radius: 16px;
                 padding: 1.2rem 1.1rem 1.1rem;
                 margin-bottom: 0.8rem;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                box-shadow: 0 2px 12px rgba(0,0,0,0.3);
             }
             .mob-chart-title {
-                font-size: 0.7rem;
-                font-weight: 800;
+                font-size: 0.68rem;
+                font-weight: 700;
                 color: var(--mob-text-sub);
                 margin-bottom: 1rem;
                 display: flex;
@@ -988,13 +979,13 @@
                 display: flex;
                 align-items: center;
                 gap: 0.8rem;
-                padding: 0.9rem 1rem;
+                padding: 0.85rem 0.9rem;
                 background: var(--mob-card);
-                border: 1px solid var(--mob-card-border);
+                border: 1px solid var(--mob-border);
                 border-radius: 14px;
-                margin-bottom: 0.5rem;
+                margin-bottom: 0.45rem;
                 -webkit-tap-highlight-color: transparent;
-                box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+                box-shadow: 0 2px 10px rgba(0,0,0,0.25);
             }
             .mob-tx-icon {
                 width: 42px; height: 42px;
@@ -1004,8 +995,8 @@
                 flex-shrink: 0;
             }
             .mob-tx-info  { flex: 1; min-width: 0; }
-            .mob-tx-desc  { font-size: 0.87rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--mob-text); }
-            .mob-tx-cat   { font-size: 0.64rem; color: var(--mob-text-sub); margin-top: 3px; }
+            .mob-tx-desc  { font-size: 0.86rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--mob-text); }
+            .mob-tx-cat   { font-size: 0.63rem; color: var(--mob-text-sub); margin-top: 2px; }
             .mob-tx-right { text-align: right; flex-shrink: 0; }
             .mob-tx-value { font-size: 0.93rem; font-weight: 800; }
             .mob-tx-date  { font-size: 0.61rem; color: var(--mob-text-sub); margin-top: 3px; }
@@ -1013,29 +1004,29 @@
             /* ══ CARDS DE DÍVIDA / INVESTIMENTO — branco ══ */
             .mob-debt-card {
                 background: var(--mob-card);
-                border: 1px solid var(--mob-card-border);
-                border-radius: 16px;
-                padding: 1.2rem 1.1rem;
-                margin-bottom: 0.8rem;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+                border: 1px solid var(--mob-border);
+                border-radius: 14px;
+                padding: 1.1rem 1rem;
+                margin-bottom: 0.65rem;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.3);
             }
             .mob-debt-header       { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.85rem; }
-            .mob-debt-name         { font-size: 1rem; font-weight: 800; color: var(--mob-text); letter-spacing: -0.3px; }
+            .mob-debt-name         { font-size: 0.95rem; font-weight: 700; color: var(--mob-text); letter-spacing: -0.2px; }
             .mob-debt-bank         { font-size: 0.65rem; color: var(--mob-text-sub); margin-top: 4px; }
             .mob-debt-badge        { font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.65rem; border-radius: 10px; }
             .mob-debt-stats        { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.6rem; margin-bottom: 0.85rem; }
             .mob-debt-stat-label   { font-size: 0.6rem; color: var(--mob-text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
             .mob-debt-stat-value   { font-size: 0.95rem; font-weight: 800; margin-top: 3px; letter-spacing: -0.3px; }
-            .mob-progress          { height: 7px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+            .mob-progress          { height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
             .mob-progress-bar      { height: 100%; background: linear-gradient(90deg,#ff6b35,#8b5cf6); border-radius: 4px; transition: width 0.5s ease; }
 
             /* ══ SEÇÃO LABEL ══ */
             .mob-section-label {
-                font-size: 0.65rem;
-                font-weight: 800;
+                font-size: 0.63rem;
+                font-weight: 700;
                 text-transform: uppercase;
-                letter-spacing: 1.2px;
-                color: var(--mob-text-sub);
+                letter-spacing: 1px;
+                color: var(--mob-text-muted);
                 padding: 0.6rem 0 0.4rem;
                 margin-bottom: 0.5rem;
                 border-bottom: 1px solid rgba(30,30,30,0.8);
@@ -1056,22 +1047,21 @@
                 flex: 0 0 auto;
                 padding: 0.38rem 0.9rem;
                 background: var(--mob-card);
-                border: 1px solid var(--mob-card-border);
+                border: 1px solid var(--mob-border);
                 border-radius: 20px;
-                font-size: 0.73rem;
-                font-weight: 700;
+                font-size: 0.71rem;
+                font-weight: 600;
                 color: var(--mob-text-sub);
                 cursor: pointer;
                 white-space: nowrap;
                 -webkit-tap-highlight-color: transparent;
                 transition: all 0.15s;
-                box-shadow: 0 1px 4px rgba(0,0,0,0.06);
             }
             .mob-filter-chip.active {
                 background: var(--mob-blue);
                 border-color: var(--mob-blue);
                 color: #fff;
-                box-shadow: 0 2px 8px rgba(26,115,232,0.3);
+                box-shadow: 0 2px 10px rgba(37,99,235,0.4);
             }
 
             /* ══ MODAL ══ */
@@ -1291,10 +1281,10 @@
                 <div class="mob-header-spacer"></div>
                 <span class="mob-page-title">Dashboard</span>
                 <div class="mob-page-actions">
-                    <select class="filter-select" id="dashboard-filter-month-mob" onchange="document.getElementById('dashboard-filter-month').value=this.value;filterDashboard();" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:var(--bg-card);border-color:var(--border);">
+                    <select class="filter-select" id="dashboard-filter-month-mob" onchange="document.getElementById('dashboard-filter-month').value=this.value;filterDashboard();" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;">
                         <option value="">Mês Atual</option>
                     </select>
-                    <button onclick="refreshDashboard()" id="mob-refresh-btn" style="background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:9px;padding:0.28rem 0.65rem;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:0.3rem;" title="Atualizar">
+                    <button onclick="refreshDashboard()" id="mob-refresh-btn" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:8px;padding:0.3rem 0.6rem;font-size:0.85rem;font-weight:700;cursor:pointer;" title="Atualizar">
                         <span id="mob-refresh-icon" style="display:inline-block;transition:transform 0.5s;">↻</span>
                     </button>
                 </div>
@@ -1659,9 +1649,8 @@
                 <button class="mob-back-btn" onclick="goToPage('dashboard')">←</button>
                 <span class="mob-page-title">Lançamentos</span>
                 <div class="mob-page-actions">
-                    <select id="monthly-filter-month-mob" class="filter-select" onchange="document.getElementById('monthly-filter-month').value=this.value;filterMonthlyTransactions();renderMobMonthlyList();setTimeout(()=>{initMobChart_MonthlyExpCat();initMobChart_MonthlyIncCat();},80);" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:var(--bg-card);border-color:var(--border);"><option value="">Todos os meses</option></select>
+                    <select id="monthly-filter-month-mob" class="filter-select" onchange="document.getElementById('monthly-filter-month').value=this.value;filterMonthlyTransactions();renderMobMonthlyList();setTimeout(()=>{initMobChart_MonthlyExpCat();initMobChart_MonthlyIncCat();},80);" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);color:#fff;"><option value="">Todos os meses</option></select>
                 </div>
-            </div>
             </div>
             <div class="mob-subnav" id="monthly-subnav">
                 <div class="mob-subnav-tab active" onclick="mobSubSwitch('monthly-subnav','monthly-subpages',this,'monthly-list')">Lançamentos</div>
@@ -5362,8 +5351,8 @@
             display: none;
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background: #ffffff;
-            border-top: 1px solid rgba(0,0,0,0.1);
+            background: #0f1117;
+            border-top: 1px solid rgba(255,255,255,0.08);
             z-index: 600;
             padding-bottom: env(safe-area-inset-bottom, 0px);
             backdrop-filter: blur(24px);
@@ -5386,8 +5375,8 @@
             align-items: center;
             height: 0;
             overflow: hidden;
-            background: #f8fafc;
-            border-top: 1px solid rgba(0,0,0,0.06);
+            background: #161b27;
+            border-top: 1px solid rgba(255,255,255,0.06);
             transition: height 0.28s cubic-bezier(0.4,0,0.2,1);
         }
         #mob-actions-row.open { height: 56px; }
@@ -5400,7 +5389,7 @@
             justify-content: center;
             padding: 0.4rem 0;
             cursor: pointer;
-            color: #94a3b8;
+            color: #475569;
             gap: 3px;
             transition: color 0.15s;
             -webkit-tap-highlight-color: transparent;
@@ -5445,7 +5434,7 @@
             justify-content: center;
             padding: 0.4rem 0;
             cursor: pointer;
-            color: #64748b;
+            color: #475569;
             gap: 3px;
             -webkit-tap-highlight-color: transparent;
             transition: color 0.15s;
