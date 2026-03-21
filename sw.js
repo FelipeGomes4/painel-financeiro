@@ -1,159 +1,100 @@
-// Service Worker - Painel Financeiro PWA
+// ── Painel Financeiro — Service Worker ──────────────────────────────────────
 const CACHE_NAME = 'painel-financeiro-v1';
-const STATIC_CACHE = 'static-v1';
-
-// Recursos para cache offline
-const ASSETS_TO_CACHE = [
+const CACHE_URLS = [
   './',
   './index.html',
   './manifest.json',
+  './icon.svg',
   './icon-192.png',
   './icon-512.png',
+  // CDN resources cached on first load
   'https://cdn.jsdelivr.net/npm/chart.js',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap'
+  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap',
 ];
 
-// Instalação: pré-cacheia os recursos essenciais
+// ── Install: pre-cache shell ─────────────────────────────────────────────────
 self.addEventListener('install', (event) => {
-  console.log('[SW] Instalando...');
+  console.log('[SW] Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Cacheando recursos essenciais');
-      // Cache com tolerância a falhas para recursos externos
-      return Promise.allSettled(
-        ASSETS_TO_CACHE.map(url =>
-          cache.add(url).catch(err => {
-            console.warn('[SW] Não foi possível cachear:', url, err);
-          })
-        )
-      );
-    }).then(() => {
-      console.log('[SW] Instalação concluída');
-      return self.skipWaiting();
-    })
+      // Cache local files immediately; CDN files best-effort
+      return cache.addAll(['./index.html', './manifest.json'])
+        .then(() => {
+          // Try CDN files individually — don't fail install if they miss
+          const cdnUrls = CACHE_URLS.filter(u => u.startsWith('https://'));
+          return Promise.allSettled(cdnUrls.map(url =>
+            fetch(url).then(res => cache.put(url, res)).catch(() => {})
+          ));
+        });
+    }).then(() => self.skipWaiting())
   );
 });
 
-// Ativação: remove caches antigos
+// ── Activate: clean old caches ───────────────────────────────────────────────
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Ativando...');
+  console.log('[SW] Activating...');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter(name => name !== CACHE_NAME && name !== STATIC_CACHE)
-          .map(name => {
-            console.log('[SW] Removendo cache antigo:', name);
-            return caches.delete(name);
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter((key) => key !== CACHE_NAME)
+          .map((key) => {
+            console.log('[SW] Deleting old cache:', key);
+            return caches.delete(key);
           })
-      );
-    }).then(() => {
-      console.log('[SW] Ativação concluída');
-      return self.clients.claim();
-    })
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-// Fetch: estratégia Cache First com fallback para rede
+// ── Fetch: Cache First for assets, Network First for pages ───────────────────
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Ignora requisições não-GET
-  if (request.method !== 'GET') return;
+  // Skip non-GET requests and chrome-extension requests
+  if (request.method !== 'GET' || url.protocol === 'chrome-extension:') return;
 
-  // Estratégia: Network First para navegação, Cache First para assets
+  // For navigation requests (HTML pages): Network First, fallback to cache
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
-        .then(response => {
-          // Atualiza cache com versão mais recente
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(request, responseClone);
-          });
+        .then((response) => {
+          // Update cache with fresh page
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
           return response;
         })
-        .catch(() => {
-          // Offline: retorna página cacheada
-          return caches.match('./index.html') || caches.match('./');
-        })
+        .catch(() => caches.match('./index.html'))
     );
     return;
   }
 
-  // Cache First para todos os outros recursos
+  // For all other requests: Cache First, fallback to network
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Atualiza cache em background (stale-while-revalidate)
-        const fetchPromise = fetch(request).then(networkResponse => {
-          if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(request, networkResponse.clone());
-            });
-          }
-          return networkResponse;
-        }).catch(() => {});
-        
-        return cachedResponse;
-      }
-
-      // Não está no cache: busca na rede e armazena
-      return fetch(request).then(response => {
-        if (!response || response.status !== 200 || response.type === 'opaque') {
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+      return fetch(request).then((response) => {
+        // Only cache successful responses
+        if (!response || response.status !== 200 || response.type === 'error') {
           return response;
         }
-
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(request, responseToCache);
-        });
-
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
         return response;
-      }).catch(err => {
-        console.warn('[SW] Falha ao buscar:', request.url, err);
-        // Retorna resposta offline genérica para imagens
+      }).catch(() => {
+        // If both cache and network fail, return a minimal offline response
         if (request.destination === 'image') {
-          return new Response(
-            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💰</text></svg>',
-            { headers: { 'Content-Type': 'image/svg+xml' } }
-          );
+          return new Response('<svg xmlns="http://www.w3.org/2000/svg"/>', {
+            headers: { 'Content-Type': 'image/svg+xml' }
+          });
         }
       });
     })
   );
 });
 
-// Sincronização em background (quando voltar online)
+// ── Background Sync (future-proof) ───────────────────────────────────────────
 self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-data') {
-    console.log('[SW] Sincronizando dados...');
-  }
+  console.log('[SW] Background sync:', event.tag);
 });
-
-// Notificações push (para alertas futuros)
-self.addEventListener('push', (event) => {
-  if (event.data) {
-    const data = event.data.json();
-    const options = {
-      body: data.body,
-      icon: './icon-192.png',
-      badge: './icon-72.png',
-      vibrate: [100, 50, 100],
-      data: { url: data.url || './' }
-    };
-    event.waitUntil(
-      self.registration.showNotification(data.title || 'Painel Financeiro', options)
-    );
-  }
-});
-
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url || './')
-  );
-});
-
-console.log('[SW] Service Worker carregado - Painel Financeiro PWA');
