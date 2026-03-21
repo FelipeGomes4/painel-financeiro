@@ -2502,9 +2502,16 @@
         function switchPage(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            document.getElementById(pageId).classList.add('active');
-            event.target.closest('.nav-item').classList.add('active');
+
+            const pageEl = document.getElementById(pageId);
+            if (!pageEl) return;
+            pageEl.classList.add('active');
+
+            // Marca nav-item desktop só se chamado via clique no sidebar
+            try {
+                const navEl = event && event.target && event.target.closest('.nav-item');
+                if (navEl) navEl.classList.add('active');
+            } catch(e) {}
 
             if (pageId === 'dashboard') updateDashboard();
             if (pageId === 'monthly') renderMonthlyTransactions();
