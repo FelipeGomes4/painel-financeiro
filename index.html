@@ -551,136 +551,443 @@
             gap: 0.5rem;
         }
 
-        /* ===== MOBILE RESPONSIVE — scroll horizontal entre páginas ===== */
+        /* ══════════════════════════════════════════════════════════════
+           MOBILE DESIGN v3 — Full-screen, imersivo, dashboard ampliado
+           ══════════════════════════════════════════════════════════════ */
+
+        /* ── Elementos mobile: ocultos por padrão no desktop ── */
+        .mob-page-header, .mob-subnav, .mob-subpages { display: none; }
+
         @media (max-width: 768px) {
 
-            /* Base: body ocupa tela toda sem overflow */
-            html { height: 100%; overflow: hidden; }
-            body {
-                height: 100%;
-                overflow: hidden;
-                flex-direction: column;
-            }
-
-            /* Esconde sidebar desktop */
+            /* ══ BASE ══ */
+            html, body { height: 100%; overflow: hidden; }
+            body { flex-direction: column; overflow: hidden; background: #080808; }
             .sidebar { display: none !important; }
 
-            /* main-content vira o trilho horizontal */
+            /* ── Trilho horizontal de páginas ── */
             .main-content {
                 margin-left: 0 !important;
                 padding: 0 !important;
                 width: 100vw;
-                height: calc(100vh - 68px - env(safe-area-inset-bottom, 0px));
+                height: calc(100vh - 64px - env(safe-area-inset-bottom, 0px));
                 overflow: hidden;
                 position: relative;
             }
 
-            /* Cada .page vira um slide de largura 100vw */
             .page {
-                display: block !important;         /* todas visíveis no DOM */
+                display: block !important;
                 position: absolute;
                 top: 0; left: 0;
-                width: 100%;
-                height: 100%;
+                width: 100%; height: 100%;
                 overflow-y: auto;
                 overflow-x: hidden;
                 -webkit-overflow-scrolling: touch;
-                padding: 0.75rem 0.75rem 1rem;
+                padding: 0;
                 box-sizing: border-box;
-                transform: translateX(100%);        /* fora da tela por padrão */
-                transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+                transform: translateX(100%);
+                transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
                 will-change: transform;
+                background: #080808;
             }
-
-            /* Página ativa: centralizada */
-            .page.active {
-                transform: translateX(0%);
-            }
-
-            /* Esconde scrollbar visível */
+            .page.active { transform: translateX(0%); }
             .page::-webkit-scrollbar { display: none; }
 
-            /* ── Tipografia compacta ── */
-            .page-header { margin-bottom: 0.6rem; }
-            .page-title  { font-size: 1.05rem !important; }
-            .page-subtitle { font-size: 0.72rem; display:none; }
+            /* ── Oculta tudo desktop dentro das pages ── */
+            .page > .page-header,
+            .page .stats-grid,
+            .page .chart-grid,
+            .page .chart-card,
+            .page .table-container,
+            .page .action-bar,
+            .page .filter-bar,
+            .page .investment-item,
+            .page .debt-item,
+            .page #debts-list,
+            .page #portfolio-summary,
+            .page #categories-container,
+            .page #investments-table,
+            .page [style*="margin-top: 2rem"],
+            .page [style*="margin-top: 1.5rem"],
+            .page [style*="margin-top: 3rem"] { display: none !important; }
 
-            /* ── Cards 2 colunas ── */
-            .stats-grid {
-                grid-template-columns: 1fr 1fr !important;
-                gap: 0.45rem !important;
-                margin-bottom: 0.6rem !important;
+            /* ══ CABEÇALHO STICKY ══ */
+            .mob-page-header {
+                display: flex !important;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.9rem 1.1rem 0.65rem;
+                position: sticky;
+                top: 0; z-index: 20;
+                background: rgba(8,8,8,0.96);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-bottom: 1px solid rgba(255,255,255,0.06);
             }
-            .stats-grid-3,
-            .stats-grid-4 { grid-template-columns: 1fr 1fr !important; }
-
-            .stat-card    { padding: 0.65rem !important; }
-            .stat-label   { font-size: 0.62rem !important; margin-bottom: 0.15rem !important; text-transform: uppercase; }
-            .stat-value   { font-size: 0.95rem !important; margin-bottom: 0.08rem !important; }
-            .stat-change  { font-size: 0.62rem !important; }
-
-            /* ── Gráficos 1 coluna ── */
-            .chart-grid {
-                grid-template-columns: 1fr !important;
-                gap: 0.45rem !important;
-                margin-top: 0.6rem !important;
-                margin-bottom: 0 !important;
+            .mob-page-title {
+                font-size: 1.2rem;
+                font-weight: 800;
+                color: #f0f0f0;
+                letter-spacing: -0.5px;
             }
-            .chart-card   { padding: 0.65rem !important; margin-bottom: 0.45rem !important; }
-            .chart-title  { font-size: 0.82rem !important; margin-bottom: 0.4rem !important; }
-            .chart-container { height: 170px !important; }
+            .mob-page-actions { display: flex; gap: 0.45rem; align-items: center; }
 
-            /* ── Tabelas scroll horizontal ── */
-            .table-container {
+            /* ══ SUB-NAV (abas) ══ */
+            .mob-subnav {
+                display: flex !important;
+                overflow-x: auto;
+                background: #080808;
+                border-bottom: 1px solid rgba(255,255,255,0.06);
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                padding: 0 1rem;
+                gap: 0;
+                position: sticky;
+                top: 51px; z-index: 19;
+            }
+            .mob-subnav::-webkit-scrollbar { display: none; }
+            .mob-subnav-tab {
+                flex: 0 0 auto;
+                padding: 0.7rem 1rem;
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: #4b5563;
+                cursor: pointer;
+                white-space: nowrap;
+                border-bottom: 2px solid transparent;
+                transition: all 0.2s;
+                -webkit-tap-highlight-color: transparent;
+                letter-spacing: 0.3px;
+            }
+            .mob-subnav-tab.active {
+                color: var(--accent);
+                border-bottom-color: var(--accent);
+            }
+
+            /* ══ CONTAINER DAS SUB-PÁGINAS ══ */
+            .mob-subpages {
+                display: block !important;
+                position: relative;
+                width: 100%;
+                overflow: hidden;
+                /* altura = tela − barra inferior − header − subnav */
+                height: calc(100vh - 64px - env(safe-area-inset-bottom,0px) - 51px - 39px);
+            }
+            .mob-subpage {
+                position: absolute;
+                top: 0; left: 0;
+                width: 100%; height: 100%;
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+                padding: 1rem 1rem 1.5rem;
+                box-sizing: border-box;
+                transform: translateX(100%);
+                transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+                will-change: transform;
+            }
+            .mob-subpage::-webkit-scrollbar { display: none; }
+            .mob-subpage.active { transform: translateX(0%); }
+            .mob-subpage.prev   { transform: translateX(-100%); }
+
+            /* ══════════════════════════════════════════════
+               HERO CARD — grande, imersivo, tela cheia
+               ══════════════════════════════════════════════ */
+            .mob-hero-card {
+                background: linear-gradient(145deg, #111827 0%, #1e1b4b 50%, #0f172a 100%);
+                border: 1px solid rgba(255,107,53,0.2);
+                border-radius: 24px;
+                padding: 1.8rem 1.5rem 1.6rem;
+                margin-bottom: 1rem;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+            }
+            /* Glow superior direito */
+            .mob-hero-card::before {
+                content: '';
+                position: absolute;
+                top: -60px; right: -60px;
+                width: 200px; height: 200px;
+                background: radial-gradient(circle, rgba(255,107,53,0.22) 0%, transparent 65%);
+                border-radius: 50%;
+                pointer-events: none;
+            }
+            /* Glow inferior esquerdo */
+            .mob-hero-card::after {
+                content: '';
+                position: absolute;
+                bottom: -40px; left: -30px;
+                width: 140px; height: 140px;
+                background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 65%);
+                border-radius: 50%;
+                pointer-events: none;
+            }
+            .mob-hero-label {
+                font-size: 0.68rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
+                color: rgba(156,163,175,0.85);
+                margin-bottom: 0.55rem;
+                position: relative; z-index: 1;
+            }
+            .mob-hero-value {
+                font-size: 2.8rem;
+                font-weight: 800;
+                line-height: 1;
+                margin-bottom: 0.5rem;
+                letter-spacing: -2px;
+                position: relative; z-index: 1;
+            }
+            .mob-hero-sub {
+                font-size: 0.76rem;
+                color: rgba(156,163,175,0.7);
+                position: relative; z-index: 1;
+            }
+            .mob-hero-row {
+                display: flex;
+                align-items: baseline;
+                gap: 0.7rem;
+                margin-bottom: 0.5rem;
+                position: relative; z-index: 1;
+            }
+            .mob-hero-badge {
+                font-size: 0.67rem;
+                font-weight: 700;
+                padding: 0.2rem 0.6rem;
+                border-radius: 20px;
+                background: rgba(16,185,129,0.2);
+                color: #34d399;
+                border: 1px solid rgba(16,185,129,0.25);
+            }
+            .mob-hero-badge.neg {
+                background: rgba(239,68,68,0.2);
+                color: #f87171;
+                border-color: rgba(239,68,68,0.25);
+            }
+
+            /* ── Linha de 2 stat-chips no hero ── */
+            .mob-hero-chips {
+                display: flex;
+                gap: 0.6rem;
+                margin-top: 1rem;
+                position: relative; z-index: 1;
+            }
+            .mob-hero-chip {
+                flex: 1;
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 14px;
+                padding: 0.7rem 0.8rem;
+            }
+            .mob-hero-chip-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6b7280; margin-bottom: 0.3rem; }
+            .mob-hero-chip-value { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.5px; }
+
+            /* ══ MINI-GRID (cards 2×N) ══ */
+            .mob-mini-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.7rem;
+                margin-bottom: 1rem;
+            }
+            .mob-mini-card {
+                background: #111111;
+                border: 1px solid #1e1e1e;
+                border-radius: 18px;
+                padding: 1rem 0.95rem;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            }
+            /* Barra de cor no topo */
+            .mob-mini-card::before {
+                content: '';
+                position: absolute;
+                top: 0; left: 0; right: 0;
+                height: 3px;
+                border-radius: 18px 18px 0 0;
+            }
+            /* Glow de fundo */
+            .mob-mini-card::after {
+                content: '';
+                position: absolute;
+                bottom: -20px; right: -20px;
+                width: 70px; height: 70px;
+                border-radius: 50%;
+                opacity: 0.07;
+            }
+            .mob-mini-card.accent-green::before  { background: linear-gradient(90deg,#10b981,#34d399,transparent); }
+            .mob-mini-card.accent-green::after   { background: #10b981; }
+            .mob-mini-card.accent-red::before    { background: linear-gradient(90deg,#ef4444,#f87171,transparent); }
+            .mob-mini-card.accent-red::after     { background: #ef4444; }
+            .mob-mini-card.accent-purple::before { background: linear-gradient(90deg,#8b5cf6,#a78bfa,transparent); }
+            .mob-mini-card.accent-purple::after  { background: #8b5cf6; }
+            .mob-mini-card.accent-orange::before { background: linear-gradient(90deg,#ff6b35,#ff9a6c,transparent); }
+            .mob-mini-card.accent-orange::after  { background: #ff6b35; }
+            .mob-mini-card.accent-yellow::before { background: linear-gradient(90deg,#f59e0b,#fbbf24,transparent); }
+            .mob-mini-card.accent-yellow::after  { background: #f59e0b; }
+            .mob-mini-label {
+                font-size: 0.62rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                color: #4b5563;
+                margin-bottom: 0.35rem;
+            }
+            .mob-mini-value {
+                font-size: 1.15rem;
+                font-weight: 800;
+                line-height: 1.2;
+                letter-spacing: -0.5px;
+            }
+            .mob-mini-change {
+                font-size: 0.62rem;
+                margin-top: 0.25rem;
+                color: #4b5563;
+            }
+
+            /* ══ CARD DE GRÁFICO — maior e mais legível ══ */
+            .mob-chart-card {
+                background: #111111;
+                border: 1px solid #1e1e1e;
+                border-radius: 20px;
+                padding: 1.2rem 1.1rem 1.1rem;
+                margin-bottom: 0.8rem;
+                box-shadow: 0 2px 16px rgba(0,0,0,0.35);
+            }
+            .mob-chart-title {
+                font-size: 0.83rem;
+                font-weight: 800;
+                color: #9ca3af;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                letter-spacing: 0.1px;
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+                font-size: 0.7rem;
+            }
+            /* Alturas generosas */
+            .mob-chart-wrap         { height: 240px; position: relative; }
+            .mob-chart-wrap.tall    { height: 290px; }
+            .mob-chart-wrap.short   { height: 195px; }
+            .mob-chart-wrap.full    { height: calc(100vh - 64px - env(safe-area-inset-bottom,0px) - 51px - 39px - 2.4rem - 1rem); min-height: 280px; }
+
+            /* ══ LISTA DE TRANSAÇÕES ══ */
+            .mob-tx-item {
+                display: flex;
+                align-items: center;
+                gap: 0.8rem;
+                padding: 0.9rem 1rem;
+                background: #111;
+                border: 1px solid #1e1e1e;
+                border-radius: 16px;
+                margin-bottom: 0.5rem;
+                -webkit-tap-highlight-color: transparent;
+                box-shadow: 0 1px 8px rgba(0,0,0,0.25);
+            }
+            .mob-tx-icon {
+                width: 44px; height: 44px;
+                border-radius: 14px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 1.2rem;
+                flex-shrink: 0;
+            }
+            .mob-tx-info  { flex: 1; min-width: 0; }
+            .mob-tx-desc  { font-size: 0.88rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #e8e8e8; }
+            .mob-tx-cat   { font-size: 0.65rem; color: #6b7280; margin-top: 3px; }
+            .mob-tx-right { text-align: right; flex-shrink: 0; }
+            .mob-tx-value { font-size: 0.95rem; font-weight: 800; }
+            .mob-tx-date  { font-size: 0.62rem; color: #4b5563; margin-top: 3px; }
+
+            /* ══ CARDS DE DÍVIDA / INVESTIMENTO ══ */
+            .mob-debt-card {
+                background: #111;
+                border: 1px solid #1e1e1e;
+                border-radius: 20px;
+                padding: 1.2rem 1.1rem;
+                margin-bottom: 0.8rem;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            }
+            .mob-debt-header       { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.85rem; }
+            .mob-debt-name         { font-size: 1rem; font-weight: 800; color: #f0f0f0; letter-spacing: -0.3px; }
+            .mob-debt-bank         { font-size: 0.65rem; color: #6b7280; margin-top: 4px; }
+            .mob-debt-badge        { font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.65rem; border-radius: 10px; }
+            .mob-debt-stats        { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.6rem; margin-bottom: 0.85rem; }
+            .mob-debt-stat-label   { font-size: 0.6rem; color: #4b5563; text-transform: uppercase; letter-spacing: 0.5px; }
+            .mob-debt-stat-value   { font-size: 0.95rem; font-weight: 800; margin-top: 3px; letter-spacing: -0.3px; }
+            .mob-progress          { height: 7px; background: #1a1a1a; border-radius: 4px; overflow: hidden; }
+            .mob-progress-bar      { height: 100%; background: linear-gradient(90deg,#ff6b35,#8b5cf6); border-radius: 4px; transition: width 0.5s ease; }
+
+            /* ══ SEÇÃO LABEL ══ */
+            .mob-section-label {
+                font-size: 0.65rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 1.2px;
+                color: #374151;
+                padding: 0.6rem 0 0.4rem;
+                margin-bottom: 0.5rem;
+                border-bottom: 1px solid rgba(30,30,30,0.8);
+            }
+
+            /* ══ CHIPS DE FILTRO ══ */
+            .mob-filter-row {
+                display: flex;
+                gap: 0.45rem;
+                margin-bottom: 0.8rem;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                padding-bottom: 2px;
             }
-            table   { min-width: 500px; }
-            th, td  { padding: 0.45rem 0.55rem !important; font-size: 0.72rem !important; }
+            .mob-filter-row::-webkit-scrollbar { display: none; }
+            .mob-filter-chip {
+                flex: 0 0 auto;
+                padding: 0.38rem 0.9rem;
+                background: #111;
+                border: 1px solid #1e1e1e;
+                border-radius: 20px;
+                font-size: 0.73rem;
+                font-weight: 700;
+                color: #6b7280;
+                cursor: pointer;
+                white-space: nowrap;
+                -webkit-tap-highlight-color: transparent;
+                transition: all 0.15s;
+            }
+            .mob-filter-chip.active {
+                background: rgba(255,107,53,0.14);
+                border-color: rgba(255,107,53,0.4);
+                color: var(--accent);
+            }
 
-            /* ── Botões ── */
-            .btn    { padding: 0.42rem 0.85rem !important; font-size: 0.78rem !important; }
-            .btn-sm { padding: 0.28rem 0.55rem !important; font-size: 0.7rem !important; }
-
-            /* ── Barras de ação e filtros ── */
-            .action-bar  { flex-wrap: wrap; gap: 0.45rem !important; margin-bottom: 0.6rem !important; }
-            .filter-bar  { gap: 0.35rem !important; margin-bottom: 0.6rem !important; }
-            .filter-select { font-size: 0.72rem !important; padding: 0.35rem 0.55rem !important; }
-
-            /* ── Itens de investimento / dívida ── */
-            .investment-item, .debt-item { padding: 0.65rem !important; margin-bottom: 0.45rem !important; }
-            .investment-name  { font-size: 0.88rem !important; }
-            .investment-type  { font-size: 0.7rem !important; }
-            .investment-stats { grid-template-columns: repeat(2,1fr) !important; gap: 0.45rem !important; }
-            .investment-stat-value { font-size: 0.88rem !important; }
-            .investment-stat-label { font-size: 0.62rem !important; }
-
-            /* ── Modal ── */
+            /* ══ MODAL ══ */
             .modal-content {
-                width: 95% !important;
-                max-height: 88vh !important;
-                padding: 1.1rem !important;
-                border-radius: 12px !important;
+                width: 96% !important;
+                max-height: 92vh !important;
+                padding: 1.3rem !important;
+                border-radius: 20px !important;
+                background: #141414 !important;
+                border-color: #222 !important;
             }
-            .modal-title { font-size: 1.05rem !important; }
-
-            /* ── Categorias ── */
-            .category-section { padding: 0.65rem !important; }
-
-            /* ── Page-header inline ── */
-            .page-header > div[style*="justify-content: space-between"] {
-                flex-direction: column !important; gap: 0.4rem !important;
-            }
-            .page-header > div > div[style*="display: flex; gap: 1rem"] {
-                flex-wrap: wrap !important; gap: 0.35rem !important;
+            .modal-title { font-size: 1.15rem !important; font-weight: 800 !important; }
+            .form-input, .form-select {
+                background: #0d0d0d !important;
+                border-color: #222 !important;
+                border-radius: 10px !important;
             }
         }
 
-        /* Extra pequeno */
+        /* ── Extra pequeno ── */
         @media (max-width: 400px) {
-            .stats-grid    { grid-template-columns: 1fr !important; }
-            .stat-value    { font-size: 0.85rem !important; }
-            .chart-container { height: 145px !important; }
+            .mob-hero-value       { font-size: 2.2rem !important; letter-spacing: -1.5px !important; }
+            .mob-hero-chip-value  { font-size: 0.9rem !important; }
+            .mob-chart-wrap       { height: 205px !important; }
+            .mob-chart-wrap.tall  { height: 250px !important; }
+            .mob-mini-value       { font-size: 1rem !important; }
         }
 
         ::-webkit-scrollbar {
@@ -785,6 +1092,7 @@
     <main class="main-content">
         <!-- Dashboard Page -->
         <div id="dashboard" class="page active">
+            <!-- ═══ DESKTOP header (oculto no mobile) ═══ -->
             <div class="page-header">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                     <div>
@@ -800,39 +1108,29 @@
                 </div>
             </div>
 
-            <!-- Cards Principais -->
+            <!-- ═══ DESKTOP content ═══ -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-label">Patrimônio Líquido</div>
                     <div class="stat-value" style="color: var(--success)" id="balance-net">R$ 0,00</div>
-                    <div class="stat-change positive" id="balance-change">
-                        <span>↑</span> Saldo - Dívidas
-                    </div>
+                    <div class="stat-change positive" id="balance-change"><span>↑</span> Saldo - Dívidas</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Saldo em Conta</div>
                     <div class="stat-value" id="balance-account">R$ 0,00</div>
-                    <div class="stat-change positive">
-                        <span>↑</span> <span id="income-transactions">0</span> receitas no mês
-                    </div>
+                    <div class="stat-change positive"><span>↑</span> <span id="income-transactions">0</span> receitas no mês</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Investimentos</div>
                     <div class="stat-value" style="color: var(--purple)" id="balance-investments">R$ 0,00</div>
-                    <div class="stat-change positive">
-                        <span>↑</span> <span id="investment-count">0</span> ativos
-                    </div>
+                    <div class="stat-change positive"><span>↑</span> <span id="investment-count">0</span> ativos</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-label">Dívidas Pendentes</div>
                     <div class="stat-value" style="color: var(--danger)" id="balance-debts">R$ 0,00</div>
-                    <div class="stat-change negative">
-                        <span>↓</span> <span id="expense-transactions">0</span> despesas no mês
-                    </div>
+                    <div class="stat-change negative"><span>↓</span> <span id="expense-transactions">0</span> despesas no mês</div>
                 </div>
             </div>
-
-            <!-- Receitas e Despesas do Mês -->
             <div style="margin-top: 2rem;">
                 <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-secondary);">Fluxo Financeiro do Mês</h2>
                 <div class="stats-grid stats-grid-3">
@@ -853,51 +1151,151 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Gráficos Principais -->
-            <div class="chart-grid" class="chart-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
-                <div class="chart-card">
-                    <h3 class="chart-title">📊 Receitas vs Despesas (6 meses)</h3>
-                    <div class="chart-container" style="height: 280px;">
-                        <canvas id="incomeExpenseChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <h3 class="chart-title">📈 Evolução Patrimonial (12 meses)</h3>
-                    <div class="chart-container" style="height: 280px;">
-                        <canvas id="balanceEvolutionChart"></canvas>
-                    </div>
-                </div>
+            <div class="chart-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
+                <div class="chart-card"><h3 class="chart-title">📊 Receitas vs Despesas (6 meses)</h3><div class="chart-container" style="height: 280px;"><canvas id="incomeExpenseChart"></canvas></div></div>
+                <div class="chart-card"><h3 class="chart-title">📈 Evolução Patrimonial (12 meses)</h3><div class="chart-container" style="height: 280px;"><canvas id="balanceEvolutionChart"></canvas></div></div>
             </div>
-
-            <!-- Gráficos Secundários -->
             <div class="chart-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
-                <div class="chart-card">
-                    <h3 class="chart-title">🏷️ Despesas por Categoria</h3>
-                    <div class="chart-container" style="height: 300px;">
-                        <canvas id="categoryChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <h3 class="chart-title">💼 Distribuição Patrimonial</h3>
-                    <div class="chart-container" style="height: 300px;">
-                        <canvas id="assetChart"></canvas>
-                    </div>
+                <div class="chart-card"><h3 class="chart-title">🏷️ Despesas por Categoria</h3><div class="chart-container" style="height: 300px;"><canvas id="categoryChart"></canvas></div></div>
+                <div class="chart-card"><h3 class="chart-title">💼 Distribuição Patrimonial</h3><div class="chart-container" style="height: 300px;"><canvas id="assetChart"></canvas></div></div>
+            </div>
+            <div class="chart-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; margin-bottom: 2rem;">
+                <div class="chart-card"><h3 class="chart-title">💰 Fluxo de Caixa Mensal</h3><div class="chart-container" style="height: 280px;"><canvas id="cashFlowChart"></canvas></div></div>
+                <div class="chart-card"><h3 class="chart-title">📅 Comparativo Anual</h3><div class="chart-container" style="height: 280px;"><canvas id="yearComparisonChart"></canvas></div></div>
+            </div>
+
+            <!-- ═══ MOBILE layout ═══ -->
+            <div class="mob-page-header">
+                <span class="mob-page-title">📊 Dashboard</span>
+                <div class="mob-page-actions">
+                    <select class="filter-select" id="dashboard-filter-month-mob" onchange="document.getElementById('dashboard-filter-month').value=this.value;filterDashboard();" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:var(--bg-card);border-color:var(--border);">
+                        <option value="">Mês Atual</option>
+                    </select>
+                    <button onclick="resetAllData()" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);color:#ef4444;border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">🗑️</button>
                 </div>
             </div>
 
-            <!-- Gráficos de Análise -->
-            <div class="chart-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem; margin-bottom: 2rem;">
-                <div class="chart-card">
-                    <h3 class="chart-title">💰 Fluxo de Caixa Mensal</h3>
-                    <div class="chart-container" style="height: 280px;">
-                        <canvas id="cashFlowChart"></canvas>
+            <!-- Sub-nav abas dashboard -->
+            <div class="mob-subnav" id="dash-subnav">
+                <div class="mob-subnav-tab active" onclick="mobSubSwitch('dash-subnav','dash-subpages',this,'dash-overview')">Visão Geral</div>
+                <div class="mob-subnav-tab" onclick="mobSubSwitch('dash-subnav','dash-subpages',this,'dash-cashflow')">Fluxo do Mês</div>
+                <div class="mob-subnav-tab" onclick="mobSubSwitch('dash-subnav','dash-subpages',this,'dash-charts')">Gráficos</div>
+                <div class="mob-subnav-tab" onclick="mobSubSwitch('dash-subnav','dash-subpages',this,'dash-assets')">Patrimônio</div>
+            </div>
+
+            <div class="mob-subpages" id="dash-subpages">
+
+                <!-- ── Aba 1: Visão Geral ── -->
+                <div class="mob-subpage active" id="dash-overview">
+                    <!-- Hero: Patrimônio Líquido -->
+                    <div class="mob-hero-card">
+                        <div class="mob-hero-label">Patrimônio Líquido</div>
+                        <div class="mob-hero-row">
+                            <div class="mob-hero-value" id="mob-balance-net" style="color:#34d399;">R$ 0,00</div>
+                        </div>
+                        <div class="mob-hero-sub">Saldo em conta menos dívidas pendentes</div>
+                        <!-- chips internos ao hero -->
+                        <div class="mob-hero-chips">
+                            <div class="mob-hero-chip">
+                                <div class="mob-hero-chip-label">Investimentos</div>
+                                <div class="mob-hero-chip-value" id="mob-balance-inv" style="color:#a78bfa;">R$ 0,00</div>
+                            </div>
+                            <div class="mob-hero-chip">
+                                <div class="mob-hero-chip-label">Dívidas</div>
+                                <div class="mob-hero-chip-value" id="mob-balance-debts" style="color:#f87171;">R$ 0,00</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 4 mini-cards -->
+                    <div class="mob-mini-grid">
+                        <div class="mob-mini-card accent-green">
+                            <div class="mob-mini-label">Saldo em Conta</div>
+                            <div class="mob-mini-value" id="mob-balance-account" style="color:#34d399;">R$ 0,00</div>
+                            <div class="mob-mini-change" id="mob-income-tx">— receitas</div>
+                        </div>
+                        <div class="mob-mini-card accent-orange">
+                            <div class="mob-mini-label">Saldo Realizado</div>
+                            <div class="mob-mini-value" id="mob-total-balance" style="color:#fb923c;">R$ 0,00</div>
+                            <div class="mob-mini-change">Rec. pagas − Desp.</div>
+                        </div>
+                        <div class="mob-mini-card accent-green">
+                            <div class="mob-mini-label">Receitas do Mês</div>
+                            <div class="mob-mini-value" id="mob-dash-income" style="color:#34d399;">R$ 0,00</div>
+                            <div class="mob-mini-change" id="mob-income-tx2">incl. pendentes</div>
+                        </div>
+                        <div class="mob-mini-card accent-red">
+                            <div class="mob-mini-label">Despesas do Mês</div>
+                            <div class="mob-mini-value" id="mob-dash-expenses" style="color:#f87171;">R$ 0,00</div>
+                            <div class="mob-mini-change" id="mob-expense-tx">incl. pendentes</div>
+                        </div>
+                    </div>
+                    <!-- Gráfico principal -->
+                    <div class="mob-chart-card">
+                        <div class="mob-chart-title">📊 Receitas vs Despesas — 6 meses</div>
+                        <div class="mob-chart-wrap tall"><canvas id="mob-incomeExpenseChart"></canvas></div>
                     </div>
                 </div>
-                <div class="chart-card">
-                    <h3 class="chart-title">📅 Comparativo Anual</h3>
-                    <div class="chart-container" style="height: 280px;">
-                        <canvas id="yearComparisonChart"></canvas>
+
+                <!-- ── Aba 2: Fluxo do Mês ── -->
+                <div class="mob-subpage" id="dash-cashflow">
+                    <!-- Hero: Receitas do mês -->
+                    <div class="mob-hero-card" style="background:linear-gradient(145deg,#052e16,#064e3b,#022c22);">
+                        <div class="mob-hero-label">Receitas do Mês</div>
+                        <div class="mob-hero-value" id="mob-month-income" style="color:#34d399;">R$ 0,00</div>
+                        <div class="mob-hero-sub">Incluindo lançamentos pendentes</div>
+                        <div class="mob-hero-chips">
+                            <div class="mob-hero-chip" style="background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.12);">
+                                <div class="mob-hero-chip-label">Despesas</div>
+                                <div class="mob-hero-chip-value" id="mob-month-expenses" style="color:#f87171;">R$ 0,00</div>
+                            </div>
+                            <div class="mob-hero-chip" style="background:rgba(255,107,53,0.08);border-color:rgba(255,107,53,0.12);">
+                                <div class="mob-hero-chip-label">Saldo Realizado</div>
+                                <div class="mob-hero-chip-value" id="mob-cashflow-balance" style="color:#fb923c;">R$ 0,00</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mob-chart-card">
+                        <div class="mob-chart-title">💰 Fluxo de Caixa Mensal</div>
+                        <div class="mob-chart-wrap tall"><canvas id="mob-cashFlowChart"></canvas></div>
+                    </div>
+                    <div class="mob-chart-card">
+                        <div class="mob-chart-title">📅 Comparativo Anual</div>
+                        <div class="mob-chart-wrap"><canvas id="mob-yearComparisonChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- ── Aba 3: Gráficos ── -->
+                <div class="mob-subpage" id="dash-charts">
+                    <div class="mob-chart-card">
+                        <div class="mob-chart-title">🏷️ Despesas por Categoria</div>
+                        <div class="mob-chart-wrap tall"><canvas id="mob-categoryChart"></canvas></div>
+                    </div>
+                    <div class="mob-chart-card">
+                        <div class="mob-chart-title">📈 Evolução Patrimonial — 12 meses</div>
+                        <div class="mob-chart-wrap tall"><canvas id="mob-balanceEvolutionChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- ── Aba 4: Patrimônio ── -->
+                <div class="mob-subpage" id="dash-assets">
+                    <div class="mob-hero-card" style="background:linear-gradient(145deg,#1a0533,#2e1065,#1e0a4a);">
+                        <div class="mob-hero-label">Carteira de Investimentos</div>
+                        <div class="mob-hero-value" id="mob-portfolio-invested" style="color:#c4b5fd;">R$ 0,00</div>
+                        <div class="mob-hero-sub" id="mob-portfolio-return-sub">Retorno total: 0%</div>
+                        <div class="mob-hero-chips">
+                            <div class="mob-hero-chip" style="background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.12);">
+                                <div class="mob-hero-chip-label">Valor Atual</div>
+                                <div class="mob-hero-chip-value" id="mob-portfolio-total" style="color:#34d399;">R$ 0,00</div>
+                            </div>
+                            <div class="mob-hero-chip" style="background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.12);">
+                                <div class="mob-hero-chip-label">Rentabilidade</div>
+                                <div class="mob-hero-chip-value" id="mob-portfolio-profit" style="color:#a78bfa;">R$ 0,00</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mob-chart-card">
+                        <div class="mob-chart-title">💼 Distribuição Patrimonial</div>
+                        <div class="mob-chart-wrap tall"><canvas id="mob-assetChart"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -952,6 +1350,52 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- ═══ MOBILE layout ═══ -->
+            <div class="mob-page-header">
+                <span class="mob-page-title">📈 Investimentos</span>
+                <div class="mob-page-actions">
+                    <button onclick="openInvestmentModal()" style="background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">➕ Novo</button>
+                </div>
+            </div>
+            <div class="mob-subnav" id="invest-subnav">
+                <div class="mob-subnav-tab active" onclick="mobSubSwitch('invest-subnav','invest-subpages',this,'invest-list')">Meus Ativos</div>
+                <div class="mob-subnav-tab" onclick="mobSubSwitch('invest-subnav','invest-subpages',this,'invest-summary')">Resumo</div>
+            </div>
+            <div class="mob-subpages" id="invest-subpages">
+
+                <!-- Aba 1: Lista -->
+                <div class="mob-subpage active" id="invest-list">
+                    <div id="mob-investments-list">
+                        <div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);">
+                            <div style="font-size:2rem;margin-bottom:0.5rem;">📈</div>
+                            Nenhum investimento cadastrado
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba 2: Resumo -->
+                <div class="mob-subpage" id="invest-summary">
+                    <div class="mob-hero-card" style="background:linear-gradient(135deg,#1a0533,#2e1065,#4c1d95);">
+                        <div class="mob-hero-label">Carteira Total</div>
+                        <div class="mob-hero-value" id="mob-inv-current-total" style="color:#a78bfa;">R$ 0,00</div>
+                        <div class="mob-hero-sub" id="mob-inv-return-sub">Retorno: 0%</div>
+                    </div>
+                    <div class="mob-mini-grid">
+                        <div class="mob-mini-card accent-purple">
+                            <div class="mob-mini-label">Valor Investido</div>
+                            <div class="mob-mini-value" id="mob-inv-invested">R$ 0,00</div>
+                        </div>
+                        <div class="mob-mini-card accent-green">
+                            <div class="mob-mini-label">Rentabilidade</div>
+                            <div class="mob-mini-value" id="mob-inv-profit">R$ 0,00</div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;padding-top:0.5rem;">
+                        <button onclick="openPriceCeilingModal()" style="background:rgba(139,92,246,0.12);border:1px solid rgba(139,92,246,0.3);color:#8b5cf6;border-radius:10px;padding:0.6rem 1.2rem;font-size:0.78rem;font-weight:700;cursor:pointer;width:100%;">📊 Simular Preço Teto</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Portfolio Page -->
@@ -999,93 +1443,158 @@
             </div>
 
             <div id="portfolio-summary"></div>
+
+            <!-- ═══ MOBILE layout ═══ -->
+            <div class="mob-page-header">
+                <span class="mob-page-title">💼 Carteira</span>
+                <div class="mob-page-actions"></div>
+            </div>
+            <div class="mob-subnav" id="portfolio-subnav">
+                <div class="mob-subnav-tab active" onclick="mobSubSwitch('portfolio-subnav','portfolio-subpages',this,'portfolio-charts-mob')">Composição</div>
+                <div class="mob-subnav-tab" onclick="mobSubSwitch('portfolio-subnav','portfolio-subpages',this,'portfolio-summary-mob')">Resumo</div>
+            </div>
+            <div class="mob-subpages" id="portfolio-subpages">
+
+                <!-- Aba 1: Gráficos -->
+                <div class="mob-subpage active" id="portfolio-charts-mob">
+                    <div class="mob-hero-card" style="background:linear-gradient(135deg,#1a0533,#2e1065,#4c1d95);">
+                        <div class="mob-hero-label">Patrimônio Total</div>
+                        <div class="mob-hero-value" id="mob-ptf-total" style="color:#a78bfa;">R$ 0,00</div>
+                        <div class="mob-hero-sub" id="mob-ptf-return-sub">Retorno total: 0%</div>
+                    </div>
+                    <div class="mob-mini-grid">
+                        <div class="mob-mini-card accent-purple">
+                            <div class="mob-mini-label">Total Investido</div>
+                            <div class="mob-mini-value" id="mob-ptf-invested">R$ 0,00</div>
+                        </div>
+                        <div class="mob-mini-card accent-green">
+                            <div class="mob-mini-label">Rentabilidade</div>
+                            <div class="mob-mini-value" id="mob-ptf-profit">R$ 0,00</div>
+                        </div>
+                    </div>
+                    <div class="mob-chart-card">
+                        <div class="mob-chart-title">🥧 Composição por Tipo</div>
+                        <div class="mob-chart-wrap tall"><canvas id="mob-portfolioCompositionChart"></canvas></div>
+                    </div>
+                    <div class="mob-chart-card">
+                        <div class="mob-chart-title">🏦 Distribuição por Banco</div>
+                        <div class="mob-chart-wrap tall"><canvas id="mob-portfolioBankChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Aba 2: Resumo por categoria -->
+                <div class="mob-subpage" id="portfolio-summary-mob">
+                    <div id="mob-portfolio-summary">
+                        <div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);">
+                            <div style="font-size:2rem;margin-bottom:0.5rem;">💼</div>
+                            Nenhum ativo cadastrado
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Monthly Transactions Page -->
         <div id="monthly" class="page">
+            <!-- Desktop -->
             <div class="page-header">
                 <h1 class="page-title">Lançamentos Mensais</h1>
                 <p class="page-subtitle">Todos os seus lançamentos financeiros</p>
             </div>
-
-            <!-- Filtros -->
             <div class="action-bar">
                 <div class="filter-bar">
-                    <select class="filter-select" id="monthly-filter-month" onchange="filterMonthlyTransactions()">
-                        <option value="">Todos os meses</option>
-                    </select>
-                    <select class="filter-select" id="monthly-filter-type" onchange="filterMonthlyTransactions()">
-                        <option value="all">Todos os tipos</option>
-                        <option value="income">Receitas</option>
-                        <option value="expense">Despesas</option>
-                    </select>
-                    <select class="filter-select" id="monthly-filter-category" onchange="filterMonthlyTransactions()">
-                        <option value="all">Todas categorias</option>
-                    </select>
+                    <select class="filter-select" id="monthly-filter-month" onchange="filterMonthlyTransactions()"><option value="">Todos os meses</option></select>
+                    <select class="filter-select" id="monthly-filter-type" onchange="filterMonthlyTransactions()"><option value="all">Todos os tipos</option><option value="income">Receitas</option><option value="expense">Despesas</option></select>
+                    <select class="filter-select" id="monthly-filter-category" onchange="filterMonthlyTransactions()"><option value="all">Todas categorias</option></select>
                 </div>
             </div>
-
-            <!-- Cards de Resumo do Mês Atual -->
             <div class="stats-grid stats-grid-4">
-                <div class="stat-card">
-                    <div class="stat-label">Receitas do Mês</div>
-                    <div class="stat-value" style="color: var(--success)" id="monthly-income-total">R$ 0,00</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Despesas do Mês</div>
-                    <div class="stat-value" style="color: var(--danger)" id="monthly-expense-total">R$ 0,00</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Saldo do Mês</div>
-                    <div class="stat-value" id="monthly-balance-total">R$ 0,00</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Total de Despesas Lançadas</div>
-                    <div class="stat-value" style="color: var(--warning)" id="monthly-all-expenses-total">R$ 0,00</div>
-                    <div class="stat-change" style="color: var(--text-muted);">
-                        <span>📋</span> Todas as despesas registradas
-                    </div>
-                </div>
+                <div class="stat-card"><div class="stat-label">Receitas do Mês</div><div class="stat-value" style="color:var(--success)" id="monthly-income-total">R$ 0,00</div></div>
+                <div class="stat-card"><div class="stat-label">Despesas do Mês</div><div class="stat-value" style="color:var(--danger)" id="monthly-expense-total">R$ 0,00</div></div>
+                <div class="stat-card"><div class="stat-label">Saldo do Mês</div><div class="stat-value" id="monthly-balance-total">R$ 0,00</div></div>
+                <div class="stat-card"><div class="stat-label">Total Despesas</div><div class="stat-value" style="color:var(--warning)" id="monthly-all-expenses-total">R$ 0,00</div></div>
             </div>
-
-            <!-- Gráficos -->
-            <div class="chart-grid" class="chart-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem;">
-                <div class="chart-card">
-                    <h3 class="chart-title">📊 Despesas por Categoria</h3>
-                    <div class="chart-container" style="height: 300px;">
-                        <canvas id="monthlyExpenseCategoryChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-card">
-                    <h3 class="chart-title">💰 Receitas por Categoria</h3>
-                    <div class="chart-container" style="height: 300px;">
-                        <canvas id="monthlyIncomeCategoryChart"></canvas>
-                    </div>
-                </div>
+            <div class="chart-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem;">
+                <div class="chart-card"><h3 class="chart-title">📊 Despesas por Categoria</h3><div class="chart-container" style="height:300px;"><canvas id="monthlyExpenseCategoryChart"></canvas></div></div>
+                <div class="chart-card"><h3 class="chart-title">💰 Receitas por Categoria</h3><div class="chart-container" style="height:300px;"><canvas id="monthlyIncomeCategoryChart"></canvas></div></div>
             </div>
-
-            <!-- Tabela de Lançamentos -->
-            <div style="margin-top: 2rem;">
-                <div class="action-bar">
-                    <h3 class="chart-title">Todos os Lançamentos</h3>
-                </div>
-
+            <div style="margin-top:2rem;">
+                <div class="action-bar"><h3 class="chart-title">Todos os Lançamentos</h3></div>
                 <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Descrição</th>
-                                <th>Categoria</th>
-                                <th>Tipo</th>
-                                <th>Valor</th>
-                                <th>Status</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="monthly-transactions-table">
-                        </tbody>
-                    </table>
+                    <table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Tipo</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
+                    <tbody id="monthly-transactions-table"></tbody></table>
+                </div>
+            </div>
+
+            <!-- Mobile -->
+            <div class="mob-page-header">
+                <span class="mob-page-title">📅 Lançamentos</span>
+                <div class="mob-page-actions">
+                    <select id="monthly-filter-month-mob" class="filter-select" onchange="document.getElementById('monthly-filter-month').value=this.value;filterMonthlyTransactions();" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:var(--bg-card);border-color:var(--border);"><option value="">Todos os meses</option></select>
+                </div>
+            </div>
+            <div class="mob-subnav" id="monthly-subnav">
+                <div class="mob-subnav-tab active" onclick="mobSubSwitch('monthly-subnav','monthly-subpages',this,'monthly-list')">Lançamentos</div>
+                <div class="mob-subnav-tab" onclick="mobSubSwitch('monthly-subnav','monthly-subpages',this,'monthly-charts')">Gráficos</div>
+                <div class="mob-subnav-tab" onclick="mobSubSwitch('monthly-subnav','monthly-subpages',this,'monthly-summary')">Resumo do Mês</div>
+            </div>
+            <div class="mob-subpages" id="monthly-subpages">
+
+                <!-- Aba 1: Lista -->
+                <div class="mob-subpage active" id="monthly-list">
+                    <div class="mob-filter-row">
+                        <div class="mob-filter-chip active" onclick="mobTxFilter(this,'all')">Todos</div>
+                        <div class="mob-filter-chip" onclick="mobTxFilter(this,'income')">💚 Receitas</div>
+                        <div class="mob-filter-chip" onclick="mobTxFilter(this,'expense')">🔴 Despesas</div>
+                        <div class="mob-filter-chip" onclick="mobTxFilter(this,'pending')">⏳ Pendentes</div>
+                    </div>
+                    <div id="mob-monthly-list">
+                        <div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);font-size:0.85rem;">
+                            <div style="font-size:2rem;margin-bottom:0.5rem;">📭</div>
+                            Nenhum lançamento encontrado
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba 2: Gráficos -->
+                <div class="mob-subpage" id="monthly-charts">
+                    <div class="mob-chart-card">
+                        <div class="mob-chart-title">📊 Despesas por Categoria</div>
+                        <div class="mob-chart-wrap tall"><canvas id="mob-monthlyExpenseCategoryChart"></canvas></div>
+                    </div>
+                    <div class="mob-chart-card">
+                        <div class="mob-chart-title">💰 Receitas por Categoria</div>
+                        <div class="mob-chart-wrap tall"><canvas id="mob-monthlyIncomeCategoryChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Aba 3: Resumo -->
+                <div class="mob-subpage" id="monthly-summary">
+                    <div class="mob-hero-card">
+                        <div class="mob-hero-label">Saldo Realizado do Mês</div>
+                        <div class="mob-hero-value" id="mob-monthly-balance">R$ 0,00</div>
+                        <div class="mob-hero-sub">Receitas pagas menos despesas pagas</div>
+                    </div>
+                    <div class="mob-mini-grid">
+                        <div class="mob-mini-card accent-green">
+                            <div class="mob-mini-label">Receitas</div>
+                            <div class="mob-mini-value" id="mob-monthly-income" style="color:#10b981;">R$ 0,00</div>
+                            <div class="mob-mini-change">Incl. pendentes</div>
+                        </div>
+                        <div class="mob-mini-card accent-red">
+                            <div class="mob-mini-label">Despesas</div>
+                            <div class="mob-mini-value" id="mob-monthly-expenses" style="color:#ef4444;">R$ 0,00</div>
+                            <div class="mob-mini-change">Incl. pendentes</div>
+                        </div>
+                        <div class="mob-mini-card accent-yellow">
+                            <div class="mob-mini-label">Total Lançado</div>
+                            <div class="mob-mini-value" id="mob-monthly-all" style="color:#f59e0b;">R$ 0,00</div>
+                        </div>
+                        <div class="mob-mini-card accent-orange">
+                            <div class="mob-mini-label">Lançamentos</div>
+                            <div class="mob-mini-value" id="mob-monthly-count" style="color:#ff6b35;">0</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1147,6 +1656,57 @@
                 </div>
                 <div id="debts-list"></div>
             </div>
+
+            <!-- ═══ MOBILE layout ═══ -->
+            <div class="mob-page-header">
+                <span class="mob-page-title">🏦 Dívidas</span>
+                <div class="mob-page-actions">
+                    <button onclick="openDebtModal()" style="background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">➕ Nova</button>
+                </div>
+            </div>
+            <div class="mob-subnav" id="debts-subnav">
+                <div class="mob-subnav-tab active" onclick="mobSubSwitch('debts-subnav','debts-subpages',this,'debts-list-mob')">Dívidas Ativas</div>
+                <div class="mob-subnav-tab" onclick="mobSubSwitch('debts-subnav','debts-subpages',this,'debts-summary-mob')">Resumo</div>
+            </div>
+            <div class="mob-subpages" id="debts-subpages">
+
+                <!-- Aba 1: Lista -->
+                <div class="mob-subpage active" id="debts-list-mob">
+                    <div id="mob-debts-list">
+                        <div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);">
+                            <div style="font-size:2rem;margin-bottom:0.5rem;">🏦</div>
+                            Nenhuma dívida cadastrada
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aba 2: Resumo -->
+                <div class="mob-subpage" id="debts-summary-mob">
+                    <div class="mob-hero-card" style="background:linear-gradient(135deg,#1a0505,#3b0a0a,#450a0a);">
+                        <div class="mob-hero-label">Total em Dívidas</div>
+                        <div class="mob-hero-value" id="mob-total-debts" style="color:#f87171;">R$ 0,00</div>
+                        <div class="mob-hero-sub">Saldo devedor total pendente</div>
+                    </div>
+                    <div class="mob-mini-grid">
+                        <div class="mob-mini-card accent-green">
+                            <div class="mob-mini-label">Pago Este Mês</div>
+                            <div class="mob-mini-value" id="mob-debts-paid" style="color:#10b981;">R$ 0,00</div>
+                        </div>
+                        <div class="mob-mini-card accent-yellow">
+                            <div class="mob-mini-label">A Pagar Este Mês</div>
+                            <div class="mob-mini-value" id="mob-debts-topay" style="color:#f59e0b;">R$ 0,00</div>
+                        </div>
+                        <div class="mob-mini-card accent-orange">
+                            <div class="mob-mini-label">Total de Parcelas</div>
+                            <div class="mob-mini-value" id="mob-debts-installments" style="color:#ff6b35;">0</div>
+                        </div>
+                        <div class="mob-mini-card accent-red">
+                            <div class="mob-mini-label">Dívidas Ativas</div>
+                            <div class="mob-mini-value" id="mob-debts-count" style="color:#ef4444;">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Categories Page -->
@@ -1162,6 +1722,24 @@
             </div>
 
             <div id="categories-container"></div>
+
+            <!-- ═══ MOBILE layout ═══ -->
+            <div class="mob-page-header">
+                <span class="mob-page-title">🏷️ Categorias</span>
+                <div class="mob-page-actions">
+                    <button onclick="openAddCategoryModal()" style="background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">➕ Nova</button>
+                </div>
+            </div>
+            <div class="mob-subpages" id="cats-subpages" style="height:calc(100vh - 68px - env(safe-area-inset-bottom,0px) - 37px);">
+                <div class="mob-subpage active" id="cats-main" style="transform:translateX(0%);">
+                    <div id="mob-categories-container">
+                        <div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);">
+                            <div style="font-size:2rem;margin-bottom:0.5rem;">🏷️</div>
+                            Nenhuma categoria cadastrada
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -4005,6 +4583,116 @@
             });
         });
 
+        /* ══════════════════════════════════════════════════
+           SINCRONIZAÇÃO mobile ↔ desktop IDs
+           ══════════════════════════════════════════════════ */
+        function syncMobileValues() {
+            const syncId = (src, dst) => {
+                const s = document.getElementById(src);
+                const d = document.getElementById(dst);
+                if (s && d) { d.innerHTML = s.innerHTML; if (s.style.color) d.style.color = s.style.color; }
+            };
+            syncId('balance-net','mob-balance-net');
+            syncId('balance-account','mob-balance-account');
+            syncId('balance-debts','mob-balance-debts');
+            syncId('balance-investments','mob-balance-inv');
+            syncId('total-balance','mob-total-balance');
+            syncId('total-balance','mob-cashflow-balance');
+            syncId('month-income','mob-month-income');
+            syncId('month-income','mob-dash-income');
+            syncId('month-expenses','mob-month-expenses');
+            syncId('month-expenses','mob-dash-expenses');
+            syncId('portfolio-invested','mob-portfolio-invested');
+            syncId('portfolio-total','mob-portfolio-total');
+            syncId('portfolio-profit','mob-portfolio-profit');
+            syncId('monthly-income-total','mob-monthly-income');
+            syncId('monthly-expense-total','mob-monthly-expenses');
+            syncId('monthly-balance-total','mob-monthly-balance');
+            syncId('monthly-all-expenses-total','mob-monthly-all');
+            syncId('invested-total','mob-inv-invested');
+            syncId('current-total','mob-inv-current-total');
+            syncId('profit-total','mob-inv-profit');
+            syncId('total-debts','mob-total-debts');
+            syncId('paid-this-month','mob-debts-paid');
+            syncId('to-pay-this-month','mob-debts-topay');
+            syncId('total-installments','mob-debts-installments');
+            syncId('portfolio-total','mob-ptf-total');
+            syncId('portfolio-invested','mob-ptf-invested');
+            syncId('portfolio-profit','mob-ptf-profit');
+            const incTx=document.getElementById('income-transactions'), mIncTx=document.getElementById('mob-income-tx');
+            const expTx=document.getElementById('expense-transactions'), mExpTx=document.getElementById('mob-expense-tx');
+            const invCt=document.getElementById('investment-count'), mInvCt=document.getElementById('mob-inv-count');
+            if(incTx&&mIncTx) mIncTx.textContent=incTx.textContent+' receitas';
+            if(expTx&&mExpTx) mExpTx.textContent=expTx.textContent+' despesas';
+            if(invCt&&mInvCt) mInvCt.textContent=invCt.textContent+' ativos';
+            const pRet=document.getElementById('portfolio-return'), mPRet=document.getElementById('mob-portfolio-return-sub');
+            if(pRet&&mPRet) mPRet.textContent='Retorno total: '+pRet.textContent;
+            const mRPct=document.getElementById('mob-inv-return-sub'), rPct=document.getElementById('return-percent');
+            if(rPct&&mRPct) mRPct.textContent='Retorno: '+rPct.textContent;
+            const mPtfRet=document.getElementById('mob-ptf-return-sub');
+            if(pRet&&mPtfRet) mPtfRet.textContent='Retorno total: '+pRet.textContent;
+            const txRows=document.querySelectorAll('#monthly-transactions-table tr'), mTxCt=document.getElementById('mob-monthly-count');
+            if(mTxCt) mTxCt.textContent=txRows.length;
+            const debtRows=document.querySelectorAll('#debts-in-transactions-table tr'), mDebtCt=document.getElementById('mob-debts-count');
+            if(mDebtCt) mDebtCt.textContent=debtRows.length;
+        }
+
+        function renderMobInvestments() {
+            const el=document.getElementById('mob-investments-list'); if(!el) return;
+            if(!investments||!investments.length){el.innerHTML='<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">📈</div>Nenhum investimento cadastrado</div>';return;}
+            el.innerHTML=investments.map(inv=>{
+                const profit=(inv.currentValue||inv.invested)-inv.invested, pct=inv.invested>0?((profit/inv.invested)*100).toFixed(1):0, isPos=profit>=0;
+                const bank=banks.find(b=>b.id==inv.bank)||{};
+                return`<div class="mob-debt-card"><div class="mob-debt-header"><div><div class="mob-debt-name">${inv.name}</div><div class="mob-debt-bank">${bank.name||'—'} · ${inv.type||'—'}</div></div><div class="mob-debt-badge" style="background:${isPos?'rgba(16,185,129,0.15)':'rgba(239,68,68,0.15)'};color:${isPos?'#10b981':'#ef4444'};">${isPos?'+':''}${pct}%</div></div><div class="mob-debt-stats"><div><div class="mob-debt-stat-label">Investido</div><div class="mob-debt-stat-value">${formatCurrency(inv.invested)}</div></div><div><div class="mob-debt-stat-label">Atual</div><div class="mob-debt-stat-value" style="color:#10b981;">${formatCurrency(inv.currentValue||inv.invested)}</div></div><div><div class="mob-debt-stat-label">Lucro</div><div class="mob-debt-stat-value" style="color:${isPos?'#10b981':'#ef4444'};">${formatCurrency(profit)}</div></div></div><div style="display:flex;gap:0.4rem;margin-top:0.4rem;"><button onclick="editInvestment('${inv.id}')" style="flex:1;padding:0.35rem;background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;">✏️ Editar</button><button onclick="deleteInvestment('${inv.id}')" style="flex:1;padding:0.35rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#ef4444;border-radius:8px;font-size:0.72rem;font-weight:700;cursor:pointer;">🗑️ Excluir</button></div></div>`;
+            }).join('');
+        }
+
+        function renderMobDebts() {
+            const el=document.getElementById('mob-debts-list'); if(!el) return;
+            if(!debts||!debts.length){el.innerHTML='<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">🏦</div>Nenhuma dívida cadastrada</div>';return;}
+            el.innerHTML=debts.map(debt=>{
+                const pct=debt.installments>0?Math.round((debt.paidInstallments/debt.installments)*100):0, remaining=debt.installments-debt.paidInstallments;
+                const bank=banks.find(b=>b.id==debt.bank)||{};
+                return`<div class="mob-debt-card"><div class="mob-debt-header"><div><div class="mob-debt-name">${debt.description}</div><div class="mob-debt-bank">${bank.name||'—'} · ${debt.category||'—'}</div></div><div class="mob-debt-badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;">${remaining} rest.</div></div><div class="mob-debt-stats"><div><div class="mob-debt-stat-label">Parcela</div><div class="mob-debt-stat-value">${formatCurrency(debt.installmentValue)}</div></div><div><div class="mob-debt-stat-label">Total</div><div class="mob-debt-stat-value">${formatCurrency(debt.total)}</div></div><div><div class="mob-debt-stat-label">Pagas</div><div class="mob-debt-stat-value">${debt.paidInstallments}/${debt.installments}</div></div></div><div class="mob-progress"><div class="mob-progress-bar" style="width:${pct}%"></div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.45rem;"><span style="font-size:0.61rem;color:var(--text-muted);">${pct}% quitado</span><div style="display:flex;gap:0.35rem;"><button onclick="editDebt('${debt.id}')" style="padding:0.3rem 0.6rem;background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:7px;font-size:0.68rem;font-weight:700;cursor:pointer;">✏️</button><button onclick="deleteDebt('${debt.id}')" style="padding:0.3rem 0.6rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#ef4444;border-radius:7px;font-size:0.68rem;font-weight:700;cursor:pointer;">🗑️</button></div></div></div>`;
+            }).join('');
+        }
+
+        function renderMobCategories() {
+            const el=document.getElementById('mob-categories-container'); if(!el) return;
+            if(!categories||!categories.length){el.innerHTML='<div style="text-align:center;padding:3rem 1rem;color:var(--text-muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">🏷️</div>Nenhuma categoria</div>';return;}
+            el.innerHTML=categories.map(cat=>{
+                const subs=cat.subcategories||[];
+                return`<div class="mob-debt-card"><div class="mob-debt-header"><div><div class="mob-debt-name">${cat.icon||'🏷️'} ${cat.name}</div><div class="mob-debt-bank">${subs.length} subcategoria(s)</div></div><div style="display:flex;gap:0.35rem;"><button onclick="openAddSubcategoryModal('${cat.id}')" style="padding:0.28rem 0.55rem;background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:7px;font-size:0.68rem;font-weight:700;cursor:pointer;">+ Sub</button><button onclick="deleteCategory('${cat.id}')" style="padding:0.28rem 0.55rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#ef4444;border-radius:7px;font-size:0.68rem;font-weight:700;cursor:pointer;">🗑️</button></div></div>${subs.map(sub=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0.5rem;background:var(--bg-secondary);border-radius:8px;margin-bottom:0.28rem;"><span style="font-size:0.78rem;">${sub.icon||'▸'} ${sub.name}</span><button onclick="deleteSubcategory('${cat.id}','${sub.id}')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:0.75rem;">✕</button></div>`).join('')}</div>`;
+            }).join('');
+        }
+
+        function renderMobPortfolioSummary() {
+            const el=document.getElementById('mob-portfolio-summary'); if(!el) return;
+            if(!investments||!investments.length) return;
+            const byType={};
+            investments.forEach(inv=>{const t=inv.type||'Outros';if(!byType[t])byType[t]={invested:0,current:0};byType[t].invested+=inv.invested||0;byType[t].current+=inv.currentValue||inv.invested||0;});
+            el.innerHTML=Object.entries(byType).map(([type,vals])=>{
+                const profit=vals.current-vals.invested, pct=vals.invested>0?((profit/vals.invested)*100).toFixed(1):0, isPos=profit>=0;
+                return`<div class="mob-debt-card"><div class="mob-debt-header"><div class="mob-debt-name">${type}</div><div class="mob-debt-badge" style="background:${isPos?'rgba(16,185,129,0.15)':'rgba(239,68,68,0.15)'};color:${isPos?'#10b981':'#ef4444'};">${isPos?'+':''}${pct}%</div></div><div class="mob-debt-stats"><div><div class="mob-debt-stat-label">Investido</div><div class="mob-debt-stat-value">${formatCurrency(vals.invested)}</div></div><div><div class="mob-debt-stat-label">Atual</div><div class="mob-debt-stat-value" style="color:#10b981;">${formatCurrency(vals.current)}</div></div><div><div class="mob-debt-stat-label">Lucro</div><div class="mob-debt-stat-value" style="color:${isPos?'#10b981':'#ef4444'};">${formatCurrency(profit)}</div></div></div></div>`;
+            }).join('');
+        }
+
+        /* Hook renders to also update mobile */
+        document.addEventListener('DOMContentLoaded', () => {
+            ['updateDashboard','renderMonthlyTransactions'].forEach(fn => {
+                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(syncMobileValues,60);};}
+            });
+            ['renderInvestments'].forEach(fn => {
+                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{renderMobInvestments();syncMobileValues();},60);};}
+            });
+            ['renderDebts','renderDebtsInTransactions'].forEach(fn => {
+                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{renderMobDebts();syncMobileValues();},60);};}
+            });
+            if(window.renderCategories){const o=window.renderCategories;window.renderCategories=function(...a){o(...a);setTimeout(renderMobCategories,60);};}
+            if(window.renderPortfolio){const o=window.renderPortfolio;window.renderPortfolio=function(...a){o(...a);setTimeout(()=>{renderMobPortfolioSummary();syncMobileValues();},60);};}
+            setTimeout(()=>{syncMobileValues();renderMobInvestments();renderMobDebts();renderMobCategories();renderMobPortfolioSummary();},500);
+        });
+
         // Service Worker Registration (skip for Artifact context)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -4072,10 +4760,12 @@
             display: none;
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background: #0f0f0f;
-            border-top: 1px solid #252525;
+            background: rgba(8,8,8,0.97);
+            border-top: 1px solid rgba(255,255,255,0.06);
             z-index: 600;
             padding-bottom: env(safe-area-inset-bottom, 0px);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
         }
         @media (max-width: 768px) { #mobile-bottom-nav { display: block !important; } }
 
@@ -4084,23 +4774,21 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            height: 52px;
+            height: 64px;
         }
 
-        /* Linha secundária (ações) — oculta por padrão, abre no "+" */
+        /* Linha secundária (ações) */
         #mob-actions-row {
             display: flex;
             justify-content: space-around;
             align-items: center;
             height: 0;
             overflow: hidden;
-            background: #161616;
-            border-top: 1px solid #252525;
-            transition: height 0.25s cubic-bezier(0.4,0,0.2,1);
+            background: rgba(15,15,15,0.98);
+            border-top: 1px solid rgba(255,255,255,0.04);
+            transition: height 0.28s cubic-bezier(0.4,0,0.2,1);
         }
-        #mob-actions-row.open {
-            height: 52px;
-        }
+        #mob-actions-row.open { height: 56px; }
 
         .mob-nav-btn {
             flex: 1;
@@ -4108,15 +4796,15 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0.35rem 0;
+            padding: 0.4rem 0;
             cursor: pointer;
-            color: #6b7280;
-            gap: 2px;
+            color: #374151;
+            gap: 3px;
             transition: color 0.15s;
             -webkit-tap-highlight-color: transparent;
         }
-        .mob-nav-btn span:first-child { font-size: 1.25rem; line-height: 1; }
-        .mob-nav-btn span:last-child  { font-size: 0.58rem; font-weight: 600; letter-spacing: 0.3px; }
+        .mob-nav-btn span:first-child { font-size: 1.3rem; line-height: 1; }
+        .mob-nav-btn span:last-child  { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.4px; }
         .mob-nav-btn.active           { color: #ff6b35 !important; }
 
         /* Botão + central */
@@ -4128,41 +4816,41 @@
             justify-content: center;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
-            gap: 2px;
+            gap: 3px;
         }
         .mob-btn-add-icon {
-            width: 40px; height: 40px;
+            width: 44px; height: 44px;
             background: linear-gradient(135deg, #ff6b35, #ff8c5a);
-            border-radius: 12px;
+            border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem;
-            box-shadow: 0 3px 12px rgba(255,107,53,0.45);
-            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 16px rgba(255,107,53,0.5), 0 0 0 1px rgba(255,107,53,0.2);
+            transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s;
         }
         .mob-btn-add-icon.open {
-            transform: rotate(45deg);
-            background: linear-gradient(135deg, #ef4444, #f87171);
-            box-shadow: 0 3px 12px rgba(239,68,68,0.4);
+            transform: rotate(45deg) scale(0.95);
+            background: linear-gradient(135deg, #dc2626, #f87171);
+            box-shadow: 0 4px 16px rgba(239,68,68,0.45);
         }
-        .mob-btn-add span:last-child { font-size: 0.58rem; font-weight: 700; color: #ff6b35; }
+        .mob-btn-add span:last-child { font-size: 0.57rem; font-weight: 700; color: #ff6b35; letter-spacing: 0.4px; }
 
-        /* Botões de ação (exportar/importar/bancos) */
+        /* Botões de ação */
         .mob-action-btn {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0.35rem 0;
+            padding: 0.4rem 0;
             cursor: pointer;
-            color: #9ca3af;
-            gap: 2px;
+            color: #6b7280;
+            gap: 3px;
             -webkit-tap-highlight-color: transparent;
             transition: color 0.15s;
         }
-        .mob-action-btn:active { color: #ff6b35; }
+        .mob-action-btn:active { color: #ff6b35; transform: scale(0.94); }
         .mob-action-btn span:first-child { font-size: 1.2rem; line-height: 1; }
-        .mob-action-btn span:last-child  { font-size: 0.56rem; font-weight: 600; }
+        .mob-action-btn span:last-child  { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.3px; }
     </style>
 
     <nav id="mobile-bottom-nav">
