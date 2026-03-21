@@ -1530,7 +1530,7 @@
             <div class="mob-page-header">
                 <span class="mob-page-title">📅 Lançamentos</span>
                 <div class="mob-page-actions">
-                    <select id="monthly-filter-month-mob" class="filter-select" onchange="document.getElementById('monthly-filter-month').value=this.value;filterMonthlyTransactions();" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:var(--bg-card);border-color:var(--border);"><option value="">Todos os meses</option></select>
+                    <select id="monthly-filter-month-mob" class="filter-select" onchange="document.getElementById('monthly-filter-month').value=this.value;filterMonthlyTransactions();renderMobMonthlyList();setTimeout(()=>{initMobChart_MonthlyExpCat();initMobChart_MonthlyIncCat();},80);" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:var(--bg-card);border-color:var(--border);"><option value="">Todos os meses</option></select>
                 </div>
             </div>
             <div class="mob-subnav" id="monthly-subnav">
@@ -4677,20 +4677,321 @@
             }).join('');
         }
 
+        /* ═══════════════════════════════════════════════════════════════
+           FUNÇÕES MOBILE ESSENCIAIS — abas, filtros e gráficos
+           ═══════════════════════════════════════════════════════════════ */
+
+        /* ── Troca de sub-aba dentro de uma página ── */
+        function mobSubSwitch(navId, pagesId, tabEl, targetId) {
+            // Atualiza tabs
+            const nav = document.getElementById(navId);
+            if (nav) nav.querySelectorAll('.mob-subnav-tab').forEach(t => t.classList.remove('active'));
+            if (tabEl) tabEl.classList.add('active');
+
+            // Anima sub-páginas
+            const container = document.getElementById(pagesId);
+            if (!container) return;
+            const pages = container.querySelectorAll('.mob-subpage');
+            const targetEl = document.getElementById(targetId);
+            if (!targetEl) return;
+
+            // Descobre índice atual e novo
+            let curIdx = -1, newIdx = -1;
+            pages.forEach((p, i) => {
+                if (p.classList.contains('active')) curIdx = i;
+                if (p.id === targetId) newIdx = i;
+            });
+            if (curIdx === newIdx) return;
+
+            // Posiciona: saindo vai para left (-100%), entrando vem da right (+100%)
+            pages.forEach((p, i) => {
+                if (i === curIdx) {
+                    p.style.transform = newIdx > curIdx ? 'translateX(-100%)' : 'translateX(100%)';
+                    p.classList.remove('active');
+                } else if (i === newIdx) {
+                    // Começa fora e entra
+                    p.style.transition = 'none';
+                    p.style.transform = newIdx > curIdx ? 'translateX(100%)' : 'translateX(-100%)';
+                    p.classList.add('active');
+                    // Força reflow e anima
+                    p.offsetHeight; // eslint-disable-line
+                    p.style.transition = '';
+                    p.style.transform = 'translateX(0%)';
+                } else {
+                    p.style.transform = i < newIdx ? 'translateX(-100%)' : 'translateX(100%)';
+                    p.classList.remove('active');
+                }
+            });
+
+            // Inicializa gráficos mobile da aba recém-aberta (lazy)
+            setTimeout(() => initMobChartsForTab(targetId), 80);
+        }
+
+        /* ── Filtro de chips na lista de lançamentos ── */
+        let _mobTxFilter = 'all';
+        function mobTxFilter(chipEl, filter) {
+            _mobTxFilter = filter;
+            // Atualiza chips visuais
+            const row = chipEl.closest('.mob-filter-row');
+            if (row) row.querySelectorAll('.mob-filter-chip').forEach(c => c.classList.remove('active'));
+            chipEl.classList.add('active');
+            // Re-renderiza lista
+            renderMobMonthlyList();
+        }
+
+        /* ── Renderiza lista mobile de lançamentos com filtro ── */
+        function renderMobMonthlyList() {
+            const el = document.getElementById('mob-monthly-list');
+            if (!el) return;
+
+            // Filtro de mês
+            const monthSel = document.getElementById('monthly-filter-month-mob');
+            const selMonth = monthSel ? monthSel.value : '';
+
+            let txs = [...(transactions || [])];
+            if (selMonth) txs = txs.filter(t => t.date && t.date.startsWith(selMonth));
+            if (_mobTxFilter === 'income')  txs = txs.filter(t => t.type === 'income');
+            if (_mobTxFilter === 'expense') txs = txs.filter(t => t.type === 'expense');
+            if (_mobTxFilter === 'pending') txs = txs.filter(t => t.status === 'pending');
+
+            // Ordena por data desc
+            txs.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+            if (!txs.length) {
+                el.innerHTML = '<div style="text-align:center;padding:3rem 1rem;color:#4b5563;"><div style="font-size:2rem;margin-bottom:0.5rem;">📭</div>Nenhum lançamento encontrado</div>';
+                return;
+            }
+
+            const catIcon = (catName) => {
+                const cat = (categories || []).flatMap(c => c.subcategories || []).find(s => s.name === catName);
+                return cat ? (cat.icon || '💰') : (catName === 'Outros' ? '💰' : '💳');
+            };
+
+            el.innerHTML = txs.map(t => {
+                const isInc = t.type === 'income';
+                const isPend = t.status === 'pending';
+                const icon = catIcon(t.category);
+                const bgColor = isInc ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)';
+                const valColor = isInc ? '#34d399' : '#f87171';
+                const pendBadge = isPend ? '<span style="font-size:0.58rem;background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.2);padding:0.1rem 0.4rem;border-radius:6px;margin-left:4px;">Pendente</span>' : '';
+                return `<div class="mob-tx-item" onclick="editTransaction('${t.id}')">
+                    <div class="mob-tx-icon" style="background:${bgColor};">${icon}</div>
+                    <div class="mob-tx-info">
+                        <div class="mob-tx-desc">${t.description || t.category || '—'}${pendBadge}</div>
+                        <div class="mob-tx-cat">${t.category || '—'}</div>
+                    </div>
+                    <div class="mob-tx-right">
+                        <div class="mob-tx-value" style="color:${valColor};">${isInc ? '+' : '−'}${formatCurrency(t.value)}</div>
+                        <div class="mob-tx-date">${formatDate(t.date)}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        /* ── Gráficos mobile (lazy: só cria quando a aba fica visível) ── */
+        const mobCharts = {};
+
+        function mobChartOptions(extra) {
+            return Object.assign({
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 400 },
+                plugins: {
+                    legend: { labels: { color: '#6b7280', font: { size: 11 }, boxWidth: 10 } }
+                },
+                scales: {
+                    y: { ticks: { color: '#4b5563', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                    x: { ticks: { color: '#4b5563', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+                }
+            }, extra || {});
+        }
+
+        function initMobChartsForTab(tabId) {
+            // Cada case cria/atualiza só os gráficos necessários para aquela aba
+            switch(tabId) {
+                case 'dash-overview':    initMobChart_IncomeExpense(); break;
+                case 'dash-cashflow':    initMobChart_CashFlow(); initMobChart_YearComparison(); break;
+                case 'dash-charts':      initMobChart_Category(); initMobChart_BalanceEvolution(); break;
+                case 'dash-assets':      initMobChart_Asset(); break;
+                case 'monthly-charts':   initMobChart_MonthlyExpCat(); initMobChart_MonthlyIncCat(); break;
+                case 'portfolio-charts-mob': initMobChart_PortfolioComp(); initMobChart_PortfolioBank(); break;
+            }
+        }
+
+        function initMobChart_IncomeExpense() {
+            const ctx = document.getElementById('mob-incomeExpenseChart'); if (!ctx) return;
+            const months = getLast6Months();
+            const inc = months.map(m => transactions.filter(t=>t.type==='income'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0));
+            const exp = months.map(m => transactions.filter(t=>t.type==='expense'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0));
+            if (mobCharts.incomeExpense) mobCharts.incomeExpense.destroy();
+            mobCharts.incomeExpense = new Chart(ctx, { type:'bar', data:{ labels:months.map(formatMonthLabel), datasets:[
+                {label:'Receitas',data:inc,backgroundColor:'rgba(16,185,129,0.7)',borderRadius:5},
+                {label:'Despesas',data:exp,backgroundColor:'rgba(239,68,68,0.7)',borderRadius:5}
+            ]}, options: mobChartOptions() });
+        }
+
+        function initMobChart_CashFlow() {
+            const ctx = document.getElementById('mob-cashFlowChart'); if (!ctx) return;
+            const months = getLast6Months();
+            const data = months.map(m => {
+                const inc = transactions.filter(t=>t.type==='income'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0);
+                const exp = transactions.filter(t=>t.type==='expense'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0);
+                return inc - exp;
+            });
+            if (mobCharts.cashFlow) mobCharts.cashFlow.destroy();
+            mobCharts.cashFlow = new Chart(ctx, { type:'bar', data:{ labels:months.map(formatMonthLabel), datasets:[{
+                label:'Saldo', data,
+                backgroundColor: data.map(v => v>=0 ? 'rgba(255,107,53,0.75)' : 'rgba(239,68,68,0.7)'),
+                borderRadius:5
+            }]}, options: mobChartOptions() });
+        }
+
+        function initMobChart_YearComparison() {
+            const ctx = document.getElementById('mob-yearComparisonChart'); if (!ctx) return;
+            const months = getLast6Months();
+            const inc = months.map(m => transactions.filter(t=>t.type==='income'&&t.date.startsWith(m)).reduce((s,t)=>s+t.value,0));
+            const exp = months.map(m => transactions.filter(t=>t.type==='expense'&&t.date.startsWith(m)).reduce((s,t)=>s+t.value,0));
+            if (mobCharts.yearComp) mobCharts.yearComp.destroy();
+            mobCharts.yearComp = new Chart(ctx, { type:'line', data:{ labels:months.map(formatMonthLabel), datasets:[
+                {label:'Receitas',data:inc,borderColor:'#34d399',backgroundColor:'rgba(16,185,129,0.08)',tension:0.4},
+                {label:'Despesas',data:exp,borderColor:'#f87171',backgroundColor:'rgba(239,68,68,0.08)',tension:0.4}
+            ]}, options: mobChartOptions() });
+        }
+
+        function initMobChart_Category() {
+            const ctx = document.getElementById('mob-categoryChart'); if (!ctx) return;
+            const now = new Date(); const curMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+            const bycat = {};
+            transactions.filter(t=>t.type==='expense'&&t.date.startsWith(curMonth)).forEach(t=>{ bycat[t.category]=(bycat[t.category]||0)+t.value; });
+            const labels=Object.keys(bycat), vals=Object.values(bycat);
+            if (mobCharts.category) mobCharts.category.destroy();
+            if (!labels.length) return;
+            const colors=['#ff6b35','#8b5cf6','#10b981','#f59e0b','#ef4444','#3b82f6','#ec4899','#14b8a6'];
+            mobCharts.category = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
+                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
+                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
+        }
+
+        function initMobChart_BalanceEvolution() {
+            const ctx = document.getElementById('mob-balanceEvolutionChart'); if (!ctx) return;
+            const months = getLast12Months ? getLast12Months() : getLast6Months();
+            let running = 0;
+            const data = months.map(m => {
+                const inc = transactions.filter(t=>t.type==='income'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0);
+                const exp = transactions.filter(t=>t.type==='expense'&&t.date.startsWith(m)&&t.status==='paid').reduce((s,t)=>s+t.value,0);
+                running += inc - exp; return running;
+            });
+            if (mobCharts.balanceEvo) mobCharts.balanceEvo.destroy();
+            mobCharts.balanceEvo = new Chart(ctx, { type:'line', data:{ labels:months.map(formatMonthLabel), datasets:[{
+                label:'Patrimônio', data, borderColor:'#8b5cf6', backgroundColor:'rgba(139,92,246,0.1)', tension:0.4, fill:true
+            }]}, options: mobChartOptions() });
+        }
+
+        function initMobChart_Asset() {
+            const ctx = document.getElementById('mob-assetChart'); if (!ctx) return;
+            const data = []; const labels = [];
+            const account = transactions.filter(t=>t.status==='paid').reduce((s,t)=>s+(t.type==='income'?t.value:-t.value),0);
+            const invTotal = investments.reduce((s,i)=>s+(i.currentValue||i.invested||0),0);
+            const debtTotal = debts.reduce((s,d)=>s+((d.installments-d.paidInstallments)*d.installmentValue),0);
+            if(account>0){labels.push('Saldo Conta');data.push(account);}
+            if(invTotal>0){labels.push('Investimentos');data.push(invTotal);}
+            if(debtTotal>0){labels.push('Dívidas');data.push(debtTotal);}
+            if (mobCharts.asset) mobCharts.asset.destroy();
+            if (!data.length) return;
+            mobCharts.asset = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data,backgroundColor:['#10b981','#8b5cf6','#ef4444'],borderWidth:0,hoverOffset:6}]},
+                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
+                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
+        }
+
+        function initMobChart_MonthlyExpCat() {
+            const ctx = document.getElementById('mob-monthlyExpenseCategoryChart'); if (!ctx) return;
+            const selMonth = document.getElementById('monthly-filter-month-mob');
+            const m = selMonth&&selMonth.value ? selMonth.value : `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`;
+            const bycat = {};
+            transactions.filter(t=>t.type==='expense'&&t.date.startsWith(m)).forEach(t=>{ bycat[t.category]=(bycat[t.category]||0)+t.value; });
+            const labels=Object.keys(bycat), vals=Object.values(bycat);
+            if (mobCharts.monthExpCat) mobCharts.monthExpCat.destroy();
+            if (!labels.length) return;
+            const colors=['#ef4444','#f59e0b','#8b5cf6','#ff6b35','#10b981','#3b82f6','#ec4899','#14b8a6'];
+            mobCharts.monthExpCat = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
+                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
+                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
+        }
+
+        function initMobChart_MonthlyIncCat() {
+            const ctx = document.getElementById('mob-monthlyIncomeCategoryChart'); if (!ctx) return;
+            const selMonth = document.getElementById('monthly-filter-month-mob');
+            const m = selMonth&&selMonth.value ? selMonth.value : `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`;
+            const bycat = {};
+            transactions.filter(t=>t.type==='income'&&t.date.startsWith(m)).forEach(t=>{ bycat[t.category]=(bycat[t.category]||0)+t.value; });
+            const labels=Object.keys(bycat), vals=Object.values(bycat);
+            if (mobCharts.monthIncCat) mobCharts.monthIncCat.destroy();
+            if (!labels.length) return;
+            const colors=['#10b981','#34d399','#3b82f6','#8b5cf6','#f59e0b','#ff6b35'];
+            mobCharts.monthIncCat = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
+                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
+                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
+        }
+
+        function initMobChart_PortfolioComp() {
+            const ctx = document.getElementById('mob-portfolioCompositionChart'); if (!ctx) return;
+            const byType = {};
+            investments.forEach(i=>{ const t=i.type||'Outros'; byType[t]=(byType[t]||0)+(i.currentValue||i.invested||0); });
+            const labels=Object.keys(byType), vals=Object.values(byType);
+            if (mobCharts.ptfComp) mobCharts.ptfComp.destroy();
+            if (!labels.length) return;
+            const colors=['#8b5cf6','#10b981','#ff6b35','#f59e0b','#3b82f6','#ef4444'];
+            mobCharts.ptfComp = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
+                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
+                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
+        }
+
+        function initMobChart_PortfolioBank() {
+            const ctx = document.getElementById('mob-portfolioBankChart'); if (!ctx) return;
+            const byBank = {};
+            investments.forEach(i=>{ const b=(banks.find(bk=>bk.id==i.bank)||{}).name||'Outro'; byBank[b]=(byBank[b]||0)+(i.currentValue||i.invested||0); });
+            const labels=Object.keys(byBank), vals=Object.values(byBank);
+            if (mobCharts.ptfBank) mobCharts.ptfBank.destroy();
+            if (!labels.length) return;
+            const colors=['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ff6b35','#ef4444'];
+            mobCharts.ptfBank = new Chart(ctx, { type:'doughnut', data:{ labels, datasets:[{data:vals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
+                options:{ responsive:true, maintainAspectRatio:false, animation:{duration:400},
+                    plugins:{ legend:{ position:'right', labels:{color:'#6b7280',font:{size:10},boxWidth:10,padding:8} } } } });
+        }
+
+        /* ── Invalidar gráficos mobile quando dados mudam ── */
+        function invalidateMobCharts() {
+            Object.values(mobCharts).forEach(c => { try { c.destroy(); } catch(e){} });
+            Object.keys(mobCharts).forEach(k => delete mobCharts[k]);
+            // Re-inicializa a aba ativa
+            const activeSub = document.querySelector('.mob-subpage.active');
+            if (activeSub) initMobChartsForTab(activeSub.id);
+        }
+
         /* Hook renders to also update mobile */
         document.addEventListener('DOMContentLoaded', () => {
             ['updateDashboard','renderMonthlyTransactions'].forEach(fn => {
-                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(syncMobileValues,60);};}
+                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{syncMobileValues();renderMobMonthlyList();invalidateMobCharts();},80);};}
             });
             ['renderInvestments'].forEach(fn => {
-                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{renderMobInvestments();syncMobileValues();},60);};}
+                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{renderMobInvestments();syncMobileValues();invalidateMobCharts();},80);};}
             });
             ['renderDebts','renderDebtsInTransactions'].forEach(fn => {
-                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{renderMobDebts();syncMobileValues();},60);};}
+                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{renderMobDebts();syncMobileValues();invalidateMobCharts();},80);};}
             });
-            if(window.renderCategories){const o=window.renderCategories;window.renderCategories=function(...a){o(...a);setTimeout(renderMobCategories,60);};}
-            if(window.renderPortfolio){const o=window.renderPortfolio;window.renderPortfolio=function(...a){o(...a);setTimeout(()=>{renderMobPortfolioSummary();syncMobileValues();},60);};}
-            setTimeout(()=>{syncMobileValues();renderMobInvestments();renderMobDebts();renderMobCategories();renderMobPortfolioSummary();},500);
+            if(window.renderCategories){const o=window.renderCategories;window.renderCategories=function(...a){o(...a);setTimeout(renderMobCategories,80);};}
+            if(window.renderPortfolio){const o=window.renderPortfolio;window.renderPortfolio=function(...a){o(...a);setTimeout(()=>{renderMobPortfolioSummary();syncMobileValues();invalidateMobCharts();},80);};}
+
+            // Boot: renderiza tudo e inicializa gráficos da aba inicial
+            setTimeout(()=>{
+                syncMobileValues();
+                renderMobMonthlyList();
+                renderMobInvestments();
+                renderMobDebts();
+                renderMobCategories();
+                renderMobPortfolioSummary();
+                initMobChartsForTab('dash-overview'); // aba inicial do dashboard
+            }, 600);
         });
 
         // Service Worker Registration (skip for Artifact context)
