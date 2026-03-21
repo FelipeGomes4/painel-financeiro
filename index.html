@@ -2436,6 +2436,31 @@
                     monthlyFilter.appendChild(option);
                 });
             }
+
+            // Monthly filter MOBILE — espelha o desktop
+            const monthlyFilterMob = document.getElementById('monthly-filter-month-mob');
+            if (monthlyFilterMob) {
+                monthlyFilterMob.innerHTML = '<option value="">Todos os meses</option>';
+                allMonths.forEach(month => {
+                    const option = document.createElement('option');
+                    option.value = month;
+                    option.textContent = formatMonthLabel(month);
+                    monthlyFilterMob.appendChild(option);
+                });
+            }
+
+            // Dashboard filter MOBILE — espelha o desktop
+            const dashFilterMob = document.getElementById('dashboard-filter-month-mob');
+            if (dashFilterMob) {
+                dashFilterMob.innerHTML = '<option value="">Mês Atual</option>';
+                allMonths.forEach(month => {
+                    const option = document.createElement('option');
+                    option.value = month;
+                    option.textContent = formatMonthLabel(month);
+                    if (month === currentMonth) option.selected = true;
+                    dashFilterMob.appendChild(option);
+                });
+            }
         }
 
         function populateCategoryFilters() {
@@ -3150,6 +3175,8 @@
                 AppStorage.setItem('transactions', JSON.stringify(transactions));
                 updateDashboard();
                 renderMonthlyTransactions();
+                renderMobMonthlyList();
+                syncMobileValues();
                 populateMonthFilters();
                 populateCategoryFilters();
             } else if (type === 'debt') {
@@ -3203,6 +3230,8 @@
                 AppStorage.setItem('transactions', JSON.stringify(transactions));
                 updateDashboard();
                 renderMonthlyTransactions();
+                renderMobMonthlyList();
+                syncMobileValues();
                 populateMonthFilters();
                 populateCategoryFilters();
             }
@@ -3217,16 +3246,20 @@
         }
 
         function deleteTransaction(id) {
+            id = typeof id === 'string' ? parseInt(id) : id;
             if (confirm('Deseja realmente excluir esta transação?')) {
                 transactions = transactions.filter(t => t.id !== id);
                 AppStorage.setItem('transactions', JSON.stringify(transactions));
                 updateDashboard();
                 renderMonthlyTransactions();
+                renderMobMonthlyList();
+                syncMobileValues();
                 populateMonthFilters();
             }
         }
 
         function editTransaction(id) {
+            id = typeof id === 'string' ? parseInt(id) : id;
             const transaction = transactions.find(t => t.id === id);
             if (!transaction) return;
             
@@ -3263,6 +3296,7 @@
         }
 
         function payTransaction(id) {
+            id = typeof id === 'string' ? parseInt(id) : id;
             if (confirm('Marcar esta transação como paga?')) {
                 const transaction = transactions.find(t => t.id === id);
                 if (transaction) {
@@ -3270,6 +3304,8 @@
                     AppStorage.setItem('transactions', JSON.stringify(transactions));
                     updateDashboard();
                     renderMonthlyTransactions();
+                    renderMobMonthlyList();
+                    syncMobileValues();
                 }
             }
         }
@@ -4751,7 +4787,6 @@
             const el = document.getElementById('mob-monthly-list');
             if (!el) return;
 
-            // Filtro de mês
             const monthSel = document.getElementById('monthly-filter-month-mob');
             const selMonth = monthSel ? monthSel.value : '';
 
@@ -4761,7 +4796,6 @@
             if (_mobTxFilter === 'expense') txs = txs.filter(t => t.type === 'expense');
             if (_mobTxFilter === 'pending') txs = txs.filter(t => t.status === 'pending');
 
-            // Ordena por data desc
             txs.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
             if (!txs.length) {
@@ -4771,32 +4805,44 @@
 
             const catIcon = (catName) => {
                 const cat = (categories || []).flatMap(c => c.subcategories || []).find(s => s.name === catName);
-                return cat ? (cat.icon || '💰') : (catName === 'Outros' ? '💰' : '💳');
+                return cat ? (cat.icon || '💰') : '💳';
             };
 
             el.innerHTML = txs.map(t => {
-                const isInc = t.type === 'income';
+                const isInc  = t.type === 'income';
                 const isPend = t.status === 'pending';
-                const icon = catIcon(t.category);
-                const bgColor = isInc ? 'rgba(16,185,129,0.12)' : 'rgba(239,68,68,0.12)';
+                const isDebt = !!t.isDebtPayment;
+                const icon     = catIcon(t.category);
+                const bgColor  = isInc ? 'rgba(16,185,129,0.14)' : 'rgba(239,68,68,0.14)';
                 const valColor = isInc ? '#34d399' : '#f87171';
-                const pendBadge = isPend ? '<span style="font-size:0.58rem;background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.2);padding:0.1rem 0.4rem;border-radius:6px;margin-left:4px;">Pendente</span>' : '';
-                return `<div class="mob-tx-item" onclick="editTransaction('${t.id}')">
-                    <div class="mob-tx-icon" style="background:${bgColor};">${icon}</div>
-                    <div class="mob-tx-info">
-                        <div class="mob-tx-desc">${t.description || t.category || '—'}${pendBadge}</div>
-                        <div class="mob-tx-cat">${t.category || '—'}</div>
+
+                const statusBadge = isPend
+                    ? `<span style="font-size:0.58rem;background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.2);padding:0.1rem 0.4rem;border-radius:6px;">Pendente</span>`
+                    : `<span style="font-size:0.58rem;background:rgba(16,185,129,0.12);color:#34d399;border:1px solid rgba(16,185,129,0.2);padding:0.1rem 0.4rem;border-radius:6px;">Pago</span>`;
+
+                const btnPay    = (isPend && !isDebt) ? `<button onclick="event.stopPropagation();payTransaction(${t.id})" style="flex:1;padding:0.4rem 0;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);color:#34d399;border-radius:10px;font-size:0.72rem;font-weight:700;cursor:pointer;">💳 Pagar</button>` : '';
+                const btnEdit   = !isDebt ? `<button onclick="event.stopPropagation();editTransaction(${t.id})" style="flex:1;padding:0.4rem 0;background:rgba(255,107,53,0.10);border:1px solid rgba(255,107,53,0.22);color:#ff6b35;border-radius:10px;font-size:0.72rem;font-weight:700;cursor:pointer;">✏️ Editar</button>` : '';
+                const btnDelete = `<button onclick="event.stopPropagation();deleteTransactionFromHistory(${t.id},${isDebt})" style="flex:1;padding:0.4rem 0;background:rgba(239,68,68,0.10);border:1px solid rgba(239,68,68,0.22);color:#f87171;border-radius:10px;font-size:0.72rem;font-weight:700;cursor:pointer;">🗑️ Excluir</button>`;
+
+                return `<div class="mob-tx-item" style="flex-direction:column;align-items:stretch;gap:0.55rem;">
+                    <div style="display:flex;align-items:center;gap:0.8rem;">
+                        <div class="mob-tx-icon" style="background:${bgColor};">${icon}</div>
+                        <div class="mob-tx-info">
+                            <div class="mob-tx-desc">${t.description || t.category || '—'}</div>
+                            <div class="mob-tx-cat" style="display:flex;align-items:center;gap:0.35rem;margin-top:3px;">
+                                ${statusBadge}
+                                <span>${t.category || '—'} · ${formatDate(t.date)}</span>
+                            </div>
+                        </div>
+                        <div class="mob-tx-right">
+                            <div class="mob-tx-value" style="color:${valColor};">${isInc ? '+' : '−'}${formatCurrency(t.value)}</div>
+                        </div>
                     </div>
-                    <div class="mob-tx-right">
-                        <div class="mob-tx-value" style="color:${valColor};">${isInc ? '+' : '−'}${formatCurrency(t.value)}</div>
-                        <div class="mob-tx-date">${formatDate(t.date)}</div>
-                    </div>
+                    <div style="display:flex;gap:0.4rem;">${btnPay}${btnEdit}${btnDelete}</div>
                 </div>`;
             }).join('');
         }
 
-        /* ── Gráficos mobile (lazy: só cria quando a aba fica visível) ── */
-        const mobCharts = {};
 
         function mobChartOptions(extra) {
             return Object.assign({
@@ -5204,9 +5250,64 @@
     </nav>
 
     <script>
-        /* ── Controle da barra de navegação móvel ── */
+        /* ════════════════════════════════════════════════════
+           NAVEGAÇÃO MOBILE — fonte única de verdade
+           ════════════════════════════════════════════════════ */
+        const PAGE_ORDER = ['dashboard','monthly','debts','investments','portfolio','categories'];
+        let currentPageIdx = 0;
         let mobActionsOpen = false;
 
+        /* Única função que muda de página — usada por tudo */
+        function goToPage(pageName) {
+            const newIdx = PAGE_ORDER.indexOf(pageName);
+            if (newIdx === -1) return;
+
+            const isMobile = window.innerWidth <= 768;
+
+            /* 1. Roda a lógica de dados do app (render) */
+            switchPage(pageName);
+
+            /* 2. No mobile, aplica translateX em todas as páginas */
+            if (isMobile) {
+                PAGE_ORDER.forEach((pid, i) => {
+                    const el = document.getElementById(pid);
+                    if (!el) return;
+                    el.style.transform = i < newIdx  ? 'translateX(-100%)' :
+                                         i === newIdx ? 'translateX(0%)'   :
+                                                        'translateX(100%)';
+                    el.classList.toggle('active', i === newIdx);
+                });
+            }
+
+            currentPageIdx = newIdx;
+
+            /* 3. Sincroniza barra inferior */
+            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                const active = btn.dataset.page === pageName;
+                btn.classList.toggle('active', active);
+                btn.style.color = active ? '#ff6b35' : '';
+            });
+
+            /* 4. Inicializa gráficos mobile da nova página */
+            const tabMap = {
+                dashboard:   'dash-overview',
+                monthly:     'monthly-list',
+                debts:       'debts-list-mob',
+                investments: 'invest-list',
+                portfolio:   'portfolio-charts-mob',
+                categories:  null
+            };
+            const activeTab = tabMap[pageName];
+            if (activeTab) setTimeout(() => initMobChartsForTab(activeTab), 80);
+        }
+
+        /* Barra inferior: botão de página */
+        function mobNav(pageName) {
+            closeMobActions();
+            goToPage(pageName);
+        }
+
+        /* Barra inferior: botão de ação */
         function toggleMobActions() {
             mobActionsOpen = !mobActionsOpen;
             document.getElementById('mob-actions-row').classList.toggle('open', mobActionsOpen);
@@ -5217,21 +5318,6 @@
             mobActionsOpen = false;
             document.getElementById('mob-actions-row').classList.remove('open');
             document.getElementById('mob-add-icon').classList.remove('open');
-        }
-
-        function mobNav(pageName) {
-            closeMobActions();
-            // Usa o switchPage original
-            if (window._mobOrigSwitch) {
-                window._mobOrigSwitch(pageName);
-            } else {
-                switchPage(pageName);
-            }
-            document.querySelectorAll('.mob-nav-btn').forEach(btn => {
-                const active = btn.dataset.page === pageName;
-                btn.classList.toggle('active', active);
-                btn.style.color = active ? '#ff6b35' : '';
-            });
         }
 
         function mobAction(action) {
@@ -5245,66 +5331,22 @@
             }
         }
 
-        /* ── Swipe horizontal entre páginas ── */
-        (function() {
-            const PAGE_ORDER = ['dashboard', 'monthly', 'debts', 'investments', 'portfolio', 'categories'];
-            let currentPageIdx = 0;
-            let touchStartX = 0, touchStartY = 0, touchStartTime = 0;
-            let isSwiping = false;
-
-            // Intercepta switchPage para animar slides
-            document.addEventListener('DOMContentLoaded', () => {
-                const origSwitch = window.switchPage;
-                window._mobOrigSwitch = origSwitch;
-
-                window.switchPage = function(pageName) {
-                    origSwitch(pageName);
-
-                    const newIdx = PAGE_ORDER.indexOf(pageName);
-                    if (newIdx === -1) return;
-
-                    const pages = document.querySelectorAll('.page');
-
-                    // Em desktop não faz nada extra
-                    if (window.innerWidth > 768) {
-                        currentPageIdx = newIdx;
-                        return;
-                    }
-
-                    // Posiciona todas as páginas nos seus slots
-                    PAGE_ORDER.forEach((pid, i) => {
-                        const el = document.getElementById(pid);
-                        if (!el) return;
-                        el.style.transform = i < newIdx  ? 'translateX(-100%)' :
-                                             i === newIdx ? 'translateX(0%)'   :
-                                                            'translateX(100%)';
-                        el.classList.toggle('active', i === newIdx);
-                    });
-
-                    currentPageIdx = newIdx;
-
-                    // Sincroniza nav
-                    document.querySelectorAll('.mob-nav-btn').forEach(btn => {
-                        const active = btn.dataset.page === pageName;
-                        btn.classList.toggle('active', active);
-                        btn.style.color = active ? '#ff6b35' : '';
-                    });
-                };
-
-                // Inicializa posições
+        /* ── Inicializa posições no boot ── */
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.innerWidth <= 768) {
                 PAGE_ORDER.forEach((pid, i) => {
                     const el = document.getElementById(pid);
-                    if (!el) return;
-                    if (window.innerWidth <= 768) {
-                        el.style.transform = i === 0 ? 'translateX(0%)' : 'translateX(100%)';
-                    }
+                    if (el) el.style.transform = i === 0 ? 'translateX(0%)' : 'translateX(100%)';
                 });
-            });
+            }
+        });
 
-            // Touch handlers no main-content
+        /* ── Swipe horizontal ── */
+        (function() {
+            let touchStartX = 0, touchStartY = 0, touchStartTime = 0, isSwiping = false;
+
             document.addEventListener('touchstart', e => {
-                const mc = document.querySelector('.main-content');
-                if (!mc || window.innerWidth > 768) return;
+                if (window.innerWidth > 768) return;
                 touchStartX    = e.touches[0].clientX;
                 touchStartY    = e.touches[0].clientY;
                 touchStartTime = Date.now();
@@ -5315,25 +5357,17 @@
                 if (window.innerWidth > 768) return;
                 const dx = e.touches[0].clientX - touchStartX;
                 const dy = e.touches[0].clientY - touchStartY;
-                if (!isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
-                    isSwiping = true;
-                }
+                if (!isSwiping && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) isSwiping = true;
             }, { passive: true });
 
             document.addEventListener('touchend', e => {
                 if (window.innerWidth > 768 || !isSwiping) return;
-                const dx   = e.changedTouches[0].clientX - touchStartX;
-                const dt   = Date.now() - touchStartTime;
-                const fast = dt < 300 && Math.abs(dx) > 40;
-                const far  = Math.abs(dx) > window.innerWidth * 0.3;
-
-                if (fast || far) {
-                    const PAGE_ORDER = ['dashboard', 'monthly', 'debts', 'investments', 'portfolio', 'categories'];
-                    if (dx < 0 && currentPageIdx < PAGE_ORDER.length - 1) {
-                        window.switchPage(PAGE_ORDER[currentPageIdx + 1]);
-                    } else if (dx > 0 && currentPageIdx > 0) {
-                        window.switchPage(PAGE_ORDER[currentPageIdx - 1]);
-                    }
+                const dx  = e.changedTouches[0].clientX - touchStartX;
+                const dt  = Date.now() - touchStartTime;
+                const ok  = (dt < 350 && Math.abs(dx) > 45) || Math.abs(dx) > window.innerWidth * 0.3;
+                if (ok) {
+                    if (dx < 0 && currentPageIdx < PAGE_ORDER.length - 1) goToPage(PAGE_ORDER[currentPageIdx + 1]);
+                    else if (dx > 0 && currentPageIdx > 0) goToPage(PAGE_ORDER[currentPageIdx - 1]);
                 }
                 isSwiping = false;
             }, { passive: true });
