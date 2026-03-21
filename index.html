@@ -659,9 +659,21 @@
 
         @media (max-width: 768px) {
 
+            /* ══ MOBILE PALETTE — azul vibrante ══ */
+            :root {
+                --mob-blue:       #1a73e8;
+                --mob-blue-dark:  #1557b0;
+                --mob-blue-light: #4a9eff;
+                --mob-bg:         #f0f4f8;
+                --mob-card:       #ffffff;
+                --mob-card-border:rgba(0,0,0,0.08);
+                --mob-text:       #1a1a2e;
+                --mob-text-sub:   #64748b;
+            }
+
             /* ══ BASE ══ */
             html, body { height: 100%; overflow: hidden; }
-            body { flex-direction: column; overflow: hidden; background: #080808; }
+            body { flex-direction: column; overflow: hidden; background: var(--mob-bg); }
             .sidebar { display: none !important; }
 
             /* ── Trilho horizontal de páginas ── */
@@ -687,7 +699,7 @@
                 transform: translateX(100%);
                 transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
                 will-change: transform;
-                background: #080808;
+                background: var(--mob-bg);
             }
             .page.active { transform: translateX(0%); }
             .page::-webkit-scrollbar { display: none; }
@@ -710,57 +722,75 @@
             .page [style*="margin-top: 1.5rem"],
             .page [style*="margin-top: 3rem"] { display: none !important; }
 
-            /* ══ CABEÇALHO STICKY ══ */
+            /* ══ CABEÇALHO STICKY — azul vibrante ══ */
             .mob-page-header {
                 display: flex !important;
                 align-items: center;
                 justify-content: space-between;
-                padding: 0.9rem 1.1rem 0.65rem;
+                padding: 0.85rem 1rem 0.75rem;
                 position: sticky;
                 top: 0; z-index: 20;
-                background: rgba(9,9,11,0.97);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                border-bottom: 1px solid rgba(255,255,255,0.05);
+                background: linear-gradient(135deg, var(--mob-blue-dark) 0%, var(--mob-blue) 100%);
+                box-shadow: 0 2px 12px rgba(26,115,232,0.35);
             }
             .mob-page-title {
-                font-size: 1.2rem;
-                font-weight: 800;
-                color: #f0f0f0;
-                letter-spacing: -0.5px;
+                font-size: 1.05rem;
+                font-weight: 700;
+                color: #fff;
+                letter-spacing: 0.1px;
+                flex: 1;
+                text-align: center;
             }
             .mob-page-actions { display: flex; gap: 0.45rem; align-items: center; }
+            /* Botão voltar */
+            .mob-back-btn {
+                width: 34px; height: 34px;
+                display: flex; align-items: center; justify-content: center;
+                background: rgba(255,255,255,0.15);
+                border: none;
+                border-radius: 10px;
+                color: #fff;
+                font-size: 1.1rem;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+                flex-shrink: 0;
+            }
+            .mob-back-btn:active { background: rgba(255,255,255,0.25); }
+            /* Placeholder para alinhar título ao centro quando há ação direita */
+            .mob-header-spacer { width: 34px; flex-shrink: 0; }
 
-            /* ══ SUB-NAV (abas) ══ */
+            /* ══ SUB-NAV — tabs Material azul ══ */
             .mob-subnav {
                 display: flex !important;
                 overflow-x: auto;
-                background: #080808;
-                border-bottom: 1px solid rgba(255,255,255,0.06);
+                background: var(--mob-blue);
                 -webkit-overflow-scrolling: touch;
                 scrollbar-width: none;
-                padding: 0 1rem;
+                padding: 0 0.5rem;
                 gap: 0;
                 position: sticky;
-                top: 51px; z-index: 19;
+                top: 55px; z-index: 19;
+                box-shadow: 0 2px 8px rgba(26,115,232,0.3);
             }
             .mob-subnav::-webkit-scrollbar { display: none; }
             .mob-subnav-tab {
                 flex: 0 0 auto;
-                padding: 0.7rem 1rem;
-                font-size: 0.75rem;
+                padding: 0.65rem 1rem;
+                font-size: 0.73rem;
                 font-weight: 700;
-                color: #4b5563;
+                color: rgba(255,255,255,0.65);
                 cursor: pointer;
                 white-space: nowrap;
-                border-bottom: 2px solid transparent;
-                transition: all 0.2s;
+                border-bottom: 2.5px solid transparent;
+                transition: all 0.18s;
                 -webkit-tap-highlight-color: transparent;
                 letter-spacing: 0.3px;
+                text-transform: uppercase;
+                font-size: 0.65rem;
             }
             .mob-subnav-tab.active {
-                color: #818cf8;
-                border-bottom-color: #6366f1;
+                color: #fff;
+                border-bottom-color: #fff;
             }
 
             /* ══ CONTAINER DAS SUB-PÁGINAS ══ */
@@ -779,8 +809,9 @@
                 overflow-y: auto;
                 overflow-x: hidden;
                 -webkit-overflow-scrolling: touch;
-                padding: 1rem 1rem 1.5rem;
+                padding: 0.85rem 0.85rem 1.5rem;
                 box-sizing: border-box;
+                background: var(--mob-bg);
                 transform: translateX(100%);
                 transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
                 will-change: transform;
@@ -790,35 +821,33 @@
             .mob-subpage.prev   { transform: translateX(-100%); }
 
             /* ══════════════════════════════════════════════
-               HERO CARD — grande, imersivo, tela cheia
+               HERO CARD — estilo card branco com destaque azul
                ══════════════════════════════════════════════ */
             .mob-hero-card {
-                background: linear-gradient(145deg, #0d0d14 0%, #13131f 50%, #0a0a12 100%);
-                border: 1px solid rgba(99,102,241,0.18);
-                border-radius: 24px;
-                padding: 1.8rem 1.5rem 1.6rem;
+                background: linear-gradient(135deg, var(--mob-blue-dark) 0%, var(--mob-blue) 60%, var(--mob-blue-light) 100%);
+                border: none;
+                border-radius: 20px;
+                padding: 1.6rem 1.4rem 1.4rem;
                 margin-bottom: 1rem;
                 position: relative;
                 overflow: hidden;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+                box-shadow: 0 6px 24px rgba(26,115,232,0.4);
             }
-            /* Glow superior direito */
             .mob-hero-card::before {
                 content: '';
                 position: absolute;
-                top: -60px; right: -60px;
-                width: 200px; height: 200px;
-                background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 65%);
+                top: -50px; right: -50px;
+                width: 160px; height: 160px;
+                background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 65%);
                 border-radius: 50%;
                 pointer-events: none;
             }
-            /* Glow inferior esquerdo */
             .mob-hero-card::after {
                 content: '';
                 position: absolute;
-                bottom: -40px; left: -30px;
-                width: 140px; height: 140px;
-                background: radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 65%);
+                bottom: -30px; left: -20px;
+                width: 120px; height: 120px;
+                background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 65%);
                 border-radius: 50%;
                 pointer-events: none;
             }
@@ -827,21 +856,22 @@
                 font-weight: 700;
                 text-transform: uppercase;
                 letter-spacing: 1.5px;
-                color: rgba(156,163,175,0.85);
+                color: rgba(255,255,255,0.75);
                 margin-bottom: 0.55rem;
                 position: relative; z-index: 1;
             }
             .mob-hero-value {
-                font-size: 2.8rem;
+                font-size: 2.6rem;
                 font-weight: 800;
                 line-height: 1;
                 margin-bottom: 0.5rem;
                 letter-spacing: -2px;
+                color: #fff;
                 position: relative; z-index: 1;
             }
             .mob-hero-sub {
                 font-size: 0.76rem;
-                color: rgba(156,163,175,0.7);
+                color: rgba(255,255,255,0.7);
                 position: relative; z-index: 1;
             }
             .mob-hero-row {
@@ -856,17 +886,15 @@
                 font-weight: 700;
                 padding: 0.2rem 0.6rem;
                 border-radius: 20px;
-                background: rgba(16,185,129,0.2);
-                color: #34d399;
-                border: 1px solid rgba(16,185,129,0.25);
+                background: rgba(255,255,255,0.2);
+                color: #fff;
+                border: 1px solid rgba(255,255,255,0.3);
             }
             .mob-hero-badge.neg {
-                background: rgba(239,68,68,0.2);
-                color: #f87171;
-                border-color: rgba(239,68,68,0.25);
+                background: rgba(244,63,94,0.3);
+                color: #fecdd3;
+                border-color: rgba(244,63,94,0.4);
             }
-
-            /* ── Linha de 2 stat-chips no hero ── */
             .mob-hero-chips {
                 display: flex;
                 gap: 0.6rem;
@@ -875,15 +903,15 @@
             }
             .mob-hero-chip {
                 flex: 1;
-                background: rgba(255,255,255,0.03);
-                border: 1px solid rgba(255,255,255,0.06);
+                background: rgba(255,255,255,0.15);
+                border: 1px solid rgba(255,255,255,0.2);
                 border-radius: 14px;
                 padding: 0.7rem 0.8rem;
             }
-            .mob-hero-chip-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6b7280; margin-bottom: 0.3rem; }
-            .mob-hero-chip-value { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.5px; }
+            .mob-hero-chip-label { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.7); margin-bottom: 0.3rem; }
+            .mob-hero-chip-value { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.5px; color: #fff; }
 
-            /* ══ MINI-GRID (cards 2×N) ══ */
+                        /* ══ MINI-GRID (cards 2×N) — estilo card branco ══ */
             .mob-mini-grid {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
@@ -891,82 +919,63 @@
                 margin-bottom: 1rem;
             }
             .mob-mini-card {
-                background: #111111;
-                border: 1px solid #1e1e1e;
-                border-radius: 18px;
+                background: var(--mob-card);
+                border: 1px solid var(--mob-card-border);
+                border-radius: 16px;
                 padding: 1rem 0.95rem;
                 position: relative;
                 overflow: hidden;
-                box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             }
-            /* Barra de cor no topo */
             .mob-mini-card::before {
                 content: '';
                 position: absolute;
                 top: 0; left: 0; right: 0;
                 height: 3px;
-                border-radius: 18px 18px 0 0;
+                border-radius: 16px 16px 0 0;
             }
-            /* Glow de fundo */
-            .mob-mini-card::after {
-                content: '';
-                position: absolute;
-                bottom: -20px; right: -20px;
-                width: 70px; height: 70px;
-                border-radius: 50%;
-                opacity: 0.07;
-            }
-            .mob-mini-card.accent-green::before  { background: linear-gradient(90deg,#10b981,#34d399,transparent); }
-            .mob-mini-card.accent-green::after   { background: #10b981; }
-            .mob-mini-card.accent-red::before    { background: linear-gradient(90deg,#ef4444,#f87171,transparent); }
-            .mob-mini-card.accent-red::after     { background: #ef4444; }
-            .mob-mini-card.accent-purple::before { background: linear-gradient(90deg,#8b5cf6,#a78bfa,transparent); }
-            .mob-mini-card.accent-purple::after  { background: #8b5cf6; }
-            .mob-mini-card.accent-orange::before { background: linear-gradient(90deg,#6366f1,#818cf8,transparent); }
-            .mob-mini-card.accent-orange::after  { background: #ff6b35; }
-            .mob-mini-card.accent-yellow::before { background: linear-gradient(90deg,#f59e0b,#fbbf24,transparent); }
-            .mob-mini-card.accent-yellow::after  { background: #f59e0b; }
+            .mob-mini-card.accent-green::before  { background: linear-gradient(90deg,#16a34a,#22c55e); }
+            .mob-mini-card.accent-red::before    { background: linear-gradient(90deg,#dc2626,#f43f5e); }
+            .mob-mini-card.accent-purple::before { background: linear-gradient(90deg,#7c3aed,#8b5cf6); }
+            .mob-mini-card.accent-orange::before { background: linear-gradient(90deg,var(--mob-blue),var(--mob-blue-light)); }
+            .mob-mini-card.accent-yellow::before { background: linear-gradient(90deg,#d97706,#f59e0b); }
             .mob-mini-label {
                 font-size: 0.62rem;
                 font-weight: 700;
                 text-transform: uppercase;
                 letter-spacing: 0.8px;
-                color: #4b5563;
+                color: var(--mob-text-sub);
                 margin-bottom: 0.35rem;
             }
             .mob-mini-value {
-                font-size: 1.15rem;
+                font-size: 1.1rem;
                 font-weight: 800;
                 line-height: 1.2;
                 letter-spacing: -0.5px;
+                color: var(--mob-text);
             }
             .mob-mini-change {
                 font-size: 0.62rem;
                 margin-top: 0.25rem;
-                color: #4b5563;
-            }
-
-            /* ══ CARD DE GRÁFICO — maior e mais legível ══ */
-            .mob-chart-card {
-                background: #111111;
-                border: 1px solid #1e1e1e;
-                border-radius: 20px;
+                color: var(--mob-text-sub);
+            }           .mob-chart-card {
+                background: var(--mob-card);
+                border: 1px solid var(--mob-card-border);
+                border-radius: 16px;
                 padding: 1.2rem 1.1rem 1.1rem;
                 margin-bottom: 0.8rem;
-                box-shadow: 0 2px 16px rgba(0,0,0,0.35);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             }
             .mob-chart-title {
-                font-size: 0.83rem;
+                font-size: 0.7rem;
                 font-weight: 800;
-                color: #9ca3af;
+                color: var(--mob-text-sub);
                 margin-bottom: 1rem;
                 display: flex;
                 align-items: center;
                 gap: 0.4rem;
-                letter-spacing: 0.1px;
                 text-transform: uppercase;
                 letter-spacing: 0.6px;
-                font-size: 0.7rem;
             }
             /* Alturas generosas */
             .mob-chart-wrap         { height: 240px; position: relative; }
@@ -974,50 +983,50 @@
             .mob-chart-wrap.short   { height: 195px; }
             .mob-chart-wrap.full    { height: calc(100vh - 64px - env(safe-area-inset-bottom,0px) - 51px - 39px - 2.4rem - 1rem); min-height: 280px; }
 
-            /* ══ LISTA DE TRANSAÇÕES ══ */
+            /* ══ LISTA DE TRANSAÇÕES — card branco ══ */
             .mob-tx-item {
                 display: flex;
                 align-items: center;
                 gap: 0.8rem;
                 padding: 0.9rem 1rem;
-                background: #111;
-                border: 1px solid #1e1e1e;
-                border-radius: 16px;
+                background: var(--mob-card);
+                border: 1px solid var(--mob-card-border);
+                border-radius: 14px;
                 margin-bottom: 0.5rem;
                 -webkit-tap-highlight-color: transparent;
-                box-shadow: 0 1px 8px rgba(0,0,0,0.25);
+                box-shadow: 0 1px 6px rgba(0,0,0,0.07);
             }
             .mob-tx-icon {
-                width: 44px; height: 44px;
-                border-radius: 14px;
+                width: 42px; height: 42px;
+                border-radius: 12px;
                 display: flex; align-items: center; justify-content: center;
-                font-size: 1.2rem;
+                font-size: 1.15rem;
                 flex-shrink: 0;
             }
             .mob-tx-info  { flex: 1; min-width: 0; }
-            .mob-tx-desc  { font-size: 0.88rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #e8e8e8; }
-            .mob-tx-cat   { font-size: 0.65rem; color: #6b7280; margin-top: 3px; }
+            .mob-tx-desc  { font-size: 0.87rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--mob-text); }
+            .mob-tx-cat   { font-size: 0.64rem; color: var(--mob-text-sub); margin-top: 3px; }
             .mob-tx-right { text-align: right; flex-shrink: 0; }
-            .mob-tx-value { font-size: 0.95rem; font-weight: 800; }
-            .mob-tx-date  { font-size: 0.62rem; color: #4b5563; margin-top: 3px; }
+            .mob-tx-value { font-size: 0.93rem; font-weight: 800; }
+            .mob-tx-date  { font-size: 0.61rem; color: var(--mob-text-sub); margin-top: 3px; }
 
-            /* ══ CARDS DE DÍVIDA / INVESTIMENTO ══ */
+            /* ══ CARDS DE DÍVIDA / INVESTIMENTO — branco ══ */
             .mob-debt-card {
-                background: #111;
-                border: 1px solid #1e1e1e;
-                border-radius: 20px;
+                background: var(--mob-card);
+                border: 1px solid var(--mob-card-border);
+                border-radius: 16px;
                 padding: 1.2rem 1.1rem;
                 margin-bottom: 0.8rem;
-                box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.07);
             }
             .mob-debt-header       { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.85rem; }
-            .mob-debt-name         { font-size: 1rem; font-weight: 800; color: #f0f0f0; letter-spacing: -0.3px; }
-            .mob-debt-bank         { font-size: 0.65rem; color: #6b7280; margin-top: 4px; }
+            .mob-debt-name         { font-size: 1rem; font-weight: 800; color: var(--mob-text); letter-spacing: -0.3px; }
+            .mob-debt-bank         { font-size: 0.65rem; color: var(--mob-text-sub); margin-top: 4px; }
             .mob-debt-badge        { font-size: 0.65rem; font-weight: 700; padding: 0.25rem 0.65rem; border-radius: 10px; }
             .mob-debt-stats        { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.6rem; margin-bottom: 0.85rem; }
-            .mob-debt-stat-label   { font-size: 0.6rem; color: #4b5563; text-transform: uppercase; letter-spacing: 0.5px; }
+            .mob-debt-stat-label   { font-size: 0.6rem; color: var(--mob-text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
             .mob-debt-stat-value   { font-size: 0.95rem; font-weight: 800; margin-top: 3px; letter-spacing: -0.3px; }
-            .mob-progress          { height: 7px; background: #1a1a1a; border-radius: 4px; overflow: hidden; }
+            .mob-progress          { height: 7px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
             .mob-progress-bar      { height: 100%; background: linear-gradient(90deg,#ff6b35,#8b5cf6); border-radius: 4px; transition: width 0.5s ease; }
 
             /* ══ SEÇÃO LABEL ══ */
@@ -1026,7 +1035,7 @@
                 font-weight: 800;
                 text-transform: uppercase;
                 letter-spacing: 1.2px;
-                color: #374151;
+                color: var(--mob-text-sub);
                 padding: 0.6rem 0 0.4rem;
                 margin-bottom: 0.5rem;
                 border-bottom: 1px solid rgba(30,30,30,0.8);
@@ -1046,21 +1055,23 @@
             .mob-filter-chip {
                 flex: 0 0 auto;
                 padding: 0.38rem 0.9rem;
-                background: #111;
-                border: 1px solid #1e1e1e;
+                background: var(--mob-card);
+                border: 1px solid var(--mob-card-border);
                 border-radius: 20px;
                 font-size: 0.73rem;
                 font-weight: 700;
-                color: #6b7280;
+                color: var(--mob-text-sub);
                 cursor: pointer;
                 white-space: nowrap;
                 -webkit-tap-highlight-color: transparent;
                 transition: all 0.15s;
+                box-shadow: 0 1px 4px rgba(0,0,0,0.06);
             }
             .mob-filter-chip.active {
-                background: rgba(99,102,241,0.12);
-                border-color: rgba(99,102,241,0.3);
-                color: #818cf8;
+                background: var(--mob-blue);
+                border-color: var(--mob-blue);
+                color: #fff;
+                box-shadow: 0 2px 8px rgba(26,115,232,0.3);
             }
 
             /* ══ MODAL ══ */
@@ -1277,16 +1288,19 @@
 
             <!-- ═══ MOBILE layout ═══ -->
             <div class="mob-page-header">
-                <span class="mob-page-title">📊 Dashboard</span>
+                <div class="mob-header-spacer"></div>
+                <span class="mob-page-title">Dashboard</span>
                 <div class="mob-page-actions">
                     <select class="filter-select" id="dashboard-filter-month-mob" onchange="document.getElementById('dashboard-filter-month').value=this.value;filterDashboard();" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:var(--bg-card);border-color:var(--border);">
                         <option value="">Mês Atual</option>
                     </select>
-                    <button onclick="resetAllData()" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);color:#ef4444;border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">🗑️</button>
+                    <button onclick="refreshDashboard()" id="mob-refresh-btn" style="background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:9px;padding:0.28rem 0.65rem;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:0.3rem;" title="Atualizar">
+                        <span id="mob-refresh-icon" style="display:inline-block;transition:transform 0.5s;">↻</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Sub-nav abas dashboard -->
+            </div><!-- Sub-nav abas dashboard -->
             <div class="mob-subnav" id="dash-subnav">
                 <div class="mob-subnav-tab active" onclick="mobSubSwitch('dash-subnav','dash-subpages',this,'dash-overview')">Visão Geral</div>
                 <div class="mob-subnav-tab" onclick="mobSubSwitch('dash-subnav','dash-subpages',this,'dash-cashflow')">Fluxo do Mês</div>
@@ -1464,10 +1478,12 @@
 
             <!-- ═══ MOBILE layout ═══ -->
             <div class="mob-page-header">
-                <span class="mob-page-title">📈 Investimentos</span>
+                <button class="mob-back-btn" onclick="goToPage('dashboard')">←</button>
+                <span class="mob-page-title">Investimentos</span>
                 <div class="mob-page-actions">
                     <button onclick="openInvestmentModal()" style="background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">➕ Novo</button>
                 </div>
+            </div>
             </div>
             <div class="mob-subnav" id="invest-subnav">
                 <div class="mob-subnav-tab active" onclick="mobSubSwitch('invest-subnav','invest-subpages',this,'invest-list')">Meus Ativos</div>
@@ -1557,7 +1573,8 @@
 
             <!-- ═══ MOBILE layout ═══ -->
             <div class="mob-page-header">
-                <span class="mob-page-title">💼 Carteira</span>
+                <button class="mob-back-btn" onclick="goToPage('dashboard')">←</button>
+                <span class="mob-page-title">Carteira</span>
                 <div class="mob-page-actions"></div>
             </div>
             <div class="mob-subnav" id="portfolio-subnav">
@@ -1639,10 +1656,12 @@
 
             <!-- Mobile -->
             <div class="mob-page-header">
-                <span class="mob-page-title">📅 Lançamentos</span>
+                <button class="mob-back-btn" onclick="goToPage('dashboard')">←</button>
+                <span class="mob-page-title">Lançamentos</span>
                 <div class="mob-page-actions">
                     <select id="monthly-filter-month-mob" class="filter-select" onchange="document.getElementById('monthly-filter-month').value=this.value;filterMonthlyTransactions();renderMobMonthlyList();setTimeout(()=>{initMobChart_MonthlyExpCat();initMobChart_MonthlyIncCat();},80);" style="font-size:0.68rem;padding:0.28rem 0.45rem;border-radius:8px;background:var(--bg-card);border-color:var(--border);"><option value="">Todos os meses</option></select>
                 </div>
+            </div>
             </div>
             <div class="mob-subnav" id="monthly-subnav">
                 <div class="mob-subnav-tab active" onclick="mobSubSwitch('monthly-subnav','monthly-subpages',this,'monthly-list')">Lançamentos</div>
@@ -1770,10 +1789,12 @@
 
             <!-- ═══ MOBILE layout ═══ -->
             <div class="mob-page-header">
-                <span class="mob-page-title">🏦 Dívidas</span>
+                <button class="mob-back-btn" onclick="goToPage('dashboard')">←</button>
+                <span class="mob-page-title">Dívidas</span>
                 <div class="mob-page-actions">
                     <button onclick="openDebtModal()" style="background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">➕ Nova</button>
                 </div>
+            </div>
             </div>
             <div class="mob-subnav" id="debts-subnav">
                 <div class="mob-subnav-tab active" onclick="mobSubSwitch('debts-subnav','debts-subpages',this,'debts-list-mob')">Dívidas Ativas</div>
@@ -1836,7 +1857,8 @@
 
             <!-- ═══ MOBILE layout ═══ -->
             <div class="mob-page-header">
-                <span class="mob-page-title">🏷️ Categorias</span>
+                <button class="mob-back-btn" onclick="goToPage('dashboard')">←</button>
+                <span class="mob-page-title">Categorias</span>
                 <div class="mob-page-actions">
                     <button onclick="openAddCategoryModal()" style="background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.25);color:var(--accent);border-radius:8px;padding:0.28rem 0.6rem;font-size:0.7rem;font-weight:700;cursor:pointer;">➕ Nova</button>
                 </div>
@@ -3286,10 +3308,9 @@
                 AppStorage.setItem('transactions', JSON.stringify(transactions));
                 updateDashboard();
                 renderMonthlyTransactions();
-                renderMobMonthlyList();
-                syncMobileValues();
                 populateMonthFilters();
                 populateCategoryFilters();
+                setTimeout(() => _refreshMobile({skipDebts:true,skipInvest:true,skipCats:true,skipPortf:true}), 50);
             } else if (type === 'debt') {
                 // Save as debt
                 const installmentValue = parseFloat(document.getElementById('transaction-installment-value').value);
@@ -3341,10 +3362,9 @@
                 AppStorage.setItem('transactions', JSON.stringify(transactions));
                 updateDashboard();
                 renderMonthlyTransactions();
-                renderMobMonthlyList();
-                syncMobileValues();
                 populateMonthFilters();
                 populateCategoryFilters();
+                setTimeout(() => _refreshMobile({skipDebts:true,skipInvest:true,skipCats:true,skipPortf:true}), 50);
             }
             
             // Limpar ID se existir
@@ -3363,9 +3383,8 @@
                 AppStorage.setItem('transactions', JSON.stringify(transactions));
                 updateDashboard();
                 renderMonthlyTransactions();
-                renderMobMonthlyList();
-                syncMobileValues();
                 populateMonthFilters();
+                setTimeout(() => _refreshMobile({skipDebts:true,skipInvest:true,skipCats:true,skipPortf:true}), 50);
             }
         }
 
@@ -3415,14 +3434,35 @@
                     AppStorage.setItem('transactions', JSON.stringify(transactions));
                     updateDashboard();
                     renderMonthlyTransactions();
-                    renderMobMonthlyList();
-                    syncMobileValues();
+                    setTimeout(() => _refreshMobile({skipDebts:true,skipInvest:true,skipCats:true,skipPortf:true}), 50);
                 }
             }
         }
 
         function filterTransactions() {
             // Function kept for compatibility but does nothing now
+        }
+
+        /* ── Botão Atualizar Dashboard ── */
+        function refreshDashboard() {
+            // Animação de rotação no ícone
+            const icon = document.getElementById('mob-refresh-icon');
+            if (icon) {
+                icon.style.transform = 'rotate(360deg)';
+                icon.style.transition = 'transform 0.6s ease';
+                setTimeout(() => {
+                    icon.style.transition = 'none';
+                    icon.style.transform = 'rotate(0deg)';
+                }, 650);
+            }
+            // Atualiza tudo
+            try { updateDashboard(); } catch(e){}
+            try { renderMonthlyTransactions(); } catch(e){}
+            setTimeout(() => {
+                try { _refreshMobile(); } catch(e){}
+                try { invalidateMobCharts(); } catch(e){}
+                try { initMobChartsForTab('dash-overview'); } catch(e){}
+            }, 100);
         }
 
         // Investments
@@ -3721,11 +3761,9 @@
             AppStorage.setItem('debts', JSON.stringify(debts));
             renderDebts();
             renderDebtsInTransactions();
-            renderMobDebts();
             renderMonthlyTransactions();
-            renderMobMonthlyList();
-            syncMobileValues();
             updateDashboard();
+            setTimeout(() => _refreshMobile(), 50);
         }
 
         function unpayInstallment(id) {
@@ -5016,8 +5054,12 @@
             }
 
             const catIcon = (catName) => {
-                const cat = (categories || []).flatMap(c => c.subcategories || []).find(s => s.name === catName);
-                return cat ? (cat.icon || '💰') : '💳';
+                try {
+                    const allSubs = Object.values(categories || {})
+                        .flatMap(c => c.subcategories || []);
+                    const cat = allSubs.find(s => s.name === catName);
+                    return cat ? (cat.icon || '💰') : '💳';
+                } catch(e) { return '💳'; }
             };
 
             el.innerHTML = txs.map(t => {
@@ -5233,30 +5275,24 @@
             if (activeSub) initMobChartsForTab(activeSub.id);
         }
 
-        /* Hook renders to also update mobile */
-        document.addEventListener('DOMContentLoaded', () => {
-            ['updateDashboard','renderMonthlyTransactions'].forEach(fn => {
-                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{syncMobileValues();renderMobMonthlyList();invalidateMobCharts();},80);};}
-            });
-            ['renderInvestments'].forEach(fn => {
-                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{renderMobInvestments();syncMobileValues();invalidateMobCharts();},80);};}
-            });
-            ['renderDebts','renderDebtsInTransactions'].forEach(fn => {
-                if(window[fn]){const o=window[fn];window[fn]=function(...a){o(...a);setTimeout(()=>{renderMobDebts();syncMobileValues();invalidateMobCharts();},80);};}
-            });
-            if(window.renderCategories){const o=window.renderCategories;window.renderCategories=function(...a){o(...a);setTimeout(renderMobCategories,80);};}
-            if(window.renderPortfolio){const o=window.renderPortfolio;window.renderPortfolio=function(...a){o(...a);setTimeout(()=>{renderMobPortfolioSummary();syncMobileValues();invalidateMobCharts();},80);};}
+        /* ── Função central de atualização mobile ── */
+        function _refreshMobile(opts) {
+            opts = opts || {};
+            try { syncMobileValues(); } catch(e){}
+            if (!opts.skipList)    try { renderMobMonthlyList(); } catch(e){}
+            if (!opts.skipDebts)   try { renderMobDebts(); } catch(e){}
+            if (!opts.skipInvest)  try { renderMobInvestments(); } catch(e){}
+            if (!opts.skipCats)    try { renderMobCategories(); } catch(e){}
+            if (!opts.skipPortf)   try { renderMobPortfolioSummary(); } catch(e){}
+            try { invalidateMobCharts(); } catch(e){}
+        }
 
-            // Boot: renderiza tudo e inicializa gráficos da aba inicial
-            setTimeout(()=>{
-                syncMobileValues();
-                renderMobMonthlyList();
-                renderMobInvestments();
-                renderMobDebts();
-                renderMobCategories();
-                renderMobPortfolioSummary();
-                initMobChartsForTab('dash-overview'); // aba inicial do dashboard
-            }, 600);
+        /* Boot */
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                _refreshMobile();
+                initMobChartsForTab('dash-overview');
+            }, 700);
         });
 
         // Service Worker Registration (skip for Artifact context)
@@ -5326,8 +5362,8 @@
             display: none;
             position: fixed;
             bottom: 0; left: 0; right: 0;
-            background: rgba(9,9,11,0.98);
-            border-top: 1px solid rgba(255,255,255,0.05);
+            background: #ffffff;
+            border-top: 1px solid rgba(0,0,0,0.1);
             z-index: 600;
             padding-bottom: env(safe-area-inset-bottom, 0px);
             backdrop-filter: blur(24px);
@@ -5350,8 +5386,8 @@
             align-items: center;
             height: 0;
             overflow: hidden;
-            background: rgba(15,15,15,0.98);
-            border-top: 1px solid rgba(255,255,255,0.04);
+            background: #f8fafc;
+            border-top: 1px solid rgba(0,0,0,0.06);
             transition: height 0.28s cubic-bezier(0.4,0,0.2,1);
         }
         #mob-actions-row.open { height: 56px; }
@@ -5364,14 +5400,14 @@
             justify-content: center;
             padding: 0.4rem 0;
             cursor: pointer;
-            color: #374151;
+            color: #94a3b8;
             gap: 3px;
             transition: color 0.15s;
             -webkit-tap-highlight-color: transparent;
         }
         .mob-nav-btn span:first-child { font-size: 1.3rem; line-height: 1; }
         .mob-nav-btn span:last-child  { font-size: 0.57rem; font-weight: 700; letter-spacing: 0.4px; }
-        .mob-nav-btn.active           { color: #818cf8 !important; }
+        .mob-nav-btn.active           { color: var(--mob-blue) !important; }
 
         /* Botão + central */
         .mob-btn-add {
@@ -5386,11 +5422,11 @@
         }
         .mob-btn-add-icon {
             width: 44px; height: 44px;
-            background: linear-gradient(135deg, #6366f1, #818cf8);
+            background: linear-gradient(135deg, var(--mob-blue-dark), var(--mob-blue));
             border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
             font-size: 1.5rem;
-            box-shadow: 0 4px 16px rgba(99,102,241,0.45), 0 0 0 1px rgba(99,102,241,0.25);
+            box-shadow: 0 4px 16px rgba(26,115,232,0.45), 0 0 0 1px rgba(26,115,232,0.25);
             transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s;
         }
         .mob-btn-add-icon.open {
@@ -5398,7 +5434,7 @@
             background: linear-gradient(135deg, #f43f5e, #fb7185);
             box-shadow: 0 4px 16px rgba(244,63,94,0.4);
         }
-        .mob-btn-add span:last-child { font-size: 0.57rem; font-weight: 700; color: #818cf8; letter-spacing: 0.4px; }
+        .mob-btn-add span:last-child { font-size: 0.57rem; font-weight: 700; color: var(--mob-blue); letter-spacing: 0.4px; }
 
         /* Botões de ação */
         .mob-action-btn {
@@ -5409,12 +5445,12 @@
             justify-content: center;
             padding: 0.4rem 0;
             cursor: pointer;
-            color: #6b7280;
+            color: #64748b;
             gap: 3px;
             -webkit-tap-highlight-color: transparent;
             transition: color 0.15s;
         }
-        .mob-action-btn:active { color: #ff6b35; transform: scale(0.94); }
+        .mob-action-btn:active { color: var(--mob-blue); transform: scale(0.94); }
         .mob-action-btn span:first-child { font-size: 1.2rem; line-height: 1; }
         .mob-action-btn span:last-child  { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.3px; }
     </style>
@@ -5497,10 +5533,10 @@
             document.querySelectorAll('.mob-nav-btn').forEach(btn => {
                 const active = btn.dataset.page === pageName;
                 btn.classList.toggle('active', active);
-                btn.style.color = active ? '#818cf8' : '';
+                btn.style.color = active ? '#1a73e8' : '';
             });
 
-            /* 4. Inicializa gráficos mobile da nova página */
+            /* 4. Refresh mobile content + gráficos */
             const tabMap = {
                 dashboard:   'dash-overview',
                 monthly:     'monthly-list',
@@ -5510,7 +5546,22 @@
                 categories:  null
             };
             const activeTab = tabMap[pageName];
-            if (activeTab) setTimeout(() => initMobChartsForTab(activeTab), 80);
+            // Sempre atualiza o conteúdo ao navegar para a página
+            setTimeout(() => {
+                if (pageName === 'monthly') {
+                    renderMobMonthlyList();
+                    syncMobileValues();
+                } else if (pageName === 'debts') {
+                    renderMobDebts();
+                    syncMobileValues();
+                } else if (pageName === 'investments') {
+                    renderMobInvestments();
+                    syncMobileValues();
+                } else if (pageName === 'dashboard') {
+                    syncMobileValues();
+                }
+                if (activeTab) initMobChartsForTab(activeTab);
+            }, 60);
         }
 
         /* Barra inferior: botão de página */
