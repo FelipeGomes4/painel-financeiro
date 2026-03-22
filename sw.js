@@ -1,100 +1,85 @@
-// ── Painel Financeiro — Service Worker ──────────────────────────────────────
-const CACHE_NAME = 'painel-financeiro-v1';
-const CACHE_URLS = [
+// ── Painel Financeiro — Service Worker v2 ───────────────────────────────────
+// Estratégia: Cache First para assets estáticos, Network First para HTML
+const CACHE = 'painel-v2';
+
+const STATIC = [
   './',
   './index.html',
   './manifest.json',
   './icon.svg',
   './icon-192.png',
   './icon-512.png',
-  // CDN resources cached on first load
-  'https://cdn.jsdelivr.net/npm/chart.js',
-  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap',
 ];
 
-// ── Install: pre-cache shell ─────────────────────────────────────────────────
-self.addEventListener('install', (event) => {
-  console.log('[SW] Installing...');
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      // Cache local files immediately; CDN files best-effort
-      return cache.addAll(['./index.html', './manifest.json'])
-        .then(() => {
-          // Try CDN files individually — don't fail install if they miss
-          const cdnUrls = CACHE_URLS.filter(u => u.startsWith('https://'));
-          return Promise.allSettled(cdnUrls.map(url =>
-            fetch(url).then(res => cache.put(url, res)).catch(() => {})
-          ));
-        });
-    }).then(() => self.skipWaiting())
+// ── Install ─────────────────────────────────────────────────────────────────
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => c.addAll(STATIC))
+      .then(() => self.skipWaiting())
+      .catch(err => console.warn('[SW] Install error:', err))
   );
 });
 
-// ── Activate: clean old caches ───────────────────────────────────────────────
-self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating...');
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => {
-            console.log('[SW] Deleting old cache:', key);
-            return caches.delete(key);
-          })
-      )
-    ).then(() => self.clients.claim())
+// ── Activate ─────────────────────────────────────────────────────────────────
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// ── Fetch: Cache First for assets, Network First for pages ───────────────────
-self.addEventListener('fetch', (event) => {
-  const { request } = event;
+// ── Fetch ────────────────────────────────────────────────────────────────────
+self.addEventListener('fetch', e => {
+  const { request } = e;
+  if (request.method !== 'GET') return;
+
   const url = new URL(request.url);
 
-  // Skip non-GET requests and chrome-extension requests
-  if (request.method !== 'GET' || url.protocol === 'chrome-extension:') return;
+  // Skip extensions and non-http
+  if (!['http:', 'https:'].includes(url.protocol)) return;
 
-  // For navigation requests (HTML pages): Network First, fallback to cache
+  // HTML pages: Network First → fallback to cache
   if (request.mode === 'navigate') {
-    event.respondWith(
+    e.respondWith(
       fetch(request)
-        .then((response) => {
-          // Update cache with fresh page
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          return response;
+        .then(res => {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(request, clone));
+          return res;
         })
         .catch(() => caches.match('./index.html'))
     );
     return;
   }
 
-  // For all other requests: Cache First, fallback to network
-  event.respondWith(
-    caches.match(request).then((cached) => {
+  // Everything else: Cache First → fetch and cache
+  e.respondWith(
+    caches.match(request).then(cached => {
       if (cached) return cached;
-      return fetch(request).then((response) => {
-        // Only cache successful responses
-        if (!response || response.status !== 200 || response.type === 'error') {
-          return response;
+      return fetch(request).then(res => {
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(request, clone));
         }
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-        return response;
+        return res;
       }).catch(() => {
-        // If both cache and network fail, return a minimal offline response
+        // Fallback for images
         if (request.destination === 'image') {
-          return new Response('<svg xmlns="http://www.w3.org/2000/svg"/>', {
-            headers: { 'Content-Type': 'image/svg+xml' }
-          });
+          return new Response(
+            '<svg xmlns="http://www.w3.org/2000/svg"/>',
+            { headers: { 'Content-Type': 'image/svg+xml' } }
+          );
         }
       });
     })
   );
 });
 
-// ── Background Sync (future-proof) ───────────────────────────────────────────
-self.addEventListener('sync', (event) => {
-  console.log('[SW] Background sync:', event.tag);
+// ── Update trigger ───────────────────────────────────────────────────────────
+self.addEventListener('message', e => {
+  if (e.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
