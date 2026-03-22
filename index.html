@@ -77,23 +77,18 @@
             font-size: 16px;
             -webkit-text-size-adjust: 100%;
             text-size-adjust: 100%;
-        }
-
-        html, body {
             overflow-x: hidden;
-            max-width: 100vw;
-            overscroll-behavior: none;
         }
 
         body {
             background: var(--bg-primary);
             color: var(--text-primary);
-            min-height: 100dvh;
+            min-height: 100vh;
             font-family: 'DM Sans', sans-serif;
             font-size: 1rem;
             line-height: 1.5;
-            display: flex;
-            flex-direction: column;
+            overflow-x: hidden;
+            /* NÃO usar display:flex no body — bloqueia scroll natural */
         }
 
         /* ══ SIDEBAR (desktop only) ══ */
@@ -133,11 +128,9 @@
 
         /* ══ MAIN ══ */
         .main-content {
-            flex: 1;
             margin-left: var(--sidebar-width);
             padding: 2rem 2.25rem;
-            overflow-y: auto;
-            min-height: 100dvh;
+            /* scroll natural do navegador — sem overflow-y: auto aqui */
         }
 
         .page { display: none; }
@@ -417,160 +410,157 @@
             .stats-grid { grid-template-columns:repeat(2,1fr); }
         }
 
-        /* ── MOBILE ≤ 768px ──────────────────────────────────────
-           Todos os valores em px para garantir tamanho correto
-           em qualquer resolução de celular (360px–430px largura)
-        ────────────────────────────────────────────────────────── */
-        @media (max-width:768px) {
-            /* Reset sidebar e mostrar shell mobile */
-            :root { --sidebar-width:0px; }
-            .sidebar        { display:none!important; }
-            .mobile-header  { display:flex; }
-            .bottom-nav     { display:block; }
-            .fab            { display:flex; }
-            .dash-tabs      { display:flex; }
-            .dash-panel     { display:none; }
-            .dash-panel.active { display:block; }
+        /* ══════════════════════════════════════════════════════════
+           MOBILE ≤ 768px
+           ══════════════════════════════════════════════════════════ */
+        @media (max-width: 768px) {
+            :root { --sidebar-width: 0px; }
 
-            /* Área de scroll principal */
-            .main-content {
-                margin-left: 0;
-                padding: 16px 16px 100px;
-                padding-bottom: calc(100px + env(safe-area-inset-bottom));
-                min-height: 100dvh;
-                overflow-y: auto;
+            /* Esconde sidebar, mostra shell mobile */
+            .sidebar       { display: none !important; }
+            .mobile-header { display: flex; }
+            .bottom-nav    { display: block; }
+            .fab           { display: flex; }
+            .dash-tabs     { display: flex; }
+            .dash-panel    { display: none; }
+            .dash-panel.active { display: block; }
+
+            /* ─── SCROLL: natural do body, sem overflow interno ─── */
+            body {
+                overflow-y: auto;   /* scroll normal da página */
                 overflow-x: hidden;
             }
 
-            /* ── Cabeçalho de página ── */
-            .page-header   { margin-bottom: 20px; }
-            .page-title    { font-size: 22px; line-height: 1.2; letter-spacing: -0.3px; }
-            .page-subtitle { font-size: 13px; margin-top: 3px; }
+            .main-content {
+                margin-left: 0;
+                padding: 16px 14px;
+                padding-bottom: calc(96px + env(safe-area-inset-bottom));
+                overflow: visible; /* herda scroll do body */
+                width: 100%;
+            }
 
-            /* ── Cards de estatística: 2 colunas ── */
+            /* ─── TIPOGRAFIA — valores absolutos em px ─── */
+            .page-header   { margin-bottom: 18px; }
+            .page-title    { font-size: 24px !important; line-height: 1.2; font-weight: 800; }
+            .page-subtitle { font-size: 14px !important; margin-top: 4px; }
+            .chart-title   { font-size: 15px !important; margin-bottom: 14px; }
+
+            /* ─── STAT CARDS: 2 colunas, fontes grandes ─── */
             .stats-grid {
                 display: grid !important;
                 grid-template-columns: 1fr 1fr !important;
-                gap: 12px;
-                margin-bottom: 16px;
+                gap: 10px;
+                margin-bottom: 14px;
             }
             .stat-card {
-                padding: 16px 14px;
-                border-radius: 16px;
+                padding: 18px 14px;
+                border-radius: 18px;
             }
             .stat-label {
-                font-size: 11px;
-                letter-spacing: 0.5px;
+                font-size: 12px !important;
+                letter-spacing: 0.04em;
                 margin-bottom: 8px;
             }
             .stat-value {
-                font-size: 20px;
+                font-size: 22px !important;
                 line-height: 1.1;
                 margin-bottom: 6px;
                 word-break: break-word;
             }
-            .stat-change { font-size: 12px; }
+            .stat-change { font-size: 13px !important; }
 
-            /* ── Grids de gráficos: 1 coluna vertical ── */
+            /* ─── GRÁFICOS: 1 coluna ─── */
             .chart-grid-2,
             .chart-grid-3 {
                 display: grid !important;
                 grid-template-columns: 1fr !important;
-                gap: 12px;
-            }
-            .chart-container { height: 220px !important; }
-            .chart-card {
-                padding: 16px 14px 14px;
-                border-radius: 16px;
-                margin-bottom: 12px;
-            }
-            .chart-title { font-size: 14px; margin-bottom: 14px; }
-
-            /* ── Tabelas: scroll horizontal interno ── */
-            .table-container { border-radius: 16px; }
-            .table-scroll    { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-            .table-scroll table { min-width: 480px; width: max-content; }
-            th { padding: 11px 12px; font-size: 11px; white-space: nowrap; }
-            td { padding: 12px 12px; font-size: 14px; }
-
-            /* ── Barras de ação e filtro ── */
-            .action-bar {
-                flex-direction: column;
-                align-items: flex-start;
                 gap: 10px;
-                margin-bottom: 16px;
             }
-            .filter-bar { gap: 8px; flex-wrap: wrap; }
-            .filter-select {
-                font-size: 14px;
-                padding: 9px 14px;
-                border-radius: 10px;
-                -webkit-appearance: none;
-                min-height: 44px;
+            .chart-container { height: 240px !important; }
+            .chart-card {
+                padding: 16px 14px;
+                border-radius: 18px;
+                margin-bottom: 10px;
             }
 
-            /* ── Botões com área de toque mínima de 44px ── */
-            .btn {
-                font-size: 15px;
-                padding: 12px 18px;
-                min-height: 44px;
+            /* ─── TABELAS: scroll horizontal interno, página não rola para lado ─── */
+            .table-container { border-radius: 18px; overflow: hidden; }
+            .table-scroll    { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+            .table-scroll table { min-width: 520px; }
+            th { padding: 12px 14px; font-size: 12px !important; white-space: nowrap; }
+            td { padding: 13px 14px; font-size: 14px !important; }
+
+            /* ─── FILTROS E AÇÕES ─── */
+            .action-bar    { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .filter-bar    { gap: 8px; flex-wrap: wrap; }
+            .filter-select {
+                font-size: 15px !important;
+                padding: 10px 14px;
                 border-radius: 12px;
+                min-height: 46px;
+                -webkit-appearance: none;
+            }
+
+            /* ─── BOTÕES: área de toque 44px mínimo ─── */
+            .btn {
+                font-size: 16px !important;
+                padding: 13px 20px;
+                min-height: 48px;
+                border-radius: 14px;
             }
             .btn-sm {
-                font-size: 13px;
-                padding: 9px 14px;
-                min-height: 40px;
+                font-size: 14px !important;
+                padding: 10px 16px;
+                min-height: 42px;
                 border-radius: 10px;
             }
 
-            /* ── Cards de investimento e dívida ── */
+            /* ─── CARDS DE INVESTIMENTO / DÍVIDA ─── */
             .investment-item,
             .debt-item {
                 padding: 16px 14px;
-                border-radius: 14px;
-                margin-bottom: 12px;
+                border-radius: 16px;
+                margin-bottom: 10px;
             }
-            .investment-header { margin-bottom: 14px; }
-            .investment-name   { font-size: 16px; }
-            .investment-stats  { grid-template-columns: repeat(2,1fr); gap: 12px; }
-            .investment-stat-label { font-size: 11px; }
-            .investment-stat-value { font-size: 16px; }
-            .investment-type { font-size: 12px; }
+            .investment-name       { font-size: 17px !important; }
+            .investment-stats      { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .investment-stat-label { font-size: 12px !important; }
+            .investment-stat-value { font-size: 17px !important; }
+            .investment-type       { font-size: 13px !important; }
 
-            /* ── Modais: bottom sheet nativo ── */
+            /* ─── MODAIS: bottom sheet ─── */
             .modal { align-items: flex-end; }
             .modal-content {
                 border-radius: 24px 24px 0 0;
                 width: 100%;
                 max-width: 100%;
-                max-height: 94dvh;
+                max-height: 92dvh;
+                overflow-y: auto;
                 padding: 24px 20px;
                 padding-bottom: calc(24px + env(safe-area-inset-bottom));
             }
-            .modal-title { font-size: 18px; }
-            .form-group  { margin-bottom: 16px; }
-            .form-label  { font-size: 13px; margin-bottom: 8px; }
+            .modal-title { font-size: 20px !important; }
+            .form-group  { margin-bottom: 18px; }
+            .form-label  { font-size: 15px !important; margin-bottom: 8px; font-weight: 600; }
             .form-input,
             .form-select {
-                font-size: 16px;   /* evita zoom do iOS */
+                font-size: 16px !important;
                 padding: 14px 16px;
-                border-radius: 12px;
-                min-height: 50px;
+                border-radius: 14px;
+                min-height: 52px;
                 -webkit-appearance: none;
             }
 
-            /* ── Categorias ── */
-            .category-section     { padding: 16px 14px; border-radius: 14px; }
-            .category-main-title  { font-size: 16px; }
-            .category-header      { margin-bottom: 14px; padding-bottom: 12px; }
-            .subcategory-item     { padding: 12px 14px; border-radius: 10px; }
-            .subcategory-name     { font-size: 14px; }
-            .subcategory-actions  { gap: 8px; }
+            /* ─── CATEGORIAS ─── */
+            .category-section    { padding: 16px 14px; border-radius: 16px; }
+            .category-main-title { font-size: 17px !important; }
+            .subcategory-item    { padding: 13px 14px; border-radius: 12px; }
+            .subcategory-name    { font-size: 15px !important; }
 
-            /* ── Badges ── */
-            .badge { font-size: 11px; padding: 4px 10px; }
+            /* ─── BADGES ─── */
+            .badge { font-size: 12px !important; padding: 5px 12px; }
 
-            /* ── Dashboard header compacto no mobile ── */
+            /* ─── DASHBOARD HEADER no mobile ─── */
             #dashboard .page-header > div {
                 flex-direction: column;
                 align-items: flex-start;
@@ -578,17 +568,18 @@
             }
             #dashboard .page-header > div > div:last-child {
                 width: 100%;
+                display: flex;
                 justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 8px;
             }
         }
 
-        /* ── Phones muito pequenos ≤ 360px ── */
-        @media (max-width:360px) {
-            .main-content { padding: 12px 12px 96px; padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
-            .stat-value   { font-size: 18px; }
-            .page-title   { font-size: 20px; }
-            .stats-grid   { gap: 10px; }
-            .stat-card    { padding: 14px 12px; }
+        /* ── Celulares pequenos ≤ 360px ── */
+        @media (max-width: 360px) {
+            .main-content { padding: 12px 12px; padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
+            .stat-value   { font-size: 19px !important; }
+            .page-title   { font-size: 21px !important; }
         }
 
         /* ── Desktop ≥ 1025px ── */
