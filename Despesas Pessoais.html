@@ -302,6 +302,97 @@
            MOBILE SHELL COMPONENTS
            ══════════════════════════════════════════════════════════ */
 
+        /* ══ MOBILE MENU DRAWER ══════════════════════════════════ */
+        #mm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,32,39,0.55);
+            z-index: 998;
+            -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+        }
+        #mm-overlay.open { display: block; }
+
+        #mm-drawer {
+            position: fixed;
+            top: 0; right: 0; bottom: 0;
+            width: 300px;
+            max-width: 88vw;
+            background: #ffffff;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: -4px 0 32px rgba(15,32,39,0.25);
+            transform: translateX(110%);
+            transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+            will-change: transform;
+        }
+        #mm-drawer.open { transform: translateX(0); }
+
+        .mm-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 20px 18px;
+            padding-top: calc(20px + env(safe-area-inset-top));
+            background: linear-gradient(135deg, #0f2027, #1a3a4a);
+            flex-shrink: 0;
+        }
+        .mm-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .mm-close {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mm-body { padding: 12px 12px 40px; flex: 1; }
+        .mm-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #8fa0b0;
+            padding: 10px 12px 6px;
+            margin: 0;
+        }
+        .mm-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            padding: 15px 16px;
+            border: none;
+            background: none;
+            border-radius: 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f2027;
+            cursor: pointer;
+            text-align: left;
+            margin-bottom: 2px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .mm-item:active { background: #f0f4f8 !important; }
+        .mm-item span { font-size: 22px; width: 30px; text-align: center; flex-shrink: 0; }
+        .mm-item-danger { color: #f05a6e; }
+        .mm-item-danger:active { background: #fff0f2 !important; }
+        .mm-divider { height: 1px; background: #e2e8f0; margin: 6px 12px; }
+        /* ════════════════════════════════════════════════════════ */
+
         /* Mobile top header */
         .mobile-header {
             display: none;
@@ -663,55 +754,41 @@
         </div>
         <div class="mobile-header-actions">
             <button class="mobile-header-btn" onclick="openTransactionModal()" title="Nova transação">➕</button>
-            <button class="mobile-header-btn" onclick="toggleMobileMenu()" title="Menu" id="mobile-menu-btn">⋮</button>
+            <button class="mobile-header-btn" onclick="toggleMobileMenu()" title="Menu">⋮</button>
         </div>
     </header>
 
-    <!-- Mobile Menu Drawer -->
-    <div id="mobile-menu-overlay" onclick="closeMobileMenu()" style="
-        display:none; position:fixed; inset:0;
-        background:rgba(15,32,39,0.5); z-index:499;
-        backdrop-filter:blur(4px);
-    "></div>
-    <div id="mobile-menu-drawer" style="
-        display:none; position:fixed;
-        top:0; right:0; bottom:0;
-        width:280px; max-width:85vw;
-        background:#fff; z-index:500;
-        box-shadow:-8px 0 40px rgba(15,32,39,0.2);
-        flex-direction:column; overflow-y:auto;
-        animation:slideInRight .25s cubic-bezier(.32,1.2,.64,1);
-    ">
-        <div style="background:linear-gradient(135deg,#0f2027,#1a3a4a);padding:calc(16px + env(safe-area-inset-top)) 20px 20px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;color:#fff;font-size:1.1rem;">Menu</div>
-                <button onclick="closeMobileMenu()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
-            </div>
+    <!-- Mobile Menu (overlay + drawer) -->
+    <div id="mm-overlay" onclick="closeMobileMenu()"></div>
+    <div id="mm-drawer">
+        <div class="mm-header">
+            <span class="mm-title">Menu</span>
+            <button class="mm-close" onclick="closeMobileMenu()">✕</button>
         </div>
-        <div style="padding:12px;">
-            <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8fa0b0;padding:8px 12px 6px;">Ações</div>
-            <button onclick="openTransactionModal();closeMobileMenu();" style="display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:none;background:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;color:#0f2027;cursor:pointer;text-align:left;margin-bottom:4px;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='none'">
-                <span style="font-size:1.4rem;width:32px;text-align:center;">➕</span> Nova Transação
+        <div class="mm-body">
+            <p class="mm-section-label">Ações</p>
+            <button class="mm-item" onclick="openTransactionModal();closeMobileMenu()">
+                <span>➕</span> Nova Transação
             </button>
-            <button onclick="openBanksModal();closeMobileMenu();" style="display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:none;background:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;color:#0f2027;cursor:pointer;text-align:left;margin-bottom:4px;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='none'">
-                <span style="font-size:1.4rem;width:32px;text-align:center;">🏦</span> Gerenciar Bancos
+            <button class="mm-item" onclick="openBanksModal();closeMobileMenu()">
+                <span>🏦</span> Gerenciar Bancos
             </button>
-            <div style="height:1px;background:#e2e8f0;margin:8px 12px;"></div>
-            <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8fa0b0;padding:8px 12px 6px;">Dados</div>
-            <button onclick="exportData();closeMobileMenu();" style="display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:none;background:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;color:#0f2027;cursor:pointer;text-align:left;margin-bottom:4px;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='none'">
-                <span style="font-size:1.4rem;width:32px;text-align:center;">📥</span> Exportar Dados
+            <div class="mm-divider"></div>
+            <p class="mm-section-label">Dados</p>
+            <button class="mm-item" onclick="exportData();closeMobileMenu()">
+                <span>📥</span> Exportar Dados
             </button>
-            <button onclick="openImportModal();closeMobileMenu();" style="display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:none;background:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;color:#0f2027;cursor:pointer;text-align:left;margin-bottom:4px;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='none'">
-                <span style="font-size:1.4rem;width:32px;text-align:center;">📤</span> Importar Dados
+            <button class="mm-item" onclick="openImportModal();closeMobileMenu()">
+                <span>📤</span> Importar Dados
             </button>
-            <div style="height:1px;background:#e2e8f0;margin:8px 12px;"></div>
-            <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8fa0b0;padding:8px 12px 6px;">Navegação</div>
-            <button onclick="switchPage('portfolio',null);closeMobileMenu();" style="display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:none;background:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;color:#0f2027;cursor:pointer;text-align:left;margin-bottom:4px;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='none'">
-                <span style="font-size:1.4rem;width:32px;text-align:center;">💼</span> Carteira
+            <div class="mm-divider"></div>
+            <p class="mm-section-label">Mais</p>
+            <button class="mm-item" onclick="switchPage('portfolio',null);closeMobileMenu()">
+                <span>💼</span> Carteira
             </button>
-            <div style="height:1px;background:#e2e8f0;margin:8px 12px;"></div>
-            <button onclick="resetAllData();closeMobileMenu();" style="display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:none;background:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;color:#f05a6e;cursor:pointer;text-align:left;" onmouseover="this.style.background='#fff0f2'" onmouseout="this.style.background='none'">
-                <span style="font-size:1.4rem;width:32px;text-align:center;">🗑️</span> Zerar Todos os Dados
+            <div class="mm-divider"></div>
+            <button class="mm-item mm-item-danger" onclick="resetAllData();closeMobileMenu()">
+                <span>🗑️</span> Zerar Todos os Dados
             </button>
         </div>
     </div>
@@ -4146,26 +4223,27 @@
         });
 
 
+
         // ── Mobile Menu ──────────────────────────────────────────────────────────
         function toggleMobileMenu() {
-            const drawer  = document.getElementById('mobile-menu-drawer');
-            const overlay = document.getElementById('mobile-menu-overlay');
-            const isOpen  = drawer.style.display === 'flex';
-            if (isOpen) {
+            const drawer  = document.getElementById('mm-drawer');
+            const overlay = document.getElementById('mm-overlay');
+            if (!drawer) return;
+            if (drawer.classList.contains('open')) {
                 closeMobileMenu();
             } else {
-                drawer.style.display  = 'flex';
-                overlay.style.display = 'block';
+                drawer.classList.add('open');
+                overlay.classList.add('open');
                 document.body.style.overflow = 'hidden';
             }
         }
 
         function closeMobileMenu() {
-            const drawer  = document.getElementById('mobile-menu-drawer');
-            const overlay = document.getElementById('mobile-menu-overlay');
-            if (!drawer || !overlay) return;
-            drawer.style.display  = 'none';
-            overlay.style.display = 'none';
+            const drawer  = document.getElementById('mm-drawer');
+            const overlay = document.getElementById('mm-overlay');
+            if (!drawer) return;
+            drawer.classList.remove('open');
+            overlay.classList.remove('open');
             document.body.style.overflow = '';
         }
 
