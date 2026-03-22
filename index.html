@@ -224,6 +224,11 @@
             from { transform:translateY(100%); opacity:0; }
             to   { transform:translateY(0);    opacity:1; }
         }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to   { transform: translateX(0);    opacity: 1; }
+        }
         .modal-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem; }
         .modal-title { font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:800;color:var(--text-primary); }
         .close-btn { background:var(--bg-secondary);border:none;color:var(--text-secondary);font-size:1rem;cursor:pointer;width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s; }
@@ -297,15 +302,119 @@
            MOBILE SHELL COMPONENTS
            ══════════════════════════════════════════════════════════ */
 
-        /* Mobile top header */
-        .mobile-header {
-            display: none;
+        /* ══ MOBILE MENU DRAWER ══════════════════════════════════ */
+        #mm-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,32,39,0.55);
+            z-index: 998;
+            -webkit-backdrop-filter: blur(3px);
+            backdrop-filter: blur(3px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        #mm-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #mm-drawer {
+            position: fixed;
+            top: 0; right: 0; bottom: 0;
+            width: 300px;
+            max-width: 88vw;
+            background: #ffffff;
+            z-index: 999;
+            display: flex !important; /* sempre flex — visibilidade via transform */
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: -4px 0 32px rgba(15,32,39,0.25);
+            transform: translateX(110%);
+            transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+            will-change: transform;
+            visibility: hidden;
+        }
+        #mm-drawer.open {
+            transform: translateX(0);
+            visibility: visible;
+        }
+
+        .mm-header {
+            display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: calc(.875rem + env(safe-area-inset-top)) 1.125rem .875rem;
+            padding: 20px 20px 18px;
+            padding-top: calc(20px + env(safe-area-inset-top));
+            background: linear-gradient(135deg, #0f2027, #1a3a4a);
+            flex-shrink: 0;
+        }
+        .mm-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .mm-close {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mm-body { padding: 12px 12px 40px; flex: 1; }
+        .mm-section-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #8fa0b0;
+            padding: 10px 12px 6px;
+            margin: 0;
+        }
+        .mm-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            padding: 15px 16px;
+            border: none;
+            background: none;
+            border-radius: 14px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f2027;
+            cursor: pointer;
+            text-align: left;
+            margin-bottom: 2px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .mm-item:active { background: #f0f4f8 !important; }
+        .mm-item span { font-size: 22px; width: 30px; text-align: center; flex-shrink: 0; }
+        .mm-item-danger { color: #f05a6e; }
+        .mm-item-danger:active { background: #fff0f2 !important; }
+        .mm-divider { height: 1px; background: #e2e8f0; margin: 6px 12px; }
+        /* ════════════════════════════════════════════════════════ */
+
+        /* Mobile top header */
+        .mobile-header {
+            display: none; /* JS aplica flex quando tela ≤ 768px */
+            align-items: center;
+            justify-content: space-between;
+            padding: calc(14px + env(safe-area-inset-top)) 16px 14px;
             background: var(--bg-sidebar);
             background-image: linear-gradient(135deg, #0f2027, #1a3a4a);
-            position: sticky; top: 0; z-index: 150;
+            position: sticky;
+            top: 0;
+            z-index: 150;
+            width: 100%;
         }
         .mobile-header-logo { display:flex;align-items:center;gap:.625rem; }
         .mobile-header-logo .logo-icon { width:38px;height:38px;font-size:1.2rem;border-radius:11px;flex-shrink:0; }
@@ -658,9 +767,44 @@
         </div>
         <div class="mobile-header-actions">
             <button class="mobile-header-btn" onclick="openTransactionModal()" title="Nova transação">➕</button>
-            <button class="mobile-header-btn" onclick="exportData()" title="Exportar">📥</button>
+            <button class="mobile-header-btn" onclick="toggleMobileMenu()" title="Menu">⋮</button>
         </div>
     </header>
+
+    <!-- Mobile Menu (overlay + drawer) -->
+    <div id="mm-overlay" onclick="closeMobileMenu()"></div>
+    <div id="mm-drawer">
+        <div class="mm-header">
+            <span class="mm-title">Menu</span>
+            <button class="mm-close" onclick="closeMobileMenu()">✕</button>
+        </div>
+        <div class="mm-body">
+            <p class="mm-section-label">Ações</p>
+            <button class="mm-item" onclick="openTransactionModal();closeMobileMenu()">
+                <span>➕</span> Nova Transação
+            </button>
+            <button class="mm-item" onclick="openBanksModal();closeMobileMenu()">
+                <span>🏦</span> Gerenciar Bancos
+            </button>
+            <div class="mm-divider"></div>
+            <p class="mm-section-label">Dados</p>
+            <button class="mm-item" onclick="exportData();closeMobileMenu()">
+                <span>📥</span> Exportar Dados
+            </button>
+            <button class="mm-item" onclick="openImportModal();closeMobileMenu()">
+                <span>📤</span> Importar Dados
+            </button>
+            <div class="mm-divider"></div>
+            <p class="mm-section-label">Mais</p>
+            <button class="mm-item" onclick="switchPage('portfolio',null);closeMobileMenu()">
+                <span>💼</span> Carteira
+            </button>
+            <div class="mm-divider"></div>
+            <button class="mm-item mm-item-danger" onclick="resetAllData();closeMobileMenu()">
+                <span>🗑️</span> Zerar Todos os Dados
+            </button>
+        </div>
+    </div>
 
     <!-- Bottom Nav (mobile) -->
     <nav class="bottom-nav">
@@ -1795,7 +1939,32 @@
         }
 
         // Initialize
+        // ── Aplica layout mobile via JS (garante PWA standalone) ──────────────
+        function applyMobileLayout() {
+            const isMobile = window.innerWidth <= 768;
+            const header   = document.querySelector('.mobile-header');
+            const sidebar  = document.querySelector('.sidebar');
+            const bottomNav = document.querySelector('.bottom-nav');
+            const fab      = document.querySelector('.fab');
+            if (!header) return;
+            if (isMobile) {
+                header.style.display    = 'flex';
+                if (sidebar)   sidebar.style.display    = 'none';
+                if (bottomNav) bottomNav.style.display  = 'block';
+                if (fab)       fab.style.display        = 'flex';
+                document.querySelector('.main-content').style.marginLeft = '0';
+            } else {
+                header.style.display    = 'none';
+                if (sidebar)   sidebar.style.display    = 'flex';
+                if (bottomNav) bottomNav.style.display  = 'none';
+                if (fab)       fab.style.display        = 'none';
+                document.querySelector('.main-content').style.marginLeft = 'var(--sidebar-width, 268px)';
+            }
+        }
+        window.addEventListener('resize', applyMobileLayout);
+
         document.addEventListener('DOMContentLoaded', () => {
+            applyMobileLayout(); // roda imediatamente
             AppStorage.init().then(() => {
                 // Re-parse data after async storage is ready
                 transactions = JSON.parse(AppStorage.getItem('transactions') || '[]');
@@ -4090,6 +4259,33 @@
                 }
             });
         });
+
+
+
+        // ── Mobile Menu ──────────────────────────────────────────────────────────
+        function toggleMobileMenu() {
+            const drawer  = document.getElementById('mm-drawer');
+            const overlay = document.getElementById('mm-overlay');
+            if (!drawer) return;
+            if (drawer.classList.contains('open')) {
+                closeMobileMenu();
+            } else {
+                drawer.classList.add('open');
+                overlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeMobileMenu() {
+            const drawer  = document.getElementById('mm-drawer');
+            const overlay = document.getElementById('mm-overlay');
+            if (!drawer) return;
+            drawer.classList.remove('open');
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        window.addEventListener('popstate', closeMobileMenu);
 
         // ═══════════════════════════════════════════════════════════════════
         // PWA — Service Worker + Install + Offline + Update
