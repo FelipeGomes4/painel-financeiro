@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Como Configurar o Firebase</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --green:#00c896; --dark:#0f2027; --bg:#f0f4f8; --card:#fff; --border:#e2e8f0; --muted:#5a6a7a; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { font-size:16px; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--dark); line-height:1.6; }
+
+  .hero { background:linear-gradient(135deg,#0f2027,#1a3a4a); padding:48px 24px 72px; text-align:center; position:relative; overflow:hidden; }
+  .hero::after { content:''; position:absolute; bottom:-2px; left:0; right:0; height:40px; background:var(--bg); border-radius:40px 40px 0 0; }
+  .hero-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(0,200,150,.15); border:1px solid rgba(0,200,150,.3); color:var(--green); border-radius:99px; padding:5px 14px; font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-bottom:20px; }
+  .hero h1 { font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(26px,5vw,40px); font-weight:800; color:#fff; letter-spacing:-.02em; line-height:1.15; margin-bottom:12px; }
+  .hero h1 span { color:var(--green); }
+  .hero p { color:rgba(200,220,235,.75); font-size:15px; max-width:480px; margin:0 auto; }
+  .hero-time { display:inline-flex; align-items:center; gap:6px; margin-top:18px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.7); border-radius:99px; padding:6px 16px; font-size:13px; }
+
+  .wrap { max-width:740px; margin:0 auto; padding:0 20px 80px; }
+  .section { margin-top:44px; }
+  .section-head { display:flex; align-items:center; gap:14px; margin-bottom:22px; padding-bottom:14px; border-bottom:2px solid var(--border); }
+  .section-icon { width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .section-head h2 { font-family:'Plus Jakarta Sans',sans-serif; font-size:20px; font-weight:800; }
+  .section-head p { font-size:13px; color:var(--muted); margin-top:2px; }
+
+  .steps { display:flex; flex-direction:column; gap:0; }
+  .step { display:flex; gap:18px; padding-bottom:28px; }
+  .step:last-child { padding-bottom:0; }
+  .step-left { display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+  .step-num { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,var(--green),#009e76); color:#fff; font-family:'Plus Jakarta Sans',sans-serif; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,200,150,.3); z-index:1; }
+  .step-line { width:2px; flex:1; background:linear-gradient(to bottom,var(--green),rgba(0,200,150,.1)); margin-top:6px; min-height:20px; }
+  .step:last-child .step-line { display:none; }
+  .step-body { flex:1; padding-top:6px; }
+  .step-body h3 { font-family:'Plus Jakarta Sans',sans-serif; font-size:16px; font-weight:700; margin-bottom:7px; }
+  .step-body p { font-size:14px; color:var(--muted); line-height:1.65; margin-bottom:8px; }
+
+  .screen { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin:12px 0; box-shadow:0 4px 16px rgba(15,32,39,.07); }
+  .screen-bar { background:#f8fafc; border-bottom:1px solid var(--border); padding:9px 14px; display:flex; align-items:center; gap:8px; }
+  .screen-dot { width:9px; height:9px; border-radius:50%; }
+  .screen-url { flex:1; background:var(--border); border-radius:5px; padding:4px 10px; font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-left:6px; }
+  .screen-body { padding:16px 18px; font-size:13px; line-height:1.7; }
+
+  .code { background:#0f2027; color:#a8d8c8; border-radius:12px; padding:14px 18px; font-family:'DM Mono',monospace; font-size:12.5px; line-height:1.85; margin:10px 0; overflow-x:auto; white-space:pre; border:1px solid rgba(0,200,150,.15); }
+  .code-key { color:#00c896; }
+  .code-val { color:#f5c96e; }
+  .code-comment { color:rgba(168,216,200,.4); }
+  .code-hl { background:rgba(0,200,150,.15); border-radius:3px; padding:1px 4px; }
+  .ci { background:#e8edf3; color:#0f2027; font-family:'DM Mono',monospace; font-size:12px; padding:2px 6px; border-radius:5px; font-weight:500; }
+
+  .tip { display:flex; gap:12px; align-items:flex-start; border-radius:12px; padding:13px 15px; margin:10px 0; font-size:13px; line-height:1.6; }
+  .tip-icon { font-size:17px; flex-shrink:0; margin-top:1px; }
+  .tip strong { display:block; font-size:14px; margin-bottom:2px; }
+  .tip-green { background:rgba(0,200,150,.08); border:1px solid rgba(0,200,150,.2); color:#005c40; }
+  .tip-yellow { background:rgba(245,166,35,.08); border:1px solid rgba(245,166,35,.25); color:#7a4f00; }
+  .tip-blue { background:rgba(61,139,255,.08); border:1px solid rgba(61,139,255,.2); color:#1a3a7a; }
+
+  .gh-page { background:#fff; padding:14px 16px; }
+  .gh-label { font-size:12px; font-weight:600; color:var(--dark); margin-bottom:5px; display:block; }
+  .gh-input { width:100%; border:1px solid #d0d7de; border-radius:6px; padding:7px 10px; font-size:12px; color:var(--dark); background:#fff; margin-bottom:10px; }
+  .gh-input.filled { background:#f6f8fa; font-weight:600; }
+  .gh-radio { display:flex; align-items:flex-start; gap:9px; padding:9px 11px; border:1px solid #d0d7de; border-radius:7px; cursor:pointer; font-size:12px; margin-bottom:6px; }
+  .gh-radio.sel { border-color:#0969da; background:#ddf4ff; }
+  .gh-btn { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid; }
+  .gh-btn-green { background:#2da44e; color:#fff; border-color:#2da44e; }
+
+  .success-box { background:linear-gradient(135deg,#0f2027,#1a3a4a); border-radius:18px; padding:28px 24px; text-align:center; margin-top:36px; border:1px solid rgba(0,200,150,.3); }
+  .success-box h3 { font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:800; color:#fff; margin-bottom:8px; }
+  .success-box p { color:rgba(200,220,235,.7); font-size:14px; }
+
+  footer { text-align:center; padding:24px 20px; font-size:13px; color:var(--muted); border-top:1px solid var(--border); }
+
+  @media (max-width:480px) {
+    .step { gap:12px; }
+    .step-num { width:34px; height:34px; font-size:13px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">🔥 Firebase Setup</div>
+  <h1>Configurar<br><span>Sincronização</span></h1>
+  <p>Configure o Firebase para sincronizar os dados do Painel Financeiro em todos os seus dispositivos.</p>
+  <div class="hero-time">⏱️ Tempo estimado: 15 minutos</div>
+</div>
+
+<div class="wrap">
+
+  <!-- ══ PARTE 1: CRIAR PROJETO ══ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon" style="background:rgba(255,160,0,.1);">🔥</div>
+      <div><h2>Parte 1 — Criar projeto no Firebase</h2><p>Gratuito — plano Spark cobre tranquilamente uso pessoal</p></div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Acesse console.firebase.google.com</h3>
+          <p>Entre com sua conta Google. Clique em <strong>"Criar um projeto"</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Nomeie o projeto</h3>
+          <p>Use um nome como <ci>painel-financeiro</ci>. Desative o Google Analytics (não é necessário). Clique em <strong>Criar projeto</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Adicione um app Web</h3>
+          <p>Na página do projeto, clique no ícone <strong>&lt;/&gt;</strong> (Web). Dê o nome <ci>painel-financeiro-web</ci>. <strong>Não</strong> ative o Firebase Hosting. Clique em <strong>Registrar app</strong>.</p>
+          <p>Uma tela com as configurações aparecerá — <strong>copie o objeto <ci>firebaseConfig</ci></strong>. Ficará assim:</p>
+          <div class="code"><span class="code-key">const</span> firebaseConfig = {
+  <span class="code-key">apiKey</span>:            <span class="code-val">"AIzaSy..."</span>,
+  <span class="code-key">authDomain</span>:        <span class="code-val">"meu-projeto.firebaseapp.com"</span>,
+  <span class="code-key">projectId</span>:         <span class="code-val">"meu-projeto"</span>,
+  <span class="code-key">storageBucket</span>:     <span class="code-val">"meu-projeto.appspot.com"</span>,
+  <span class="code-key">messagingSenderId</span>: <span class="code-val">"123456789"</span>,
+  <span class="code-key">appId</span>:             <span class="code-val">"1:123:web:abc123"</span>
+};</div>
+          <div class="tip tip-yellow">
+            <span class="tip-icon">⚠️</span>
+            <div><strong>Guarde essas informações</strong> — você vai precisar colar no arquivo <ci>index.html</ci> no próximo passo.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PARTE 2: ATIVAR AUTH ══ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon" style="background:rgba(61,139,255,.1);">🔐</div>
+      <div><h2>Parte 2 — Ativar autenticação</h2><p>Para login com e-mail e Google</p></div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Vá em Authentication</h3>
+          <p>No menu lateral do Firebase Console, clique em <strong>Build → Authentication</strong>. Clique em <strong>"Começar"</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Ative E-mail/Senha</h3>
+          <p>Na aba <strong>Sign-in method</strong>, clique em <strong>E-mail/Senha</strong>, ative a primeira opção e salve.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Ative Google (opcional)</h3>
+          <p>Clique em <strong>Google</strong>, ative, informe seu e-mail de suporte e salve. Isso permite login com 1 clique.</p>
+          <div class="tip tip-blue">
+            <span class="tip-icon">💡</span>
+            <div>Se hospedar no GitHub Pages, adicione o domínio em <strong>Authentication → Settings → Authorized domains</strong>: <ci>SEU-USUARIO.github.io</ci></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PARTE 3: FIRESTORE ══ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon" style="background:rgba(0,200,150,.1);">🗄️</div>
+      <div><h2>Parte 3 — Criar banco de dados Firestore</h2><p>Onde os dados financeiros serão armazenados</p></div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Vá em Firestore Database</h3>
+          <p>No menu lateral, clique em <strong>Build → Firestore Database</strong>. Clique em <strong>"Criar banco de dados"</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Escolha as configurações</h3>
+          <p>Localização: <ci>southamerica-east1</ci> (São Paulo — mais rápido no Brasil). Modo: <strong>Produção</strong>. Clique em <strong>Criar</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Configure as regras de segurança</h3>
+          <p>Clique na aba <strong>Regras</strong> e substitua o conteúdo por:</p>
+          <div class="code"><span class="code-key">rules_version</span> = <span class="code-val">'2'</span>;
+service cloud.firestore {
+  match /databases/{database}/documents {
+    <span class="code-comment">// Cada usuário só acessa seus próprios dados</span>
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+    }
+  }
+}</div>
+          <p>Clique em <strong>Publicar</strong>.</p>
+          <div class="tip tip-green">
+            <span class="tip-icon">✅</span>
+            <div><strong>Seguro!</strong> Esta regra garante que cada usuário só acessa os próprios dados — ninguém vê as finanças de outra pessoa.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PARTE 4: COLAR CONFIG ══ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon" style="background:rgba(124,111,247,.1);">⚙️</div>
+      <div><h2>Parte 4 — Colar as configurações no app</h2><p>Última etapa — conectar o app ao Firebase</p></div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Abra o arquivo index.html</h3>
+          <p>Abra o <ci>index.html</ci> em qualquer editor de texto (Notepad, VS Code, etc.).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Encontre o bloco FIREBASE_CONFIG</h3>
+          <p>Use <strong>Ctrl+F</strong> (ou Cmd+F) e busque por:</p>
+          <div class="code">COLE_AQUI_apiKey</div>
+          <p>Você verá este bloco:</p>
+          <div class="code"><span class="code-key">const</span> FIREBASE_CONFIG = {
+  <span class="code-key">apiKey</span>:            <span class="code-val">"COLE_AQUI_apiKey"</span>,
+  <span class="code-key">authDomain</span>:        <span class="code-val">"COLE_AQUI_authDomain"</span>,
+  <span class="code-key">projectId</span>:         <span class="code-val">"COLE_AQUI_projectId"</span>,
+  <span class="code-key">storageBucket</span>:     <span class="code-val">"COLE_AQUI_storageBucket"</span>,
+  <span class="code-key">messagingSenderId</span>: <span class="code-val">"COLE_AQUI_messagingSenderId"</span>,
+  <span class="code-key">appId</span>:             <span class="code-val">"COLE_AQUI_appId"</span>
+};</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Substitua pelos seus valores</h3>
+          <p>Cole os valores do Firebase Console que você copiou na Parte 1:</p>
+          <div class="code"><span class="code-key">const</span> FIREBASE_CONFIG = {
+  <span class="code-key">apiKey</span>:            <span class="code-val">"AIzaSyXXXXXXXXXXXXXXX"</span>,  <span class="code-comment">← seu valor</span>
+  <span class="code-key">authDomain</span>:        <span class="code-val">"meu-projeto.firebaseapp.com"</span>,
+  <span class="code-key">projectId</span>:         <span class="code-val">"meu-projeto"</span>,
+  <span class="code-key">storageBucket</span>:     <span class="code-val">"meu-projeto.appspot.com"</span>,
+  <span class="code-key">messagingSenderId</span>: <span class="code-val">"123456789012"</span>,
+  <span class="code-key">appId</span>:             <span class="code-val">"1:123456789012:web:abcdef"</span>
+};</div>
+          <p>Salve o arquivo.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-left"><div class="step-num">4</div><div class="step-line"></div></div>
+        <div class="step-body">
+          <h3>Faça upload do index.html atualizado no GitHub</h3>
+          <p>No repositório GitHub, clique no arquivo <ci>index.html</ci> → ícone de lápis ✏️ → Selecione tudo (Ctrl+A) → Cole o novo conteúdo → <strong>Commit changes</strong>.</p>
+          <p>O deploy roda automaticamente em ~1 minuto.</p>
+          <div class="tip tip-green">
+            <span class="tip-icon">✅</span>
+            <div>Pronto! Ao abrir o app, uma tela de login aparecerá. Crie uma conta, entre e os dados sincronizam automaticamente em todos os dispositivos.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LIMITES GRATUITOS ══ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon" style="background:rgba(0,200,150,.1);">💰</div>
+      <div><h2>Limites do plano gratuito (Spark)</h2><p>Mais que suficiente para uso pessoal</p></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:6px;">📖</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#0f2027;">50.000</div>
+        <div style="font-size:13px;color:var(--muted);">leituras/dia</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:6px;">✏️</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#0f2027;">20.000</div>
+        <div style="font-size:13px;color:var(--muted);">escritas/dia</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:6px;">💾</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#0f2027;">1 GB</div>
+        <div style="font-size:13px;color:var(--muted);">armazenamento</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:6px;">👥</div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:18px;font-weight:800;color:#0f2027;">∞</div>
+        <div style="font-size:13px;color:var(--muted);">usuários</div>
+      </div>
+    </div>
+    <div class="tip tip-green" style="margin-top:14px;">
+      <span class="tip-icon">✅</span>
+      <div>Para um app de finanças pessoais com uso diário normal, você nunca chegará perto desses limites. <strong>É 100% gratuito.</strong></div>
+    </div>
+  </div>
+
+  <div class="success-box">
+    <div style="font-size:48px;margin-bottom:14px;">🎉</div>
+    <h3>Sincronização ativa!</h3>
+    <p>Seus dados financeiros agora sincronizam automaticamente entre celular, tablet e computador em tempo real.</p>
+  </div>
+
+</div>
+<footer>Painel Financeiro · Firebase Sync · Dados seguros e criptografados</footer>
+</body>
+</html>
