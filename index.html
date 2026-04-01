@@ -306,6 +306,30 @@
            MOBILE SHELL COMPONENTS
            ══════════════════════════════════════════════════════════ */
 
+        /* ══ SORTABLE TABLE HEADERS ════════════════════════════════ */
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            transition: color 0.15s;
+        }
+        th.sortable:hover { color: var(--accent-dark); }
+        th.sortable .sort-icon {
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 10px;
+            opacity: 0.35;
+            transition: opacity 0.15s, transform 0.2s;
+            vertical-align: middle;
+        }
+        th.sortable.sort-asc  .sort-icon,
+        th.sortable.sort-desc .sort-icon { opacity: 1; color: var(--accent-dark); }
+        th.sortable.sort-asc  .sort-icon { transform: rotate(0deg); }
+        th.sortable.sort-desc .sort-icon { transform: rotate(180deg); }
+        th.sortable.sort-asc,
+        th.sortable.sort-desc { color: var(--accent-dark); }
+        /* ════════════════════════════════════════════════════════ */
+
         /* ══ BOTÃO ATUALIZAR ══════════════════════════════════════ */
         .btn-refresh {
             display: inline-flex;
@@ -1455,12 +1479,24 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Data</th>
-                                <th>Descrição</th>
-                                <th>Categoria</th>
-                                <th>Tipo</th>
-                                <th>Valor</th>
-                                <th>Status</th>
+                                <th class="sortable" onclick="sortTransactions('date')" id="th-date">
+                                    Data <span class="sort-icon">▲</span>
+                                </th>
+                                <th class="sortable" onclick="sortTransactions('description')" id="th-description">
+                                    Descrição <span class="sort-icon">▲</span>
+                                </th>
+                                <th class="sortable" onclick="sortTransactions('category')" id="th-category">
+                                    Categoria <span class="sort-icon">▲</span>
+                                </th>
+                                <th class="sortable" onclick="sortTransactions('type')" id="th-type">
+                                    Tipo <span class="sort-icon">▲</span>
+                                </th>
+                                <th class="sortable" onclick="sortTransactions('value')" id="th-value">
+                                    Valor <span class="sort-icon">▲</span>
+                                </th>
+                                <th class="sortable" onclick="sortTransactions('status')" id="th-status">
+                                    Status <span class="sort-icon">▲</span>
+                                </th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -1946,12 +1982,12 @@
         const FIREBASE_CONFIG = {
             // ⚠️  Cole aqui as configurações do seu projeto Firebase
             // Veja o arquivo COMO_CONFIGURAR_FIREBASE.html para instruções
-            apiKey: "AIzaSyAN7tApIwAv3Jh68TifmiPkFpH8fCZOujc",
-            authDomain: "painel-financeiro-8dac0.firebaseapp.com",
-            projectId: "painel-financeiro-8dac0",
-            storageBucket: "painel-financeiro-8dac0.firebasestorage.app",
-            messagingSenderId: "107475493543",
-            appId: "1:107475493543:web:97ff6f206d0c540a8d3182"
+            apiKey:            "COLE_AQUI_apiKey",
+            authDomain:        "COLE_AQUI_authDomain",
+            projectId:         "COLE_AQUI_projectId",
+            storageBucket:     "COLE_AQUI_storageBucket",
+            messagingSenderId: "COLE_AQUI_messagingSenderId",
+            appId:             "COLE_AQUI_appId"
         };
 
         // ══ Firebase state ══════════════════════════════════════════════════════
@@ -2551,6 +2587,7 @@
             renderMonthlyTransactions();
             renderCategories();
             renderPortfolio();
+            _updateSortHeaders(); // inicializa ícone de ordenação
             }); // end AppStorage.init().then
         });
 
@@ -4138,7 +4175,8 @@
             if (filtered.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhum lançamento encontrado</td></tr>';
             } else {
-                filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+                // Sempre pendentes primeiro, depois aplica ordenação secundária
+                filtered = _applySortToTransactions(filtered);
                 
                 tbody.innerHTML = filtered.map(t => `
                     <tr>
@@ -4273,6 +4311,88 @@
 
         function filterMonthlyTransactions() {
             renderMonthlyTransactions();
+        }
+
+        // ── Ordenação da tabela de lançamentos ───────────────────────────────────
+        let _sortCol = 'date';   // coluna ativa
+        let _sortDir = 'desc';   // 'asc' ou 'desc'
+
+        function sortTransactions(col) {
+            if (_sortCol === col) {
+                // Mesma coluna: inverte direção
+                _sortDir = _sortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                _sortCol = col;
+                // Padrão ao trocar coluna
+                _sortDir = col === 'value' ? 'desc' : (col === 'date' ? 'desc' : 'asc');
+            }
+            _updateSortHeaders();
+            renderMonthlyTransactions();
+        }
+
+        function _updateSortHeaders() {
+            const cols = ['date','description','category','type','value','status'];
+            cols.forEach(col => {
+                const th = document.getElementById('th-' + col);
+                if (!th) return;
+                th.classList.remove('sort-asc','sort-desc');
+                if (col === _sortCol) {
+                    th.classList.add(_sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+                }
+            });
+        }
+
+        function _applySortToTransactions(list) {
+            const col = _sortCol;
+            const dir = _sortDir;
+
+            return [...list].sort((a, b) => {
+                // ── Pendentes SEMPRE primeiro (prioridade máxima) ──
+                if (a.status !== b.status) {
+                    if (a.status === 'pending') return -1;
+                    if (b.status === 'pending') return  1;
+                }
+
+                // ── Ordenação secundária pela coluna selecionada ──
+                let valA, valB;
+                switch (col) {
+                    case 'date':
+                        valA = new Date(a.date).getTime();
+                        valB = new Date(b.date).getTime();
+                        break;
+                    case 'description':
+                        valA = (a.description || '').toLowerCase();
+                        valB = (b.description || '').toLowerCase();
+                        break;
+                    case 'category':
+                        valA = (a.category || '').toLowerCase();
+                        valB = (b.category || '').toLowerCase();
+                        break;
+                    case 'type':
+                        // income antes de expense (asc), ou ao contrário (desc)
+                        valA = a.type === 'income' ? 0 : 1;
+                        valB = b.type === 'income' ? 0 : 1;
+                        break;
+                    case 'value':
+                        valA = a.value || 0;
+                        valB = b.value || 0;
+                        break;
+                    case 'status':
+                        // pending=0, paid=1
+                        valA = a.status === 'pending' ? 0 : 1;
+                        valB = b.status === 'pending' ? 0 : 1;
+                        break;
+                    default:
+                        valA = new Date(a.date).getTime();
+                        valB = new Date(b.date).getTime();
+                }
+
+                if (valA < valB) return dir === 'asc' ? -1 :  1;
+                if (valA > valB) return dir === 'asc' ?  1 : -1;
+
+                // Desempate: mais recente primeiro
+                return new Date(b.date) - new Date(a.date);
+            });
         }
 
         function deleteMonthlyExpense(id) {
